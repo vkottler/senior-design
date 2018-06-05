@@ -1,2 +1,9 @@
-# senior-design
-A senior design project for B.S. in Computer Engineering at UW-Madison.
+# Fault-Tolerant Quadcopter
+
+*Contributors: Vaughn Kottler*
+
+An attempt at a quadcopter design that maintains *single* fault tolerance.
+
+## Repository Structure
+
+TODO
