@@ -1,2 +1,4 @@
 *.sw[ip]
 .~*
+*.bak
+*-cache.lib
