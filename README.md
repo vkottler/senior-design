@@ -22,4 +22,8 @@ Bill of materials and other logistics-tracking assets.
 
 ### [src](src)
 
-Source code for compute units on the vehicle.
+Source code for compute units and RIOs on the vehicle and on the ground.
+
+### [scripts](scripts)
+
+Utility shell scripts for installing dependencies to work on this project.
