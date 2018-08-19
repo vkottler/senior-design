@@ -1,4 +1,12 @@
-*.sw[ip]
+*.sw[iop]
+*.o
+*.d
 .~*
 *.bak
 *-cache.lib
+rel
+bin
+*.elf
+*.map
+*.pyc
+*~
