@@ -1,4 +1,4 @@
-.PHONY: help Makefile
+.PHONY: help Makefile view serve
 
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
@@ -6,6 +6,9 @@ SPHINXPROJ    = SeniorDesignQuadcopter
 SOURCEDIR     = src
 BUILDDIR      = rel
 DEV_BIN       = venv/bin
+
+BROWSER       = firefox
+PYTHON_BIN    = python3
 
 help:
 	@$(DEV_BIN)/$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -15,7 +18,13 @@ help:
 %: Makefile venv
 	@$(DEV_BIN)/$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
+view:
+	@$(BROWSER) http://localhost:8000/$(BUILDDIR)/html/index.html
+
+serve:
+	@$(PYTHON_BIN) -m http.server
+
 venv:
 	@rm -rf venv
-	@virtualenv --python=python3 venv
+	@virtualenv --python=$(PYTHON_BIN) venv
 	@$(DEV_BIN)/pip install -r dev_requirements.txt
