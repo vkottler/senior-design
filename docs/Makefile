@@ -21,7 +21,7 @@ help:
 view:
 	@$(BROWSER) http://localhost:8000/$(BUILDDIR)/html/index.html
 
-serve:
+serve: venv
 	@$(PYTHON_BIN) -m http.server
 
 venv:
