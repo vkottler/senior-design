@@ -1,5 +1,5 @@
-Display Architecture
-====================
+Display and Control Architecture
+================================
 
 .. toctree::
    :glob:
