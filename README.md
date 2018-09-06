@@ -1,8 +1,9 @@
 # Fault-Tolerant Quadcopter
 
-*Contributors: Vaughn Kottler*
+*Contributors: Vaughn Kottler, Cooper Green, Mayank Katwal*
 
-An attempt at a quadcopter design that maintains *single* fault tolerance.
+An attempt at a quadcopter flight system that maintains
+single-fault tolerance.
 
 ## Repository Structure
 
