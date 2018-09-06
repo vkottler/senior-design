@@ -5,15 +5,6 @@ A senior design project (Fall 2018) by Mayank Katwal, Vaughn Kottler and
 Cooper Green. We are undergraduate Computer Engineering and Computer Sciences
 students at the University of Wisconsin-Madison.
 
-Table of Contents
------------------
-
-.. toctree::
-
-   flight
-   ground
-   display
-
 Overview
 --------
 
@@ -22,7 +13,6 @@ the challenges faced by engineers working in aerospace.
 
 Quadcopter kits, components, reference designs and instructional content
 currently exist in high volumes from hobbyist to enthusiast quality and price.
-
 We aim to take advantage of this ecosystem so we can choose the specific
 problems and design aspects we want to understand and build solutions for.
 
@@ -52,3 +42,12 @@ The project is designed for three significant bodies of work, which are:
    - Accepts commands from the ground, sends telemetry back to the ground
    - Maintains a holding pattern, or attempts a soft landing if ground
      communication is lost
+
+Table of Contents
+-----------------
+
+.. toctree::
+
+   flight
+   ground
+   display
