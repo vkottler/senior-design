@@ -20,6 +20,11 @@ In our case, we want to focus on an end-to-end
 (ground controller / display + ground station + vehicle) avionics and
 software system.
 
+Block Diagram
+-------------
+
+.. image:: im/top_level.png
+
 Goals and Scope
 ---------------
 
