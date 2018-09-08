@@ -27,4 +27,4 @@ serve: venv
 venv:
 	@rm -rf venv
 	@virtualenv --python=$(PYTHON_BIN) venv
-	@$(DEV_BIN)/pip install -r dev_requirements.txt
+	@$(DEV_BIN)/pip install -r requirements.txt
