@@ -5,6 +5,8 @@ This page discusses our approach to managing time and
 resouces to hopefully accomplish our goals by the end
 of the semester.
 
+*"A problem well stated is a problem half solved." - Charles Kettering*
+
 Abstract
 --------
 
@@ -36,4 +38,23 @@ reaching certain milestones.
 Plan of Attack
 --------------
 
-TODO
+*"If I had an hour to solve a problem I'd spend 55 minutes thinking about
+the problem and 5 minutes thinking about solutions." - Albert Einstein*
+
+We believe there is significant value in planning out the body of work before
+even prototyping and experimenting. The following diagrams attempt to capture
+how we intend to move into implementation and completion of this project.
+
+Initial Development and Prototyping
+***********************************
+
+How we plan to approach the initial stages of the project:
+
+.. image:: im/workflow_1.png
+
+Final Stages
+************
+
+How we plan to approach integration and final result preparation:
+
+.. image:: im/workflow_2.png
