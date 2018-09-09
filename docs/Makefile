@@ -7,10 +7,15 @@ SOURCEDIR     = src
 BUILDDIR      = rel
 DEV_BIN       = venv/bin
 
-BROWSER       = firefox
-PYTHON_BIN    = python3
+BROWSER       ?= firefox
+PYTHON_BIN    ?= python3
 
-help:
+# Windows-specific variable modifications
+ifeq ($(OS),Windows_NT)
+DEV_BIN       = venv/Scripts
+endif
+
+help: venv
 	@$(DEV_BIN)/$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
