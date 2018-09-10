@@ -11,3 +11,7 @@ bin
 *.pyc
 *~
 venv
+*.aux
+*.log
+*.out
+*.dvi
