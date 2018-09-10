@@ -53,6 +53,7 @@ Table of Contents
 
 .. toctree::
 
+   project_management
    flight
    ground
    display
