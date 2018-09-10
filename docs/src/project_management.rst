@@ -1,11 +1,23 @@
 Project Management
 ==================
 
+*"A problem well stated is a problem half solved." - Charles Kettering*
+
 This page discusses our approach to managing time and
 resouces to hopefully accomplish our goals by the end
 of the semester.
 
-*"A problem well stated is a problem half solved." - Charles Kettering*
+Individual Roles
+----------------
+
+**Cooper Green** - Responsible Engineer for the ground station and radio
+frequency communication.
+
+**Mayank Katwal** - Responsible Engineer for the user interface and
+telemetry backend.
+
+**Vaughn Kottler** - Responsible Engineer for the flight vehicle and control
+algorithms.
 
 Abstract
 --------
