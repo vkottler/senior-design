@@ -6,6 +6,7 @@
 \usepackage{fancyhdr}
 \usepackage[hidelinks]{hyperref}
 \usepackage{color}
+\usepackage{float}
 
 % page margins
 \addtolength{\topmargin}{-0.75in}
@@ -49,7 +50,7 @@ We are interested in building a \textit{quadcopter} plus
 \textit{ground station} and \textit{web-based user interface}.
 We have chosen to call this project the
 \textbf{fault-tolerant quadcopter}. This name reveals one of our
-stretch goals that will be covered in a future section.
+design goals that will be covered in a future section.
 
 This document serves as the formal proposal to be vetted by the
 course instructor,
@@ -61,10 +62,9 @@ sync with our project's scope and current progress. At the time
 of writing it is not yet in a stable state.
 
 This project is designed for three major bodies of work that were
-mentioned above but are better captured by Figure
-\ref{fig:high-level}:
+mentioned above but are better captured by \textbf{Figure \ref{fig:high-level}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/top_level}
 	\caption{High-level overview of the major components and
@@ -75,60 +75,102 @@ mentioned above but are better captured by Figure
 This high-level architecture is inspired by existing aerospace
 avionics and software systems that we have done research on
 and have some first-hand experience with. Our current, collective
-experience with such systems and the technical challenges we
-anticipate being associated with them is minimal, though. For
-this reason we seek feedback on our lower-level goals and
-approach, provided that this high-level idea suffices as
+experience with such systems (and the technical challenges we
+anticipate being associated with them) is minimal, though. For
+this reason \textbf{we seek feedback on our lower-level goals and
+approach}, provided that this high-level idea suffices as
 a project worth pursuing.
 
 \section{Technical Features}
 
-TODO
+A vehicle that is \textit{single-fault tolerant} is capable of continuing
+nominal operation after experiencing any arbitrary failure in a well-defined
+\textit{fault space}. We aim to implement single-fault tolerance by:
+
+\begin{enumerate}
+	\item Limiting the initial fault space to a ``loss of ground station
+		heartbeat'' event
+	\item Executing a ``landing maneuver'' upon fault detection
+	\item Iteratively hardening our design to a broader fault space,
+		time permitting
+\end{enumerate}
+
+We recognize some intermediate milestones that will need to be reached before
+an ``automatic flight-termination system'' described above can be expected to
+function:
+
+\begin{itemize}
+	\item Establish wireless communication between the vehicle and
+		ground station
+	\item Establish percentage-based throttle control over each motor
+	\item Establish manual-commanding capability to the vehicle from a
+		web-based user interface
+	\item View live telemetry from a web-based user interface
+	\item Sense angular velocity via gyroscope and force experienced via
+		inertial measurement unit
+	\item Develop a control algorithm to fly in a stable hover or
+		holding pattern
+	\item Extend control algorithm to control for velocity in three axes
+		to achieve controlled motion
+	\item Sense relative altitude
+	\item Extend control algorithm to control for a specific \textit{delta-y}
+		(perpendicular to ground plane) 
+\end{itemize}
+
+Our limited understanding of control theory and lack of experience in general
+with avionics systems may limit what we can achieve in the end, but we
+recognize this and have focused on primarily \textit{system-level} goals and
+requirements versus specific technical requirements (battery life, thrust and
+payload capability, etc.).
 
 \subsection{Quadcopter}
 
-Responsible Engineer: \textbf{Vaughn}
+We intend to pursue an implmentation depicted in
+\textbf{Figure \ref{fig:quadcopter}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/quadcopter}
 	\caption{Block diagram view of the quadcopter}
+	\label{fig:quadcopter}
 \end{figure}
 
-\begin{itemize}
-	\item TODO
-\end{itemize}
+{\large Responsible Engineer: \textbf{Vaughn}}
+
+\pagebreak
 
 \subsection{Ground Station}
 
-Responsible Engineer: \textbf{Cooper}
+We intend to pursue an implmentation depicted in
+\textbf{Figure \ref{fig:ground_station}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/ground_station}
 	\caption{Block diagram view of the ground station}
+	\label{fig:ground_station}
 \end{figure}
 
-\begin{itemize}
-	\item TODO
-\end{itemize}
+{\large Responsible Engineer: \textbf{Cooper}}
+
+\pagebreak
 
 \subsection{Display and Controller}
 
-Responsible Engineer: \textbf{Mayank}
+We intend to pursue an implmentation depicted in
+\textbf{Figure \ref{fig:display_controller}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/display_controller}
 	\caption{Block diagram view of the display and control user
 		interface}
+	\label{fig:display_controller}
 \end{figure}
 
-\begin{itemize}
-	\item TODO
-\end{itemize}
+{\large Responsible Engineer: \textbf{Mayank}}
 
-\section{Responsibilities}
+\section{Roles and Responsibilities}
 
 How we plan to share responsibility.
 
@@ -160,6 +202,20 @@ How we plan to share responsibility.
 \end{description}
 
 \section{Project Management}
+
+\begin{quote}
+	\textit{``If I had an hour to solve a problem I'd spend 55 minutes
+	thinking about the problem and 5 minutes thinking about
+	solutions.'' - Albert Einstein}
+\end{quote}
+
+TODO
+
+\subsection{Initial Development and Prototyping}
+
+TODO
+
+\subsection{Final Stages}
 
 TODO
 
