@@ -1,4 +1,0 @@
-Compute Node
-============
-
-TODO

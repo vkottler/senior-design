@@ -1,11 +1,6 @@
 Ground Hardware and Software
 ============================
 
-Documentation and notes for work on the ground station.
+Block diagram:
 
 .. image:: im/ground_station.png
-
-.. toctree::
-   :glob:
-
-   ground/*

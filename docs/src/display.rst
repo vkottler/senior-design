@@ -1,11 +1,6 @@
 Display and Control Architecture
 ================================
 
-Documentation and notes for work on the display and controller.
+Block diagram:
 
 .. image:: im/display_controller.png
-
-.. toctree::
-   :glob:
-
-   display/*
