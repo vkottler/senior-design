@@ -68,11 +68,11 @@ mentioned above but are better captured by \textbf{Figure \ref{fig:high-level}}:
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/top_level}
 	\caption{High-level overview of the major components and
-		their interfaces}
+		their interfaces.}
 	\label{fig:high-level}
 \end{figure}
 
-This high-level architecture is inspired by existing aerospace
+\noindent This high-level architecture is inspired by existing aerospace
 avionics and software systems that we have done research on
 and have some first-hand experience with. Our current, collective
 experience with such systems (and the technical challenges we
@@ -95,9 +95,9 @@ nominal operation after experiencing any arbitrary failure in a well-defined
 		time permitting
 \end{enumerate}
 
-We recognize some intermediate milestones that will need to be reached before
-an ``automatic flight-termination system'' described above can be expected to
-function:
+\noindent We recognize some intermediate milestones that will need to be reached
+before an \textit{automatic flight-termination system} described above can be
+expected to function:
 
 \begin{itemize}
 	\item Establish wireless communication between the vehicle and
@@ -117,88 +117,102 @@ function:
 		(perpendicular to ground plane) 
 \end{itemize}
 
-Our limited understanding of control theory and lack of experience in general
-with avionics systems may limit what we can achieve in the end, but we
+\noindent Our limited understanding of control theory and lack of experience in
+general with avionics systems may limit what we can achieve in the end, but we
 recognize this and have focused on primarily \textit{system-level} goals and
 requirements versus specific technical requirements (battery life, thrust and
 payload capability, etc.).
 
 \subsection{Quadcopter}
 
-We intend to pursue an implmentation depicted in
+For the flight vehicle, we intend to pursue an implmentation depicted in
 \textbf{Figure \ref{fig:quadcopter}}:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/quadcopter}
-	\caption{Block diagram view of the quadcopter}
+	\caption{Block diagram view of the quadcopter.}
 	\label{fig:quadcopter}
 \end{figure}
 
-{\large Responsible Engineer: \textbf{Vaughn}}
+\noindent{\Large Responsible Engineer: \textbf{Vaughn}}
 
 \pagebreak
 
 \subsection{Ground Station}
 
-We intend to pursue an implmentation depicted in
+For the ground station, we intend to pursue an implmentation depicted in
 \textbf{Figure \ref{fig:ground_station}}:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/ground_station}
-	\caption{Block diagram view of the ground station}
+	\caption{Block diagram view of the ground station.}
 	\label{fig:ground_station}
 \end{figure}
 
-{\large Responsible Engineer: \textbf{Cooper}}
+\noindent{\Large Responsible Engineer: \textbf{Cooper}}
 
 \pagebreak
 
 \subsection{Display and Controller}
 
-We intend to pursue an implmentation depicted in
-\textbf{Figure \ref{fig:display_controller}}:
+For the display and control interface, we intend to pursue an
+implmentation depicted in \textbf{Figure \ref{fig:display_controller}}:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{../src/im/display_controller}
 	\caption{Block diagram view of the display and control user
-		interface}
+		interface.}
 	\label{fig:display_controller}
 \end{figure}
 
-{\large Responsible Engineer: \textbf{Mayank}}
+\noindent{\Large Responsible Engineer: \textbf{Mayank}}
 
 \section{Roles and Responsibilities}
 
-How we plan to share responsibility.
+\begin{quote}
+	\textit{``A problem well stated is a problem half
+	solved.'' - Charles Kettering}
+\end{quote}
+
+\noindent Distribution of work and responsibilities has been discussed and the
+following summaries represent a consensus reached on initial roles and task
+delegation.
 
 \subsection{Vaughn Kottler}
 
-\textbf{Responsible Engineer} for the following:
-
 \begin{description}
-	\item [Flight Vehicle] TODO
-	\item [Control Algorithms] TODO
+	\item [Flight Hardware] Final design and assembly of the quadcopter.
+		Validation of component selection to ensure flight is feasible.
+	\item [Flight Software] The firmware image flashed to the flight
+		computer. Includes necessary control algorithms and runtime
+		configurability.
+	\item [Project Oversight] Track project progress and maintain
+		documentation.
 \end{description}
 
 \subsection{Mayank Katwal}
 
-\textbf{Responsible Engineer} for the following:
-
 \begin{description}
-	\item [Telemetry Display] TODO
-	\item [Vehicle Controller] Hardware of Software
+	\item [Telemetry Display] A web-based dashboard that summarizes the health
+		and status of the quadcopter during flight.
+	\item [Vehicle Control Interface] A web-based user interface that allows
+		manual control of the quadcopter during flight.
+	\item [Data and Command APIs] User programs that expose flight data
+		and command capability to client browsers via HTTP over TLS requests.
 \end{description}
 
 \subsection{Cooper Green}
 
-\textbf{Responsible Engineer} for the following:
-
 \begin{description}
-	\item [Ground Station] TODO
-	\item [Radio Frequency Communication] TODO
+	\item [Ground Station] Hardware asbstraction layer source code and
+		mezzanine board implementation. A coherent and well-defined interface
+		to the hardware from user programs.
+	\item [Radio Frequency Communication] Choice of frequency bands and
+		protocols used to send and receive data with radio modules.
+	\item [Telemetry Storage] A data archival system for post-flight analysis.
 \end{description}
 
 \section{Project Management}
@@ -209,14 +223,28 @@ How we plan to share responsibility.
 	solutions.'' - Albert Einstein}
 \end{quote}
 
-TODO
+\noindent The value of detailed (but \textit{precise}!) planning for a project
+of this scope and timeline cannot be overstated. Prototyping and experimenting
+is inevitable but must be guided to avoid allocating disproportionate effort
+towards minor goals that put higher-level goals at risk.
+\textbf{Figure \ref{fig:workflow_1}} introduces our approach and
+\textbf{Figure \ref{fig:workflow_2}} establishes a proposed process for
+handling integration and final stages in project realization.
 
-\subsection{Initial Development and Prototyping}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{../src/im/workflow_1}
+	\caption{A flexible workflow diagram that attempts to capture our ideal
+		process for initial prototype and development work.}
+	\label{fig:workflow_1}
+\end{figure}
 
-TODO
-
-\subsection{Final Stages}
-
-TODO
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{../src/im/workflow_2}
+	\caption{The remaining stages of the workflow diagram that captures our
+		intended process for bringing the project to completion.}
+	\label{fig:workflow_2}
+\end{figure}
 
 \end{document}
