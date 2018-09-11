@@ -1,11 +1,6 @@
 Flight Hardware and Software
 ============================
 
-Documentation and notes for work on the quadcopter.
+Block diagram:
 
 .. image:: im/quadcopter.png
-
-.. toctree::
-   :glob:
-
-   flight/*

@@ -15,3 +15,6 @@ venv
 *.log
 *.out
 *.dvi
+*.nav
+*.snm
+*.toc

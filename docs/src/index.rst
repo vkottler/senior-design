@@ -5,6 +5,10 @@ A senior design project (Fall 2018) by Mayank Katwal, Vaughn Kottler and
 Cooper Green. We are undergraduate Computer Engineering and Computer Sciences
 students at the University of Wisconsin-Madison.
 
+:download:`Formal Proposal <../proposal/proposal.pdf>`
+
+:download:`Presentation Slides <../proposal/presentation.pdf>`
+
 Overview
 --------
 

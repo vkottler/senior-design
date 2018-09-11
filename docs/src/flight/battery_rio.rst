@@ -1,4 +1,0 @@
-Battery RIO
-===========
-
-TODO
