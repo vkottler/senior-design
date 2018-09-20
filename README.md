@@ -5,6 +5,9 @@
 An attempt at a quadcopter flight system that maintains
 single-fault tolerance.
 
+This project's documentation is hosted on
+[Read the Docs](https://fault-tolerant-quadcopter.readthedocs.io/en/latest/).
+
 ## Repository Structure
 
 ### [cad](cad)
