@@ -1,4 +1,5 @@
 .PHONY: clean all
+.SECONDARY:
 .DEFAULT_GOAL := all
 
 # platform-specific programs
@@ -18,7 +19,7 @@ PNGVIEWER := eog
 %: %.pdf
 	@$(PDFVIEWER) $< &
 
-all: presentation
+all: proposal-final
 
 clean:
-	@rm -f *.log *.aux *.dvi *.out *.pdf
+	@rm -f *.log *.aux *.dvi *.out
