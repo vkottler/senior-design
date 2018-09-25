@@ -1,5 +1,5 @@
-.PHONY: clean proposal presentation
-.DEFAULT_GOAL := proposal
+.PHONY: clean all
+.DEFAULT_GOAL := all
 
 # platform-specific programs
 PDFVIEWER := evince
@@ -15,17 +15,10 @@ PNGVIEWER := eog
 %.pdf: %.tex
 	pdflatex $<
 
-proposal: proposal.pdf
+%: %.pdf
 	@$(PDFVIEWER) $< &
 
-presentation: presentation.pdf
-	@$(PDFVIEWER) $< &
-
-#dvi: $(PROJECT).dvi
-#	@$(DVIVIEWER) $< &
-
-#png: $(PROJECT).png
-#	@$(PNGVIEWER) $< &
+all: presentation
 
 clean:
 	@rm -f *.log *.aux *.dvi *.out *.pdf
