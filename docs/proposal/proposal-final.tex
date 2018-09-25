@@ -26,6 +26,7 @@
 
 % custom commands
 \newcommand{\HREF}[2]{{\color{blue}\underline{\smash{\href{#1}{#2}}}}}
+\newcommand{\HREFA}[2]{\textcolor{blue}{\underline{\smash{\href{#1}{#2}}}}}
 
 % metadata
 \title{ECE 453 Project Proposal}
@@ -47,22 +48,56 @@
 	{\large\textit{Vaughn Kottler, Mayank Katwal, Cooper Green}}
 \end{center}
 
+\section{Abstract}
+
+This document serves as the formal, semester-project proposal to be vetted by
+the course instructor:
+\HREF{https://directory.engr.wisc.edu/ece/Faculty/Krachey_Joe/}{Joe Krachey}.
+We have additional
+\HREF{https://fault-tolerant-quadcopter.readthedocs.io/en/latest/}
+{online documentation} that we plan to keep in sync with our project's scope
+and current progress.
+
 \section{Executive Summary}
 
-We are interested in building a \textit{quadcopter} plus
-\textit{ground station} and \textit{web-based user interface}.
+\subsection{Problem Statement}
+
+Seemingly no ``multi-vehicle fleet'' or autonomous-flight capable drone
+technology is available to interact with in the consumer market. Similarly,
+open-source hardware and software in the ``DIY drone'' ecosystem cannot be
+easily converted or augmented to solve that problem.
+
+We identified this problem while exploring learning objectives...
+
+To gain relevant experience with aerospace problem spaces, it's necessary
+to design, test and build a custom flying machine.
+
+\subsection{Proposal}
+
+We intend to build a \textbf{quadcopter} plus
+\textbf{ground station} and \textbf{web-based user interface}.
 We have chosen to call this project the
 \textbf{fault-tolerant quadcopter}. This name reveals one of our
-design goals that will be covered in a future section.
+design goals that will be covered in a future section. 
 
-This document serves as the formal proposal to be vetted by the
-course instructor,
-\HREF{https://directory.engr.wisc.edu/ece/Faculty/Krachey_Joe/}{Joe Krachey}.
-We have
-\HREF{https://fault-tolerant-quadcopter.readthedocs.io/en/latest/}
-{additional documentation in work online} that we plan to keep in
-sync with our project's scope and current progress. At the time
-of writing it is not yet in a stable state.
+With respect to the problem statement (and single-semester timeline), we do
+not anticipate delivering a polished technical solution to any of the specific
+deficiencies we identify in the ``free and open-source'' ecosystem. We have
+tentatively planned to continue working on this project until our source
+repository \HREF{https://github.com/vkottler/senior-design}{on GitHub}...
+
+\subsection{Concept of Operation}
+
+\textbf{Figure \ref{fig:conops}} TODO.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=4in]{../src/im/conops}
+	\caption{The intended physical configuration.}
+	\label{fig:conops}
+\end{figure}
+
+\subsection{Overview}
 
 This project is designed for three major bodies of work that were
 mentioned above but are better captured by \textbf{Figure \ref{fig:high-level}}:
@@ -173,10 +208,18 @@ implmentation depicted in \textbf{Figure \ref{fig:display_controller}}:
 
 \noindent{\Large Responsible Engineer: \textbf{Mayank}}
 
+\pagebreak
+
 \section{Bill of Materials}
+
+This is our current estimate of what will be required to complete this
+project. Items listed as having zero cost were provided to us or are things
+that we already previously owned.
+
 \begin{center}
 {\renewcommand{\arraystretch}{1.5}
 \begin{tabular}{|p{2in}|p{3in}|p{0.6in}|p{0.65in}|}
+    \hline
     \multicolumn{4}{|c|}{\textbf{Quadcopter}} \\
     \hline
     Item (as hyperlink) & Purpose & Quantity & Total Cost \\
@@ -188,7 +231,7 @@ implmentation depicted in \textbf{Figure \ref{fig:display_controller}}:
     LiPo Charger & TODO & 0 & TODO \\
     STM32 Development Boards & TODO & 0 & TODO \\
     ST-Link V2 Programmer & TODO & 0 & TODO \\
-    Custom Flight Controller & TODO & 0 & TODO \\
+    Custom Flight Controller & PCB and components cost & 0 & TODO \\
     Terminals / Lugs & TODO & 0 & TODO \\
     \hline
     \multicolumn{4}{|c|}{\textbf{Ground Station}} \\
@@ -198,13 +241,16 @@ implmentation depicted in \textbf{Figure \ref{fig:display_controller}}:
     Radio Candidate 1 (Pair) & TODO & 0 & TODO \\
     Radio Candidate 2 (Pair) & TODO & 0 & TODO \\
     Radio Candidate 3 (Pair) & TODO & 0 & TODO \\
+    DE1-SoC Custom Mezzanine & PCB and components cost & 0 & TODO \\
     DE1-SoC Custom Mezzanine & TODO & 0 & TODO \\
     \hline
     \multicolumn{4}{|c|}{\textbf{General Development}} \\
     \hline
     Item (as hyperlink) & Purpose & Quantity & Total Cost \\
     \hline
-    TODO & TODO & 0 & TODO \\
+    Oscilloscope & TODO & 0 & TODO \\
+    \HREFA{https://www.adafruit.com/product/2312}{Saleae Logic Analyzer} & TODO & 0 & TODO \\
+    \hline
 \end{tabular}
 }
 \end{center}
