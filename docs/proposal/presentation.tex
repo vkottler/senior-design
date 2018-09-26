@@ -1,19 +1,22 @@
 \documentclass{beamer}
+\setbeamertemplate{navigation symbols}{}
+
+\usetheme{Madrid}
+\usecolortheme{beaver}
 
 % packages
 \usepackage{graphicx}
 \usepackage{enumitem}
 
 % metadata
-\title{ECE 453 Project Proposal}
-\author{Vaughn Kottler}
-\author{Mayank Katwal}
-\author{Cooper Green}
+\title{Fault-Tolerant Quadcopter}
+\author{Cooper, Vaughn, Mayank}
 \date{\today}
 
 \begin{document}
 
 % title slide
+{\setbeamertemplate{footline}{}
 \begin{frame}
 \begin{center}
 {\Large\textbf{Fault-Tolerant Quadcopter}}\\
@@ -22,6 +25,99 @@ ECE 453 Project Proposal (Fall 2018)\\
 University of Wisconsin-Madison\\
 \vspace{\baselineskip}
 {\large\textit{Vaughn Kottler, Mayank Katwal, Cooper Green}}
+\end{center}
+\end{frame}
+}
+
+% state of the art (cheap toys)
+\begin{frame}
+\frametitle{State of the Art (Cheap Toys)}
+\begin{center}
+\includegraphics[width=3.5in]{../src/im/crude}
+
+Price Range: \$25 - \$50
+\end{center}
+\end{frame}
+
+% state of the art (fpv)
+\begin{frame}
+\frametitle{State of the Art (Enthusiast FPV)}
+\begin{center}
+\includegraphics[width=3.5in]{../src/im/fpv}
+
+Price Range: \$100+
+\end{center}
+\end{frame}
+
+% state of the art (industry)
+\begin{frame}
+\frametitle{State of the Art (Industry)}
+\begin{center}
+\includegraphics[width=4in]{../src/im/autonomous2}
+
+Light Show at the Olympics
+\end{center}
+\end{frame}
+
+% state of the art (industry)
+\begin{frame}
+\frametitle{State of the Art (Industry)}
+\begin{center}
+\includegraphics[width=4in]{../src/im/autonomous3}
+
+Super Bowl LI Halftime Show
+\end{center}
+\end{frame}
+
+% state of the art (industry)
+\begin{frame}
+\frametitle{State of the Art (Industry)}
+\begin{center}
+\includegraphics[width=4in]{../src/im/great_wall1}
+
+Intel Surveys Great Wall of China
+\end{center}
+\end{frame}
+
+% state of the art (industry)
+\begin{frame}
+\frametitle{State of the Art (Industry)}
+\begin{center}
+\includegraphics[width=2.5in]{../src/im/great_wall2}
+\break
+\includegraphics[width=3.5in]{../src/im/great_wall3}
+
+Controlled via laptop
+\end{center}
+\end{frame}
+
+% problem statement
+\begin{frame}
+\frametitle{Problem Statement - Motivation}
+\Large
+To gain relevant experience with aerospace problem spaces, it's necessary
+to design, test and build a custom flying machine.
+\break
+
+\textbf{How hard are these problems?}
+\end{frame}
+
+% problem statement
+\begin{frame}
+\frametitle{Problem Statement - Relevance}
+\Large
+Seemingly no ``multi-vehicle fleet'' or autonomous-flight capable drone
+technology is available to interact with in the consumer market.
+\break
+
+\textbf{We gap can we fill in this ecosystem?}
+\end{frame}
+
+% concept of approach
+\begin{frame}
+\frametitle{Concept of Operation}
+\begin{center}
+\includegraphics[width=4.5in]{../src/im/conops}
 \end{center}
 \end{frame}
 
@@ -41,33 +137,10 @@ University of Wisconsin-Madison\\
 \end{description}
 \end{frame}
 
-% learning objectives
-\begin{frame}
-
-\frametitle{Learning Objectives}
-
-Exposure to:
-\begin{itemize}[itemsep=10pt]
-	\item [--] Radio-frequency communication
-	\item [--] Control theory
-	\item [--] System-level engineering
-	\item [--] SoC platform(s)
-\end{itemize}
-
-\vspace{\baselineskip}
-
-Also:
-\begin{itemize}[itemsep=10pt]
-	\item [--] Data pipelining in the aerospace/avionics problem space
-	\item [--] Modern user-interface design and implementation
-\end{itemize}
-
-\end{frame}
-
 % features
 \begin{frame}
 \frametitle{Features}
-\begin{description}[align=right,labelwidth=100pt,itemsep=10pt]
+\begin{description}[align=right,labelwidth=120pt,itemsep=10pt]
 	\item [Single-Fault Tolerant] -- Land safely in the event of communication
 		``heartbeat timeout''
 	\item [Telemetry Archival] -- Implement long-term telemetry storage for
@@ -80,6 +153,26 @@ Also:
 \frametitle{Quadcopter}
 \begin{center}
 \includegraphics[width=\linewidth]{../src/im/quadcopter}
+\end{center}
+\end{frame}
+
+% quadcopter components
+\begin{frame}
+\frametitle{Quadcopter Components}
+\begin{center}
+\includegraphics[width=1in]{../src/im/motor_esc}
+\includegraphics[width=1in]{../src/im/motor_esc}
+\includegraphics[width=1in]{../src/im/motor_esc}
+\includegraphics[width=1in]{../src/im/motor_esc}
+\break
+\includegraphics[width=1in]{../src/im/propeller}
+\includegraphics[width=1in]{../src/im/chassis}
+\includegraphics[width=1in]{../src/im/battery}
+\break
+\includegraphics[width=1in]{../src/im/dev_board}
+\includegraphics[width=1in]{../src/im/programmer}
+\includegraphics[width=1in]{../src/im/radio1}
+\includegraphics[width=1in]{../src/im/radio2}
 \end{center}
 \end{frame}
 
@@ -99,48 +192,31 @@ Also:
 \end{center}
 \end{frame}
 
-% milestones 1
+% total cost
 \begin{frame}
-\frametitle{Milestones}
-\begin{enumerate}[label=\arabic*),itemsep=10pt]
-	\item Establish wireless communication between the vehicle and
-		ground station
-	\item Establish percentage-based throttle control over each motor
-	\item Establish manual-commanding capability to the vehicle from a
-		web-based user interface
-	\item View live telemetry from a web-based user interface
-	\item Sense angular velocity via gyroscope and force experienced via
-		inertial measurement unit
-\end{enumerate}
-\end{frame}
-
-% milestones 2
-\begin{frame}
-\frametitle{Milestones cont.}
-\begin{enumerate}[start=6,label=\arabic*),itemsep=10pt]
-	\item Develop a control algorithm to fly in a stable hover or
-		holding pattern
-	\item Extend control algorithm to control for velocity in three axes
-		to achieve controlled motion
-	\item Sense relative altitude
-	\item Extend control algorithm to control for a specific \textit{delta-y}
-		(perpendicular to ground plane) 
-\end{enumerate}
-\end{frame}
-
-% workflow 1
-\begin{frame}
-\frametitle{Initial Development and Prototyping}
+\frametitle{Bill of Materials}
 \begin{center}
-\includegraphics[height=200pt,width=\linewidth,keepaspectratio]{../src/im/workflow_1}
+\begin{tabular}{ c c c }
+    cell 1 & cell 2 & cell 3 \\
+    cell 4 & cell 5 & cell 6 \\
+    cell 7 & cell 8 & cell 9
+\end{tabular}
 \end{center}
 \end{frame}
 
-% workflow 2
 \begin{frame}
-\frametitle{Final Stages}
+\frametitle{Summary}
+\large
+We feel prepared to take on this challenge:
+\begin{itemize}
+    \item[\textbullet] Prior experience with systems' engineering (vehicle projects)
+    \item[\textbullet] At least a dozen previous failures
+    \item[\textbullet] Confident in this architecture
+    \item[\textbullet] Have development tools and equipment on standby
+\end{itemize}
+\vspace{0.5in}
 \begin{center}
-\includegraphics[height=200pt,width=\linewidth,keepaspectratio]{../src/im/workflow_2}
+Funding would greatly increase the quality of the final product!
 \end{center}
 \end{frame}
 
