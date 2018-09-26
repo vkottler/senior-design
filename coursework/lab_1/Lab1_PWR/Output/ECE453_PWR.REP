@@ -1,0 +1,223 @@
+*************************************************************
+FileName = ECE453_PWR.GBR
+AutoAperture = True
+*************************************************************
+Generating : Bottom Overlay
+      File : ECE453_PWR.GBO
+
+    Adding Layer      : Bottom Overlay
+
+    Adding Layer      : Mechanical 9
+
+
+Used DCodes :
+    D10
+    D48
+    D49
+    D50
+    D51
+*************************************************************
+
+*************************************************************
+Generating : Top Pad Master
+      File : ECE453_PWR.GPT
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+    Adding Layer      : Mechanical 9
+
+
+Used DCodes :
+    D10
+    D17
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D35
+    D44
+    D45
+    D46
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : ECE453_PWR.GTS
+
+    Adding Layer      : Top Solder
+
+    Adding Layer      : Mechanical 9
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+    D27
+*************************************************************
+
+*************************************************************
+Generating : Bottom Pad Master
+      File : ECE453_PWR.GPB
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+    Adding Layer      : Mechanical 9
+
+
+Used DCodes :
+    D10
+    D44
+    D45
+    D46
+*************************************************************
+
+*************************************************************
+Generating : Top Overlay
+      File : ECE453_PWR.GTO
+
+    Adding Layer      : Top Overlay
+
+    Adding Layer      : Mechanical 9
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+*************************************************************
+
+*************************************************************
+Generating : Bottom Layer
+      File : ECE453_PWR.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Mechanical 9
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D38
+    D44
+    D45
+    D46
+    D47
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : ECE453_PWR.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : Mechanical 9
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D24
+    D25
+    D26
+    D27
+*************************************************************
+
+*************************************************************
+Generating : Top Layer
+      File : ECE453_PWR.GTL
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Mechanical 9
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D14
+    D17
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+    D45
+    D46
+    D47
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : ECE453_PWR.GD1
+
+    Adding Layer      : Mechanical 9
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D10
+    D52
+    D53
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : ECE453_PWR.GG1
+
+    Adding Layer      : Mechanical 9
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D10
+    D52
+*************************************************************
+
