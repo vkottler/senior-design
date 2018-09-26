@@ -7,11 +7,17 @@
 % packages
 \usepackage{graphicx}
 \usepackage{enumitem}
+\usepackage{color}
+\usepackage{hyperref}
 
 % metadata
 \title{Fault-Tolerant Quadcopter}
 \author{Cooper, Vaughn, Mayank}
 \date{\today}
+
+% custom commands
+\newcommand{\HREF}[2]{{\color{blue}\underline{\smash{\href{#1}{#2}}}}}
+\newcommand{\HREFA}[2]{\textcolor{blue}{\underline{\smash{\href{#1}{#2}}}}}
 
 \begin{document}
 
@@ -93,17 +99,6 @@ Controlled via laptop
 
 % problem statement
 \begin{frame}
-\frametitle{Problem Statement - Motivation}
-\Large
-To gain relevant experience with aerospace problem spaces, it's necessary
-to design, test and build a custom flying machine.
-\break
-
-\textbf{How hard are these problems?}
-\end{frame}
-
-% problem statement
-\begin{frame}
 \frametitle{Problem Statement - Relevance}
 \Large
 Seemingly no ``multi-vehicle fleet'' or autonomous-flight capable drone
@@ -111,6 +106,17 @@ technology is available to interact with in the consumer market.
 \break
 
 \textbf{We gap can we fill in this ecosystem?}
+\end{frame}
+
+% problem statement
+\begin{frame}
+\frametitle{Problem Statement - Motivation}
+\Large
+To gain relevant experience with aerospace problem spaces, it's necessary
+to design, test and build a custom flying machine.
+\break
+
+\textbf{How hard are these problems?}
 \end{frame}
 
 % concept of approach
@@ -140,11 +146,11 @@ technology is available to interact with in the consumer market.
 % features
 \begin{frame}
 \frametitle{Features}
-\begin{description}[align=right,labelwidth=120pt,itemsep=10pt]
-	\item [Single-Fault Tolerant] -- Land safely in the event of communication
-		``heartbeat timeout''
-	\item [Telemetry Archival] -- Implement long-term telemetry storage for
-		post-flight data analysis
+\begin{description}[align=right,labelwidth=130pt,itemsep=15pt]
+    \item [Telemetry Viewing] -- View vehicle data from the UI
+    \item [Manual Commanding] -- Control the vehicle from the UI
+    \item [Holding-Pattern Stability] -- Ability to ``idle'' with little to no motion
+	\item [Single-Fault Tolerant] -- Land safely if communication is lost
 \end{description}
 \end{frame}
 
@@ -194,14 +200,19 @@ technology is available to interact with in the consumer market.
 
 % total cost
 \begin{frame}
-\frametitle{Bill of Materials}
-\begin{center}
-\begin{tabular}{ c c c }
-    cell 1 & cell 2 & cell 3 \\
-    cell 4 & cell 5 & cell 6 \\
-    cell 7 & cell 8 & cell 9
-\end{tabular}
-\end{center}
+\frametitle{Estimated Total Cost}
+\large
+\vspace{0.2in}
+\begin{itemize}
+\item \textbf{\$305} -- Quadcopter (Parts, custom PCB)
+\item \textbf{\$108} -- Ground Station (Parts, custom PCB)
+\item \textbf{\$200} -- General development and test equipment/components
+\item \textbf{\$613} -- Total
+\end{itemize}
+\vspace{0.2in}
+\Large
+Higher-granularity breakdown in report.
+    
 \end{frame}
 
 \begin{frame}
