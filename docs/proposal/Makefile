@@ -19,7 +19,7 @@ PNGVIEWER := eog
 %: %.pdf
 	@$(PDFVIEWER) $< &
 
-all: proposal-final
+all: presentation
 
 clean:
 	@rm -f *.log *.aux *.dvi *.out
