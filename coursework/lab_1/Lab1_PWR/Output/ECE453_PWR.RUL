@@ -1,0 +1,6 @@
+DRC Rules Export File for PCB: C:\Users\vkottler\Documents\gitRepos\senior-design\coursework\lab_1\Lab1_PWR\ECE453_PWR.PcbDoc
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=7.87
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=3.94
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4.00
+RuleKind=Clearance|RuleName=Polygon_Clearance|Scope=Board|Minimum=20.00
