@@ -47,4 +47,6 @@ def main(argv):
         engine.step()
         time_remaining -= args.step_duration
 
+    print(engine.metrics())
+
     return 0
