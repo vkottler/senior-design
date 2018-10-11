@@ -27,6 +27,10 @@ CAPACITY_LUT[10]  = 3.69
 CAPACITY_LUT[5]   = 3.61
 CAPACITY_LUT[0]   = 3.27
 
+class BatteryException(Exception):
+    """ Custom exception for Battery-related events. """
+    pass
+
 class Battery(object):
     """ Simulated Lithium-Ion Polymer (LiPo) cell configurations. """
 
@@ -70,7 +74,17 @@ class Battery(object):
 
         # convert load-time pair into mAh
         charge_used = (load_amps * 1000) * (time_s / 3600)
+
+        # prevent using an amount of charge that would make the simulation
+        # environment inaccurate / unstable
+        if charge_used >= (self.starting_capacity * 0.05):
+            raise BatteryException("Cannot use 5% or more of battery capacity at once.")
+
         self.capacity -= charge_used
+
+        # prevent execution from continuing if no capacity remains
+        if self.capacity <= 0:
+            raise BatteryException("Capacity reached 0.")
 
         # account for heat rise
         self.add_heat(load_amps, time_s)
