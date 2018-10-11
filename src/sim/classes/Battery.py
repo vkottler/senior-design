@@ -3,6 +3,7 @@
 Fault-Tolerant Quadcopter - simulated battery
 """
 
+# https://www.rcgroups.com/forums/showthread.php?2366548-LiPo-80-rule-and-my-shallow-charge-rates
 CAPACITY_LUT = {}
 CAPACITY_LUT[100] = 4.20
 CAPACITY_LUT[95]  = 4.15
@@ -44,22 +45,75 @@ class Battery(object):
         # https://www.nrel.gov/transportation/assets/pdfs/long_beach_btm.pdf
         self.specific_heat = 1011.8 # J/kg per deg C
 
-    def consume_capacity(self, load_amps, time):
-        """ """
+    def add_heat(load_amps, time_s):
+        """
+        Account for heat rise experienced at some load current for a
+        specified duration.
+        """
 
-        # convert load-time pair into mAh:
-        energy = (load_amps * 1000)
+        heat_rise_energy = self.voltage_drop(load_amps) * load_amps * time_s
+        self.temperature += heat_rise_energy / self.specific_heat
 
-        # TODO
+    def time_remaining_at_load(load_amps):
+        """
+        Determine how many seconds the battery will run for at a specified
+        load from its current capacity.
+        """
 
-        pass
+        return (self.capacity * 3600) / (load_amps * 1000)
 
-    def request_power(self, time):
-        """ """
+    def consume_capacity(self, load_amps, time_s):
+        """
+        Subtract from the state of charge based on current consumed for
+        a specified duration.
+        """
 
-        # TODO
+        # convert load-time pair into mAh
+        charge_used = (load_amps * 1000) * (time_s / 3600)
+        self.capacity -= charge_used
 
-        pass
+        # account for heat rise
+        self.add_heat(load_amps, time_s)
+
+    def request_power(self, power_w, time_s, consume=True):
+        """
+        Consume power from the battery for a specified duration.
+
+        Returns the following tuple:
+            (resulting_voltage, resulting_current, time_remaining_at_power)
+        """
+
+        # P = IV
+        # V depends on I
+        # V = V(I) = v(0) - v(I), v(0) is a constant
+        # P = (v(0) - v(I)) * I
+        # ...solving a differential equation
+        #
+        # P is the area under the curve of V(I)
+        #
+        # Approximate V and I by "integrating" with a discrete step size
+        # until the area is greater than or equal to the requested power.
+        amps = 0
+        dI = 0.01
+        accumulated_power_w = 0
+        while accumulated_power_w < power_w:
+            accumulated_power_w += self.get_voltage(amps) * dI
+            amps += dI
+
+        # Consume battery capacity
+        if consume:
+            self.consume_capacity(amps, time_s)
+
+        # note that if energy was consumed, time remaining here is up to date
+        return (self.get_voltage(amps), amps, self.time_remaining_at_load(amps))
+
+    def voltage_drop(load_amps):
+        """
+        Calculate the voltage drop due to internal resistance for the
+        specified load.
+        """
+
+        return self.internal_res * load_amps / 1000
 
     def get_voltage(self, load_amps=0):
         """
@@ -73,7 +127,7 @@ class Battery(object):
             charge += 5 - interp
         elif interp != 0:
             charge -= interp
-        return (self.cell_count * CAPACITY_LUT[charge]) - (self.internal_res * load / 1000)
+        return (self.cell_count * CAPACITY_LUT[charge]) - self.voltage_drop(load_amps)
 
     def percent_charge(self, round_result=False):
         """

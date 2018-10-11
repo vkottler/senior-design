@@ -30,6 +30,7 @@ class Quadcopter(object):
                      ESC(self.battery, 31),
                      ESC(self.battery, 31),
                      ESC(self.battery, 31)]
+        # TODO, measure coordinate system
         self.motors = [Motor( 1,  0, self.escs[0], 59),
                        Motor(-1,  0, self.escs[0], 59),
                        Motor( 0,  1, self.escs[0], 59),
