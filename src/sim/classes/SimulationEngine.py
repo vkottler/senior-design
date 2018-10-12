@@ -6,6 +6,9 @@ Fault-Tolerant Quadcopter - coordinates simulation execution
 # built-in
 import time
 
+# internal
+from .Quadcopter import Quadcopter
+
 class SimulationEngine(object):
     """ """
 
@@ -15,6 +18,9 @@ class SimulationEngine(object):
         self.step_duration = step_duration
         self.real_time = real_time
         self.computation_times = []
+
+        # TODO: do we want this here?
+        self.quadcopter = Quadcopter()
 
     def step(self):
         """ """
