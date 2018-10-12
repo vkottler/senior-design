@@ -17,7 +17,7 @@ class TelemetryClient(object):
         self.port = port
         self.sock = socket.socket()
         self.data = queue.Queue()
-        self.thread = threading.Thread(self.stream_telemetry)
+        self.thread = threading.Thread(target=self.stream_telemetry)
 
     def stream_telemetry(self):
         """ """

@@ -3,6 +3,9 @@
 Fault-Tolerant Quadcopter - telemetry channel
 """
 
+# internal
+import json
+
 class Channel(object):
     """ """
 
@@ -14,15 +17,28 @@ class Channel(object):
     def __init__(self, name, value_type, unit, telemetry_client):
         """ """
 
-        self.name  = name
-        self.type  = value_type
-        self.unit  = unit
-        self.value = None
-        self.telemetry_client
+        self.dict = {}
+        self.dict["name"]  = name
+        self.dict["type"]  = str(value_type)
+        self.dict["unit"]  = unit
+        self.dict["value"] = None
+        self.type = value_type
+        self.telemetry_client = telemetry_client
 
-    def to_json(self):
+    def set_data(self, data):
         """ """
 
-    # TODO: add a "to_json" function
-    # TODO: add a "publish" function
-    # TODO: add static class to return a Channel object from JSON
+        self.dict["value"] = data
+
+    def to_json(self, pretty=False):
+        """ """
+
+        return json.dumps(self.dict, ensure_ascii=True)
+
+    def to_byte():
+        """ """
+        pass
+
+    def publish(self):
+        """ """
+        pass
