@@ -4,6 +4,7 @@ Fault-Tolerant Quadcopter - telemetry server
 """
 
 # built-in
+import logging
 import queue
 import socketserver
 import threading
@@ -16,15 +17,15 @@ class DefaultTelemetryHandler(socketserver.StreamRequestHandler):
 
         while True:
 
-            self.data = self.rfile.readline().strip()
+            data = self.rfile.readline().strip()
 
-            if data == "":
-                print("A client connection was closed.")
-                break
+            if not data or data == "":
+                TelemetryServer.log.info("A client connection was closed.")
+                return
 
             # convert JSON back to Channel
             # TODO
-            print(self.data)
+            print(data)
 
             # push to a concurrent data structure owned by self.server
             #self.server.data.put()
@@ -36,9 +37,12 @@ class TelemetryServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-    def __init__(self, port=10018):
+    log = logging.getLogger(__name__)
+
+    def __init__(self, port=10018, name="Generic Server"):
         """ """
 
+        self.name = name
         super().__init__(("127.0.0.1", port), DefaultTelemetryHandler)
         self.data = queue.Queue()
         self.thread = threading.Thread(target=self.serve_forever)
@@ -47,10 +51,12 @@ class TelemetryServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         """ """
 
         self.thread.start()
-        # TODO, log?
+        TelemetryServer.log.info("'%s' was started.", self.name)
 
     def stop(self):
         """ """
 
         self.shutdown()
         self.thread.join()
+        self.server_close()
+        TelemetryServer.log.info("'%s' was stopped.", self.name)
