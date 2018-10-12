@@ -34,20 +34,20 @@ class BatteryException(Exception):
 class Battery(object):
     """ Simulated Lithium-Ion Polymer (LiPo) cell configurations. """
 
-    def __init__(self, cell_count, capacity_mAh, internal_res_mOhm, weight_g,
-                 temperature=25):
+    def __init__(self, cell_count_s, cell_count_p, capacity_mAh,
+                 internal_res_mOhm, weight_g, temperature=25):
         """ Constructor, some parameters are specified by the caller. """
 
-        self.cell_count = cell_count
-        self.starting_capacity = capacity_mAh
-        self.capacity = capacity_mAh
+        self.cell_count_s = cell_count_s
+        self.starting_capacity = capacity_mAh * cell_count_p
+        self.capacity = self.starting_capacity
         self.weight = weight_g
         self.temperature = temperature
         self.internal_res = internal_res_mOhm
-        self.voltages = [CAPACITY_LUT[100] for i in range(self.cell_count)]
+        self.voltages = [CAPACITY_LUT[100] for i in range(self.cell_count_s)]
 
         # https://www.nrel.gov/transportation/assets/pdfs/long_beach_btm.pdf
-        self.specific_heat = 1011.8 # J/kg per deg C
+        self.specific_heat = 1011.8 * (self.weight / 1000) # J/kg per deg C
 
     def add_heat(load_amps, time_s):
         """
@@ -141,7 +141,7 @@ class Battery(object):
             charge += 5 - interp
         elif interp != 0:
             charge -= interp
-        return (self.cell_count * CAPACITY_LUT[charge]) - self.voltage_drop(load_amps)
+        return (self.cell_count_s * CAPACITY_LUT[charge]) - self.voltage_drop(load_amps)
 
     def percent_charge(self, round_result=False):
         """

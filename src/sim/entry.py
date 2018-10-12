@@ -8,11 +8,7 @@ import argparse
 
 # internal
 from .classes.SimulationEngine import SimulationEngine
-
-def simulate():
-    """ """
-
-    return 0
+from .classes.telemetry.Server import TelemetryServer
 
 def main(argv):
     """ """
@@ -38,6 +34,10 @@ def main(argv):
     # parse input arguments
     args = parser.parse_args(argv[1:])
 
+    # start the telemetry server
+    telemetry_server = TelemetryServer()
+    telemetry_server.start()
+
     # initialize the simulation environment
     engine = SimulationEngine(args.step_duration, args.real_time)
 
@@ -48,5 +48,8 @@ def main(argv):
         time_remaining -= args.step_duration
 
     print(engine.metrics())
+
+    # stop the telemetry server
+    telemetry_server.stop()
 
     return 0

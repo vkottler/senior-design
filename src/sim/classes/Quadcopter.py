@@ -3,9 +3,10 @@
 Fault-Tolerant Quadcopter - simulated full quadcopter
 """
 
+# internal
 from .Battery import Battery
 from .ESC import ESC
-from .Motor import
+from .Motor import Motor
 
 class Quadcopter(object):
     """ """
@@ -24,14 +25,15 @@ class Quadcopter(object):
         #                 load:  2.8  Ohms
         # voltage  /   current:  0.28 V / 4.20 A = 0.0667 Ohms
         # total res. / # cells: 66.67 mOhm / 3 = 22.22 mOhm
-        self.battery = Battery(3, 1300, 22.22, 116)
+        self.battery = Battery(3, 1, 1300, 22.22, 116)
 
-        self.escs = [ESC(self.battery, 31),
-                     ESC(self.battery, 31),
-                     ESC(self.battery, 31),
-                     ESC(self.battery, 31)]
         # TODO, measure coordinate system
-        self.motors = [Motor( 1,  0, self.escs[0], 59),
-                       Motor(-1,  0, self.escs[0], 59),
-                       Motor( 0,  1, self.escs[0], 59),
-                       Motor( 0, -1, self.escs[0], 59)]
+        self.motors = [Motor( 1,  0, 150, 59),
+                       Motor(-1,  0, 150, 59),
+                       Motor( 0,  1, 150, 59),
+                       Motor( 0, -1, 150, 59)]
+
+        self.escs = [ESC(self.motors[0], 31),
+                     ESC(self.motors[1], 31),
+                     ESC(self.motors[2], 31),
+                     ESC(self.motors[3], 31)]

@@ -6,10 +6,10 @@ Fault-Tolerant Quadcopter - simulated electronic speed-controller
 class ESC(object):
     """ """
 
-    def __init__(self, battery, weight):
+    def __init__(self, motor, weight):
         """ """
 
-        self.battery = battery
+        self.motor = motor
         self.weight = weight
         self.throttle = 0
         self.consumption = 0 # TODO, how much idle current?
@@ -23,4 +23,4 @@ class ESC(object):
         elif value > 100:
             self.throttle = 100
 
-        # TODO, set consumption
+        self.consumption = self.throttle * self.motor.max_power
