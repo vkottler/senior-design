@@ -9,54 +9,61 @@ import queue
 import socketserver
 import threading
 
-class DefaultTelemetryHandler(socketserver.StreamRequestHandler):
-    """ """
-
-    def handle(self):
-        """ """
-
-        while True:
-
-            data = self.rfile.readline().strip()
-
-            if not data or data == "":
-                TelemetryServer.log.info("A client connection was closed.")
-                return
-
-            # convert JSON back to Channel
-            # TODO
-            print(data)
-
-            # push to a concurrent data structure owned by self.server
-            #self.server.data.put()
+# internal
+from .DataHandling import DefaultTelemetryHandler
 
 class TelemetryServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-    """ """
+    """
+    A TCP-message server that accepts incoming telemetry
+    (published Channel data) and 
+    """
 
-    # kill active connections on exit + much faster rebinding
+    # kill active connections on exit + faster rebinding
     daemon_threads = True
     allow_reuse_address = True
 
     log = logging.getLogger(__name__)
 
-    def __init__(self, port=10018, name="Generic Server"):
-        """ """
+    def __init__(self, port=10018, name="Generic Server",
+                 handle_class=DefaultTelemetryHandler):
+        """ Initialize the Telemetry Server. """
 
         self.name = name
-        super().__init__(("127.0.0.1", port), DefaultTelemetryHandler)
+        super().__init__(("127.0.0.1", port), handle_class)
         self.data = queue.Queue()
         self.thread = threading.Thread(target=self.serve_forever)
+        self.started = False
+        self.stopped = False
+
+    def port(self):
+        """ Return the port that this server is attached to. """
+
+        return self.server_address[1]
 
     def start(self):
-        """ """
+        """ Start serving Telemetry Clients. """
+
+        # check to see if starting this Server makes sense
+        if self.started:
+            TelemetryServer.log.error("'%s' can't be started.", self.name)
+            return False
 
         self.thread.start()
-        TelemetryServer.log.info("'%s' was started.", self.name)
+        TelemetryServer.log.info("'%s' was started on port %d.", self.name, self.port())
+        self.started = True
+        return True
 
     def stop(self):
-        """ """
+        """ Stop listening for new (and servicing existing) Telemetry Clients. """
 
+        # check to see if stopping this Server makes sense
+        if not self.started or self.stopped:
+            TelemetryServer.log.error("'%s' can't be stopped.", self.name)
+            return False
+
+        self.stopped = True
         self.shutdown()
         self.thread.join()
         self.server_close()
         TelemetryServer.log.info("'%s' was stopped.", self.name)
+        return True

@@ -34,13 +34,17 @@ class TelemetryClient(object):
         as they appear in the queue.
         """
 
+        packets = 0
+
         while not self.stopped:
             try:
                 channel_obj = self.data.get_nowait()
                 self.sock.sendall(bytearray(channel_obj.to_json() + "\n", encoding="utf-8"))
                 self.data.task_done()
+                packets += 1
             except queue.Empty:
                 pass
+        TelemetryClient.log.info("'%s' done streaming after %d transactions.", self.name, packets)
 
     def start(self):
         """
@@ -48,17 +52,29 @@ class TelemetryClient(object):
         service in another thread.
         """
 
+        # check to see if starting this Client makes sense
+        if self.started:
+            TelemetryClient.log.error("'%s' can't be started.", self.name)
+            return False
+
         self.sock.connect(("127.0.0.1", self.port))
         self.thread.start()
         self.started = True
         TelemetryClient.log.info("'%s' was started.", self.name)
+        return True
 
     def stop(self):
         """
         Disconnect from the Telemetry Server and stop the telemetry service.
         """
 
+        # check to see if stopping this Client makes sense
+        if not self.started or self.stopped:
+            TelemetryClient.log.error("'%s' can't be stopped.", self.name)
+            return False
+
         self.stopped = True
         self.thread.join()
         self.sock.close()
         TelemetryClient.log.info("'%s' was stopped.", self.name)
+        return True

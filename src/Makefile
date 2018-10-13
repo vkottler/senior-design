@@ -1,10 +1,13 @@
-.PHONY: clean
+.PHONY: clean sim
 
 DEV_BIN       = venv/bin
 PYTHON_BIN    ?= python3
 
 test-sim: venv
-	@$(DEV_BIN)/nosetests --nocapture --nologcapture sim
+	@$(DEV_BIN)/nosetests --nocapture --nologcapture --logging-level=INFO sim
+
+sim:
+	@./sim.py
 
 venv:
 	@rm -rf venv
