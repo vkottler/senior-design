@@ -57,10 +57,12 @@ class Channel(object):
             return False
         return True
 
-    def set_data(self, data):
+    def set_data(self, data, publish=False):
         """ Set a new value for this channel. """
 
         self.dict["value"] = data
+        if publish:
+            self.publish()
 
     def to_json(self):
         """ Convert this channel to JSON. """
@@ -72,6 +74,8 @@ class Channel(object):
         Publish this channel's data as telemetry via its telemetry client.
         """
 
+        if self.telemetry_client is None: 
+            raise ChannelException("Telemetry client is None for this channel.")
         if not self.telemetry_client.started or self.telemetry_client.stopped:
             raise ChannelException("Telemetry client not active.")
         self.telemetry_client.data.put(self)

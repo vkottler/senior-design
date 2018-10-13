@@ -1,4 +1,4 @@
-.PHONY: clean main %-flash %-dump
+.PHONY: clean main %-flash %-dump sim
 .SECONDARY:
 .DEFAULT_GOAL = main
 
@@ -26,7 +26,10 @@ DEV_BIN       = venv/bin
 PYTHON_BIN    ?= python3
 
 test-sim: venv
-	@$(DEV_BIN)/nosetests --nocapture --nologcapture sim
+	@$(DEV_BIN)/nosetests --nocapture --nologcapture --logging-level=INFO sim
+
+sim:
+	@./sim.py
 
 venv:
 	@rm -rf venv

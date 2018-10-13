@@ -7,11 +7,12 @@ Fault-Tolerant Quadcopter - simulated full quadcopter
 from .Battery import Battery
 from .ESC import ESC
 from .Motor import Motor
+from .telemetry.Client import TelemetryClient
 
 class Quadcopter(object):
     """ """
 
-    def __init__(self):
+    def __init__(self, port):
         """ """
 
         self.chassis_weight  = 24     # structural pcb (top)
@@ -37,3 +38,6 @@ class Quadcopter(object):
                      ESC(self.motors[1], 31),
                      ESC(self.motors[2], 31),
                      ESC(self.motors[3], 31)]
+
+        self.telemetry = TelemetryClient(port, "Quadcopter")
+        self.telemetry.start()

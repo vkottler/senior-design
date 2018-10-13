@@ -12,15 +12,9 @@ from sim.classes.telemetry.Server import TelemetryServer
 import unittest
 
 class TestChannel(unittest.TestCase):
-    """ """
+    """ Test Channel-related actions. """
 
-    def test_channel_from_json(self):
-        """ """
-
-        # TODO
-        self.assertTrue(True)
-
-    def test_to_json(self):
+    def test_to_from_json(self):
         """
         Test that a conversion to and from JSON results in an 'equivalent'
         object.
@@ -31,23 +25,24 @@ class TestChannel(unittest.TestCase):
         self.assertTrue(self.chan.equals(check_channel, True))
 
     def test_publish(self):
-        """ """
+        """ Test publishing a channel. """
 
-        self.chan.publish()
+        for i in range(1000):
+            self.chan.set_data(i, True)
 
     def setUp(self):
-        """ """
+        """ Initialize client-server pair and a single channel. """
 
-        # set up client and server pair
-        self.client = TelemetryClient()
-        self.server = TelemetryServer()
+        # set up client and server pair, use an arbitrary port
+        self.server = TelemetryServer(0)
         self.server.start()
+        self.client = TelemetryClient(self.server.port())
         self.client.start()
 
         self.chan = Channel("test", int, "meters", self.client, 123)
 
     def tearDown(self):
-        """ """
+        """ Stop client and server. """
 
         self.client.stop()
         self.server.stop()

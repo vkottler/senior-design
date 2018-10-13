@@ -5,13 +5,15 @@ Fault-Tolerant Quadcopter - command-line entry and argument parsing
 
 # built-in
 import argparse
+import logging
 
 # internal
-from .classes.SimulationEngine import SimulationEngine
-from .classes.telemetry.Server import TelemetryServer
+from .sim import simulate
 
 def main(argv):
     """ """
+
+    logging.basicConfig(level=logging.INFO)
 
     desc = "Flight Algorithm Tuning and Testing"
     parser = argparse.ArgumentParser(description=desc, prog="sim.py")
@@ -26,7 +28,7 @@ def main(argv):
                         action="store_true")
     parser.add_argument("-d", "--duration",
                         help="Number of seconds to run for",
-                        type=int, default=10)
+                        type=int, default=5)
     parser.add_argument("-s", "--step-duration",
                         help="Number of milliseconds per step",
                         type=int, default=1)
@@ -34,22 +36,4 @@ def main(argv):
     # parse input arguments
     args = parser.parse_args(argv[1:])
 
-    # start the telemetry server
-    telemetry_server = TelemetryServer()
-    telemetry_server.start()
-
-    # initialize the simulation environment
-    engine = SimulationEngine(args.step_duration, args.real_time)
-
-    # run the simulation to completion
-    time_remaining = args.duration * 1000
-    while time_remaining:
-        engine.step()
-        time_remaining -= args.step_duration
-
-    print(engine.metrics())
-
-    # stop the telemetry server
-    telemetry_server.stop()
-
-    return 0
+    return simulate(args)
