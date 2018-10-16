@@ -54,4 +54,3 @@ class Quadcopter(object):
 
         self.telemetry = TelemetryClient(port, "Quadcopter")
         self.telemetry.start()
-
