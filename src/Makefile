@@ -1,4 +1,5 @@
-.PHONY: clean main %-flash %-dump sim
+<<<<<<< 07d640e3f303a5cfa613a1cd14372d600da84591
+.PHONY: clean main %-flash %-dump sim test-sim clean-venv
 .SECONDARY:
 .DEFAULT_GOAL = main
 
@@ -32,6 +33,8 @@ sim:
 	@./sim.py
 
 venv:
-	@rm -rf venv
 	@virtualenv --python=$(PYTHON_BIN) venv
 	@$(DEV_BIN)/pip install -r requirements.txt
+
+clean-venv:
+	@rm -rf venv
