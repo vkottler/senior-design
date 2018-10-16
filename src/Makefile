@@ -38,3 +38,8 @@ venv:
 
 clean-venv:
 	@rm -rf venv
+
+export FLASK_APP = py/web.py
+export FLASK_ENV = development
+start:
+	@$(DEV_BIN)/flask run
