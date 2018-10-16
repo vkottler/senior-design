@@ -4,9 +4,9 @@ Fault-Tolerant Quadcopter - testing telemetry channels
 """
 
 # payload
-from sim.classes.telemetry.Channel import Channel
-from sim.classes.telemetry.Client import TelemetryClient
-from sim.classes.telemetry.Server import TelemetryServer
+from py.classes.telemetry.Channel import Channel
+from py.classes.telemetry.Client import TelemetryClient
+from py.classes.telemetry.Server import TelemetryServer
 
 # built-in
 import unittest

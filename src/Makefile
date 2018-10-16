@@ -26,7 +26,7 @@ DEV_BIN       = venv/bin
 PYTHON_BIN    ?= python3
 
 test-sim: venv
-	@$(DEV_BIN)/nosetests --nocapture --nologcapture --logging-level=INFO sim
+	@$(DEV_BIN)/nosetests py
 
 sim:
 	@./sim.py

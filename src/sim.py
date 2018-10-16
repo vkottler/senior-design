@@ -4,7 +4,7 @@
 import sys
 
 # internal
-from sim.entry import main
+from py.entry import sim_main
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(sim_main(sys.argv))
