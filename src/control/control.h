@@ -100,6 +100,5 @@ bool control_init(uint8_t gyro_range_idx, uint8_t imu_range_idx,
                   motion_state_t *state,
                   motion_configuration_t *config,
                   float imu_rate, float gyro_rate);
-bool default_init(void);
 
 /*******************************************************************/
