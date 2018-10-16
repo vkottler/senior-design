@@ -122,10 +122,3 @@ bool control_init(uint8_t gyro_range_idx, uint8_t imu_range_idx,
 
     return true;
 }
-
-bool default_init(void)
-{
-    motion_state_t state;
-    motion_configuration_t config;
-    return control_init(0, 0, &state, &config, 800.0f, 800.0f);
-}
