@@ -11,6 +11,7 @@ import threading
 
 # internal
 from .DataHandling import DefaultTelemetryHandler
+from .DataBuffer import TelemetryBuffer
 
 class TelemetryServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """
@@ -34,6 +35,7 @@ class TelemetryServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         self.thread = threading.Thread(target=self.serve_forever)
         self.started = False
         self.stopped = False
+        self.buffer = TelemetryBuffer()
 
     def port(self):
         """ Return the port that this server is attached to. """

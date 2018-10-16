@@ -32,8 +32,7 @@ class DefaultTelemetryHandler(socketserver.StreamRequestHandler):
                 return
 
             channel = Channel.from_json(data, None)
-            DefaultTelemetryHandler.log.info("%s: %s (%s)", channel.dict["name"],
-                                             channel.dict["value"], channel.dict["type"])
-
-            # push to a concurrent data structure owned by self.server
-            #self.server.data.put()
+            DefaultTelemetryHandler.log.debug("%s: %s (%s)", channel.dict["name"],
+                                              channel.dict["value"], channel.dict["type"])
+            # store data
+            self.server.buffer.put(channel)

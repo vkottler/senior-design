@@ -3,6 +3,9 @@
 Fault-Tolerant Quadcopter - telemetry channel
 """
 
+# built-in
+import time
+
 # internal
 import json
 
@@ -41,6 +44,7 @@ class Channel(object):
         self.dict["type"]  = value_type.__name__
         self.dict["unit"]  = unit
         self.dict["value"] = value
+        self.dict["timestamp"] = time.time() * 1000
         self.type = value_type
         self.telemetry_client = telemetry_client
 
@@ -61,6 +65,7 @@ class Channel(object):
         """ Set a new value for this channel. """
 
         self.dict["value"] = data
+        self.dict["timestamp"] = time.time() * 1000
         if publish:
             self.publish()
 
