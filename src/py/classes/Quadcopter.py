@@ -3,6 +3,9 @@
 Fault-Tolerant Quadcopter - simulated full quadcopter
 """
 
+# built-in
+from ctypes import cdll
+
 # internal
 from .Battery import Battery
 from .ESC import ESC
@@ -39,5 +42,10 @@ class Quadcopter(object):
                      ESC(self.motors[2], 31),
                      ESC(self.motors[3], 31)]
 
+        # run accelerometer+gyro initialization routine
+        self.control = cdll.LoadLibrary('control/control.so')
+        self.control.default_init()
+
         self.telemetry = TelemetryClient(port, "Quadcopter")
         self.telemetry.start()
+

@@ -1,4 +1,4 @@
-.PHONY: clean sim
+.PHONY: test-sim sim clean-venv
 
 DEV_BIN       = venv/bin
 PYTHON_BIN    ?= python3
@@ -10,6 +10,8 @@ sim:
 	@./sim.py
 
 venv:
-	@rm -rf venv
 	@virtualenv --python=$(PYTHON_BIN) venv
 	@$(DEV_BIN)/pip install -r requirements.txt
+
+clean-venv:
+	@rm -rf venv
