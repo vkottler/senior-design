@@ -10,7 +10,7 @@ import logging
 # internal
 from .sim import simulate
 
-def main(argv):
+def sim_main(argv):
     """ """
 
     logging.basicConfig(level=logging.INFO)
