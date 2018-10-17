@@ -52,5 +52,14 @@ class Quadcopter(object):
                                   pointer(self.control_configuration),
                                   c_float(800), c_float(800))
 
+        # initialize the telemetry client
         self.telemetry = TelemetryClient(port, "Quadcopter")
-        self.telemetry.start()
+
+    def connect(self):
+        """ Attempt to connect to the telemetry proxy. """
+
+        try:
+            self.telemetry.start()
+            return True
+        except ConnectionRefusedError:
+            return False
