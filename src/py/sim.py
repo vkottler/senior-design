@@ -10,19 +10,17 @@ import sys
 # internal
 from .classes.Quadcopter import Quadcopter
 from .classes.SimulationEngine import SimulationEngine
-from .classes.telemetry.Server import TelemetryServer
 
 def simulate(parsed):
     """ """
 
     log = logging.getLogger(__name__)
 
-    # initialize telemetry server
-    server = TelemetryServer(0, "Simulation Server")
-    server.start()
-
     # initialize quadcopter
-    quadcopter = Quadcopter(server.port())
+    quadcopter = Quadcopter(parsed.port)
+    if not quadcopter.connect():
+        log.error("Couldn't connect to telemetry proxy on port %d.", parsed.port)
+        return 1
 
     # initialize the simulation environment
     engine = SimulationEngine(quadcopter, parsed.step_duration, parsed.real_time)
@@ -42,6 +40,5 @@ def simulate(parsed):
 
     # stop telemetry
     quadcopter.telemetry.stop()
-    server.stop()
 
     return 0

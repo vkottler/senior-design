@@ -9,6 +9,7 @@ import logging
 
 # internal
 from .sim import simulate
+from .web import serve
 
 def sim_main(argv):
     """ """
@@ -32,8 +33,17 @@ def sim_main(argv):
     parser.add_argument("-s", "--step-duration",
                         help="Number of milliseconds per step",
                         type=int, default=1)
+    parser.add_argument("-S", "--server",
+                        help="Run the telemetry server only",
+                        action="store_true")
+    parser.add_argument("-p", "--port",
+                        help="Port to serve from or connect to for telemetry",
+                        type=int, default=10018)
 
     # parse input arguments
     args = parser.parse_args(argv[1:])
 
+    # may need better 'command dispatching' in the future
+    if args.server:
+        return serve(args)
     return simulate(args)

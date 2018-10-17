@@ -1,5 +1,4 @@
-<<<<<<< 07d640e3f303a5cfa613a1cd14372d600da84591
-.PHONY: clean main %-flash %-dump sim test-sim clean-venv
+.PHONY: clean main %-flash %-dump sim test-sim clean-venv serve
 .SECONDARY:
 .DEFAULT_GOAL = main
 
@@ -30,7 +29,10 @@ test-sim: venv
 	@$(DEV_BIN)/nosetests py
 
 sim:
-	@./sim.py
+	@$(DEV_BIN)/$(PYTHON_BIN) sim.py
+
+serve: 
+	@$(DEV_BIN)/$(PYTHON_BIN) sim.py --server
 
 venv:
 	@virtualenv --python=$(PYTHON_BIN) venv
@@ -38,8 +40,3 @@ venv:
 
 clean-venv:
 	@rm -rf venv
-
-export FLASK_APP = py/web.py
-export FLASK_ENV = development
-start:
-	@$(DEV_BIN)/flask run
