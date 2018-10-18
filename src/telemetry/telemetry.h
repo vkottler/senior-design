@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #define TELEMETRY_CAPACITY  64
 #define telemetry_debug     printf
 
