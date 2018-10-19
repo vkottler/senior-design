@@ -4,6 +4,9 @@
 
 #include "telemetry.h"
 
+/*
+ * Test program that executes some telemetry code.
+ */
 int main(int argc, char **argv)
 {
     channel_manifest_t *manifest;
@@ -16,15 +19,14 @@ int main(int argc, char **argv)
     if (!manifest) return 1;
 
     /* create sample channels */
-    uint32_t channel_idx;
-    for (i = 0; i < 100; i++)
+    for (i = 0; i < 1000; i++)
     {
         if (i % 2)
-            channel_idx = channel_add(manifest, "test_float", "kg",
-                                      TELEM_FLOAT, sizeof(float));
+            channel_add(manifest, "test_float", "kg",
+                        TELEM_FLOAT, sizeof(float));
         else
-            channel_idx = channel_add(manifest, "test_channel", "N/A",
-                                      TELEM_STRING, 256);
+            channel_add(manifest, "test_channel", "N/A",
+                        TELEM_STRING, 256);
     }
 
     /* create telemetry packets for these channels */
