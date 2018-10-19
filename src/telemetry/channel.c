@@ -17,9 +17,11 @@ uint32_t channel_add(channel_manifest_t *manifest,
                      const char *name, const char *unit,
                      channel_data_t type, size_t size)
 {
+    uint32_t index = manifest->count;
+    channel_t *channel = &manifest->channels[index];
+
     /* initialize channel */
-    channel_t *channel = &manifest->channels[manifest->count];
-    channel->manifest_index = manifest->count++;
+    channel->manifest_index = index;
     channel->name = name;
     channel->unit = unit;
     channel->type = type;
@@ -27,7 +29,7 @@ uint32_t channel_add(channel_manifest_t *manifest,
     channel->data = NULL;
 
     /* handle manifest capacity */
-    if (manifest->count == manifest->capacity)
+    if (++manifest->count == manifest->capacity)
     {
         manifest->channels = realloc(manifest->channels,
                                      manifest->capacity * 2 * sizeof(channel_t));
@@ -39,9 +41,12 @@ uint32_t channel_add(channel_manifest_t *manifest,
         manifest->capacity = manifest->capacity * 2;
     }
 
-    return channel->manifest_index;
+    return index;
 }
 
+/*
+ * Convert the channel-data-type enum into a String.
+ */
 const char *channel_type_to_str(channel_data_t type)
 {
     switch (type)
@@ -59,6 +64,9 @@ const char *channel_type_to_str(channel_data_t type)
     return NULL;
 }
 
+/*
+ * Print a channel's data to the given IO stream.
+ */
 void channel_print_data(FILE *stream, channel_t *channel)
 {
     fputs("Data: ", stream);
@@ -77,6 +85,9 @@ void channel_print_data(FILE *stream, channel_t *channel)
     fputs("\r\n", stream);
 }
 
+/*
+ * Print a channel to the given IO stream.
+ */
 void channel_print(FILE *stream, channel_t *channel)
 {
     fputs("====================\r\n", stream);

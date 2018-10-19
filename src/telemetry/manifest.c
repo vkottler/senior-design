@@ -6,6 +6,9 @@
 
 #include <stdlib.h>
 
+/*
+ * Create a channel manifest with a specified initial capacity.
+ */
 channel_manifest_t *channel_manifest_create(uint32_t capacity)
 {
     channel_manifest_t *manifest = malloc(sizeof(channel_manifest_t));
@@ -26,6 +29,9 @@ channel_manifest_t *channel_manifest_create(uint32_t capacity)
     return manifest;
 }
 
+/*
+ * Print a channel manifest to the given IO stream.
+ */
 void channel_manifest_print(FILE *stream, channel_manifest_t *manifest)
 {
     fputs("********************\r\n", stream);
