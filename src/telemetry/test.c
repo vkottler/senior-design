@@ -2,26 +2,50 @@
  * Vaughn Kottler, 10/17/2018
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "telemetry.h"
 
 int main(int argc, char **argv)
 {
     channel_manifest_t *manifest;
-    channel_t *sample_channel;
-    float sample_channel_data = 123.123;
+    telemetry_packet_t **packets;
+    size_t npackets;
+    int i;
 
-    manifest = create_channel_manifest(TELEMETRY_CAPACITY);
+    /* create channel manifest */
+    manifest = channel_manifest_create(TELEMETRY_CAPACITY);
+    if (!manifest) return 1;
 
-    /* create sample channel */
-    for (int i = 0; i < 10000; i++)
+    /* create sample channels */
+    uint32_t channel_idx;
+    for (i = 0; i < 100; i++)
     {
-        sample_channel = add_channel(manifest, "test_channel", "kg", TELEM_FLOAT,
-                                     sizeof(float), &sample_channel_data);
+        if (i % 2)
+            channel_idx = channel_add(manifest, "test_float", "kg",
+                                      TELEM_FLOAT, sizeof(float));
+        else
+            channel_idx = channel_add(manifest, "test_channel", "N/A",
+                                      TELEM_STRING, 256);
     }
-    printf("Everything worked.\n");
+
+    /* create telemetry packets for these channels */
+    packets = telemetry_packets_from_manifest(manifest, TELEMETRY_MTU, &npackets);
+    if (!packets) return 1;
+    printf("%u packets created.\r\n", npackets);
+    for (i = 0; i < npackets; i++)
+        telemetry_packet_print(stdout, packets[i]);
+
+    /* set data values */
+    for (i = 0; i < manifest->count; i++)
+    {
+        if (i % 2)
+            *((float *) manifest->channels[i].data) = (float) i;
+        else
+            manifest->channels[i].data = "Hello I am String data.";
+    }
+
+    /* print manifest */
+    for (i = 0; i < 10; i++)
+        channel_print(stdout, &manifest->channels[i]);
 
     return 0;
 }

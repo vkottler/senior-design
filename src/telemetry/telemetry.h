@@ -4,9 +4,12 @@
 
 #pragma once
 
+#include <stdio.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #define TELEMETRY_CAPACITY  64
+#define TELEMETRY_MTU       1500
 #define telemetry_debug     printf
 
 typedef enum _channel_data {
@@ -27,25 +30,32 @@ typedef struct _channel {
     channel_data_t  type;
     size_t          size;
     void           *data;
-    unsigned int    manifest_index;
+    uint32_t        manifest_index;
 } channel_t;
 
 typedef struct _channel_manifest {
-    channel_t    *channels;
-    unsigned int  count;
-    unsigned int  capacity;
+    channel_t *channels;
+    uint32_t   count;
+    uint32_t   capacity;
 } channel_manifest_t;
 
-typedef struct _telemetry_packet {
-    unsigned int     channel_count;
-    unsigned int    *manifest_indices;
-    void            *data;
-    size_t           data_size;
+typedef struct __attribute__((__packed__)) _telemetry_packet {
+    uint32_t  channel_count;
+    size_t    data_size;
+    uint32_t  crc32;
+    void     *blob;
 } telemetry_packet_t;
 
-channel_t *add_channel(channel_manifest_t *manifest,
-                       const char *name, const char *unit,
-                       channel_data_t type, size_t size, void *data);
-channel_manifest_t *create_channel_manifest(unsigned int capacity);
-telemetry_packet_t *create_telemetry_packet(channel_t *channels,
-                                            unsigned int count);
+uint32_t channel_add(channel_manifest_t *manifest,
+                     const char *name, const char *unit,
+                     channel_data_t type, size_t size);
+void channel_print(FILE *stream, channel_t *channel);
+
+channel_manifest_t *channel_manifest_create(uint32_t capacity);
+void channel_manifest_print(FILE *stream, channel_manifest_t *manifest);
+
+telemetry_packet_t *telemetry_packet_create(channel_t *channels,
+                                            uint32_t count);
+telemetry_packet_t **telemetry_packets_from_manifest(channel_manifest_t *manifest,
+                                                    size_t mtu, size_t *npackets);
+void telemetry_packet_print(FILE *stream, telemetry_packet_t *packet);
