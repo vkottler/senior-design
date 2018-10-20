@@ -1,4 +1,4 @@
-.PHONY: clean main
+.PHONY: clean main %-flash %-dump
 .SECONDARY:
 .DEFAULT_GOAL = main
 

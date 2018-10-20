@@ -12,14 +12,14 @@ extern uint32_t __bss_start__, __bss_end__;
 extern uint32_t __StackTop;
 
 #ifndef __STACK_SIZE
-#define	__STACK_SIZE	0x00001000
+#define	__STACK_SIZE	0x00000C00
 #endif
 static uint8_t stack[__STACK_SIZE] __attribute__((
 	aligned(8), used, section(".stack")
 ));
 
 #ifndef __HEAP_SIZE
-#define	__HEAP_SIZE		0x00001000
+#define	__HEAP_SIZE		0x00000400
 #endif
 static uint8_t heap[__HEAP_SIZE] __attribute__((
     aligned(8), used, section(".heap")
@@ -39,7 +39,7 @@ void SysTick_Handler(void) { ticks++; }
  * Reset Handler.
  */
 extern void SystemInit(void);
-extern int _mainCRTStartup();
+extern int main(void);
 void Reset_Handler(void)
 {
     uint32_t *pSrc, *pDest;
@@ -61,7 +61,7 @@ void Reset_Handler(void)
     SystemInit();
 
     /* Jump to the main initialization routine. */
-    _mainCRTStartup();
+    main();
 }
 
 /*
