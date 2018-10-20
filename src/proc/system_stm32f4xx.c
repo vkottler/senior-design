@@ -27,10 +27,6 @@ uint32_t SystemCoreClock = 16000000;
 const uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
 
-#if defined (DATA_IN_ExtSRAM) || defined (DATA_IN_ExtSDRAM)
-    static void SystemInit_ExtMemCtl(void); 
-#endif
-
 /**
   * @brief  Setup the microcontroller system
   *         Initialize the FPU setting, vector table location and External memory 
@@ -65,10 +61,6 @@ void SystemInit(void)
     /* Disable all interrupts */
     RCC->CIR = 0x00000000;
 
-    #if defined (DATA_IN_ExtSRAM) || defined (DATA_IN_ExtSDRAM)
-        SystemInit_ExtMemCtl(); 
-    #endif
-
     /* Configure the Vector Table location add offset address */
     #ifdef VECT_TAB_SRAM
         /* Vector Table Relocation in Internal SRAM */
@@ -77,6 +69,8 @@ void SystemInit(void)
         /* Vector Table Relocation in Internal FLASH */
         SCB->VTOR = FLASH_BASE | VECT_TAB_OFFSET;
     #endif
+
+    SystemCoreClockUpdate();
 }
 
 /**
@@ -153,9 +147,11 @@ void SystemCoreClockUpdate(void)
             break;
 
         default: SystemCoreClock = HSI_VALUE; break;
-  }
+    }
 
-  /* Compute HCLK frequency */
-  tmp = AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> 4)]; /* Get HCLK prescaler */
-  SystemCoreClock >>= tmp;                                 /* HCLK frequency */
+    /* Compute HCLK frequency */
+    tmp = AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> 4)]; /* Get HCLK prescaler */
+    SystemCoreClock >>= tmp;                                 /* HCLK frequency */
+
+	SysTick_Config(SystemCoreClock / 1000);
 }
