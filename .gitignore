@@ -20,3 +20,4 @@ venv
 *.toc
 History
 __Previews
+__pycache__
