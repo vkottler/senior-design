@@ -1,0 +1,10 @@
+[ProjectGroup]
+Version=1.0
+[Project1]
+ProjectPath=flight\quadcopter.PrjMbd
+[Project2]
+ProjectPath=flight\flight-controller.PrjPCB
+[Project3]
+ProjectPath=ground\mezzanine-card.PrjPCB
+[Project4]
+ProjectPath=flight\flight-power.PrjPCB
