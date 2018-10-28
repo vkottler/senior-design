@@ -7,4 +7,4 @@ ProjectPath=flight\flight-controller.PrjPCB
 [Project3]
 ProjectPath=ground\mezzanine-card.PrjPCB
 [Project4]
-ProjectPath=flight\flight-power.PrjPCB
+ProjectPath=flight\esc.PrjPCB
