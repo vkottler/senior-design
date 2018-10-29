@@ -1,2 +1,3 @@
 Record=TopLevelDocument|FileName=esc.SchDoc
+Record=SheetSymbol|SourceDocument=esc.SchDoc|Designator=ESC Control Inputs|SchDesignator=ESC Control Inputs|FileName=esc_inputs.SchDoc|SymbolType=Normal|RawFileName=esc_inputs.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
 Record=SheetSymbol|SourceDocument=esc.SchDoc|Designator=Output Stage|SchDesignator=Output Stage|FileName=fets.SchDoc|SymbolType=Normal|RawFileName=fets.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
