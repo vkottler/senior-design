@@ -2,14 +2,13 @@
 #include <unistd.h>			//Used for UART
 #include <fcntl.h>			//Used for UART
 #include <termios.h>		//Used for UAR
-#include <string.h>
 
-int uart_write(int uart, char * buff)
+int uart_write(int uart, unsigned char * buff, int size)
 {
 
   if(uart != -1)
   {
-    int count = write(uart, buff, strlen(buff));		//filestream, bytes to write, number of bytes to writedd
+    int count = write(uart, buff, size);//filestream, bytes to write, number of bytes to writedd
     if (count < 0)
     {
       close(uart);
@@ -17,6 +16,7 @@ int uart_write(int uart, char * buff)
       return -1;
     }
   }
+  return 0;
 }
 
 int uart_read(int uart, char * buff)
