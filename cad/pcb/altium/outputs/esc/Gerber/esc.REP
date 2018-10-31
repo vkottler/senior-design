@@ -2,30 +2,46 @@
 FileName = esc.GBR
 AutoAperture = True
 *************************************************************
-Generating : Top Paste
-      File : esc.GTP
+Generating : Bottom Overlay
+      File : esc.GBO
 
-    Adding Layer      : Top Paste
+    Adding Layer      : Bottom Overlay
 
-    Adding Layer      : Top Layer
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D73
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : esc.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : Bottom Layer
 
     Adding Layer      : Multi-Layer
 
 
 Used DCodes :
-    D14
-    D15
-    D16
-    D17
-    D18
-    D19
-    D20
-    D21
-    D22
-    D23
-    D24
-    D25
-    D26
+    D27
+    D28
+    D32
+    D34
+    D40
+    D41
+    D42
+    D43
+    D44
+    D45
+    D68
+    D69
+    D70
+    D71
+    D72
 *************************************************************
 
 *************************************************************
@@ -62,6 +78,33 @@ Used DCodes :
 *************************************************************
 
 *************************************************************
+Generating : Top Paste
+      File : esc.GTP
+
+    Adding Layer      : Top Paste
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+*************************************************************
+
+*************************************************************
 Generating : Top Overlay
       File : esc.GTO
 
@@ -76,6 +119,79 @@ Used DCodes :
 *************************************************************
 
 *************************************************************
+Generating : Bottom Layer
+      File : esc.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D12
+    D13
+    D14
+    D15
+    D19
+    D21
+    D49
+    D50
+    D53
+    D54
+    D55
+    D56
+    D57
+    D58
+    D62
+    D63
+    D64
+    D65
+    D66
+    D67
+*************************************************************
+
+*************************************************************
+Generating : Bottom Paste
+      File : esc.GBP
+
+    Adding Layer      : Bottom Paste
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D14
+    D15
+    D19
+    D21
+    D62
+    D63
+    D64
+    D65
+    D66
+*************************************************************
+
+*************************************************************
+Generating : Power Plane
+      File : esc.GP2
+
+    Adding Layer      : Power Plane
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D12
+    D49
+    D57
+    D59
+    D60
+    D61
+*************************************************************
+
+*************************************************************
 Generating : Board Outline
       File : esc.GM2
 
@@ -84,6 +200,24 @@ Generating : Board Outline
 
 Used DCodes :
     D12
+*************************************************************
+
+*************************************************************
+Generating : Ground Plane
+      File : esc.GP1
+
+    Adding Layer      : Ground Plane
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D12
+    D49
+    D57
+    D59
+    D60
+    D61
 *************************************************************
 
 *************************************************************
@@ -124,139 +258,5 @@ Used DCodes :
     D56
     D57
     D58
-*************************************************************
-
-*************************************************************
-Generating : Bottom Layer
-      File : esc.GBL
-
-    Adding Layer      : Bottom Layer
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D12
-    D13
-    D14
-    D15
-    D19
-    D21
-    D49
-    D50
-    D53
-    D54
-    D55
-    D56
-    D57
-    D58
-    D62
-    D63
-    D64
-    D65
-    D66
-    D67
-*************************************************************
-
-*************************************************************
-Generating : Bottom Overlay
-      File : esc.GBO
-
-    Adding Layer      : Bottom Overlay
-
-
-Used DCodes :
-    D10
-    D11
-    D12
-    D73
-*************************************************************
-
-*************************************************************
-Generating : Power Plane
-      File : esc.GP2
-
-    Adding Layer      : Power Plane
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D12
-    D49
-    D57
-    D59
-    D60
-    D61
-*************************************************************
-
-*************************************************************
-Generating : Ground Plane
-      File : esc.GP1
-
-    Adding Layer      : Ground Plane
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D12
-    D49
-    D57
-    D59
-    D60
-    D61
-*************************************************************
-
-*************************************************************
-Generating : Bottom Paste
-      File : esc.GBP
-
-    Adding Layer      : Bottom Paste
-
-    Adding Layer      : Bottom Layer
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D14
-    D15
-    D19
-    D21
-    D62
-    D63
-    D64
-    D65
-    D66
-*************************************************************
-
-*************************************************************
-Generating : Bottom Solder
-      File : esc.GBS
-
-    Adding Layer      : Bottom Solder
-
-    Adding Layer      : Bottom Layer
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D27
-    D28
-    D32
-    D34
-    D40
-    D41
-    D42
-    D43
-    D44
-    D45
-    D68
-    D69
-    D70
-    D71
-    D72
 *************************************************************
 
