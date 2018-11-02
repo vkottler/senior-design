@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+<script>
+window.onload = function () {
+
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
+var dps = []; // dataPoints for motor1
+var dps2 = []; // dataPoints for motor3
+var dps3 = []; // dataPoints for motor2
+var dps4 = []; // dataPoints for motor4
+
+
+var chart2 = new CanvasJS.Chart("chartContainer2", {
+	zoomEnabled: true,
+	title :{
+		text: "Current v. Time"
+	},
+	axisY: {
+		title: "Current (Amps)",
+		includeZero: true
+	},
+	axisX: {
+		title:"Time (s)"
+	},         
+	data: [{
+		//MOTOR1
+		type: "line",
+		dataPoints: dps,
+		showInLegend: true,
+		legendText: "Motor +X", 
+		color: "red"
+	},
+	{
+		//MOTOR2
+		type: "line",
+		dataPoints: dps2,
+		showInLegend: true, 
+		legendText: "Motor +y",
+		color: "green"
+	},
+	{
+		//MOTOR3
+		type: "line",
+		dataPoints: dps3,
+		showInLegend: true, 
+		legendText: "Motor -x",
+		color: "black"
+	},
+	{	
+		//MOTOR1
+		type: "line",
+		dataPoints: dps4,
+		showInLegend: true,
+		legendText: "Motor -y", 
+		color: "blue"
+	}
+	]
+});
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	zoomEnabled: true,
+	title :{
+		text: "Voltage v. Time"
+	},
+	axisY: {
+		title: "Voltage (V)",
+		includeZero: true
+	},
+	axisX: {
+		title:"Time (s)"
+	},         
+	data: [{
+		//MOTOR1
+		type: "line",
+		dataPoints: dps,
+		showInLegend: true,
+		legendText: "Motor +X", 
+		color: "red"
+	},
+	{
+		//MOTOR2
+		type: "line",
+		dataPoints: dps2,
+		showInLegend: true, 
+		legendText: "Motor +y",
+		color: "green"
+	},
+	{
+		//MOTOR3
+		type: "line",
+		dataPoints: dps3,
+		showInLegend: true, 
+		legendText: "Motor -x",
+		color: "black"
+	},
+	{	
+		//MOTOR1
+		type: "line",
+		dataPoints: dps4,
+		showInLegend: true,
+		legendText: "Motor -y", 
+		color: "blue"
+	}
+	]
+});
+
+//indepent variable x (time)
+var xVal = 0;
+
+//dependent variable y
+var yVal = 0;
+var yVal2 = 0;
+var yVal3 = 0;
+var yVal4 = 0; 
+
+var updateInterval = 1000; //1sec
+var dataLength = 100; //dataPoints visible at any point
+
+var updateChart = function (count) {
+	count = count || 1;
+	for (var j = 0; j < count; j++) {	
+		/*TODO: change to incoming telem*/
+		yVal = getRandomIntInclusive(1, 2);
+		yVal2 = getRandomIntInclusive(3, 4);
+		yVal3 = getRandomIntInclusive(7, 8);
+		yVal4 = getRandomIntInclusive(10, 11);
+		
+		dps.push({
+			x: xVal,
+			y: yVal
+		});
+		dps2.push({
+			x: xVal,
+			y: yVal2
+		});
+		dps3.push({
+			x: xVal,
+			y: yVal3
+		});
+		dps4.push({
+			x: xVal,
+			y: yVal4
+		});
+		xVal++;
+	}
+	if (dps.length > dataLength) {
+		dps.shift();
+		dps2.shift();
+		dps3.shift();
+		dps4.shift();
+	}
+	chart.render();
+	chart2.render();
+};
+
+updateChart(dataLength);
+setInterval(function(){updateChart()}, updateInterval);
+}
+</script>
+</head>
+<body>		
+	<h1 align="center">Quadcopter Telemetry Viewing</h1>
+	<th><div id="chartContainer2" style="height: 270px; max-width: 100%; margin: 3% auto;"></div> </th>
+	<th><div id="chartContainer" style="height: 270px; max-width: 100%; margin: 3% auto;"></div></th>
+<script src="./canvasjs-2.2/canvasjs.min.js"></script>
+</body>
+</html>
