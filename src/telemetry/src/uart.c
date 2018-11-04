@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <unistd.h>			//Used for UART
-#include <fcntl.h>			//Used for UART
-#include <termios.h>		//Used for UAR
+#include <unistd.h>
+#include <fcntl.h>
+#include <uart.h>
 
 int uart_write(int uart, unsigned char * buff, int size)
 {
@@ -43,7 +43,7 @@ int uart_read(int uart, char * buff)
   return rx_length;
 }
 
-int uart_config()
+int uart_config(speed_t baud)
 {
   int uart0_filestream = -1;
   uart0_filestream = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);		//Open in non blocking read/write mode
@@ -58,7 +58,7 @@ int uart_config()
 
   struct termios options;
   tcgetattr(uart0_filestream, &options);
-  options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;		//<Set baud rate
+  options.c_cflag = baud | CS8 | CLOCAL | CREAD;		//<Set baud rate
   options.c_iflag = IGNPAR;
   options.c_oflag = 0;
   options.c_lflag = 0;

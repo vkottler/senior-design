@@ -17,7 +17,8 @@ typedef enum{
 #define mode_1  13 
 
 int radio_config();
-int radio_print_parm();
+int radio_print_param();
+int radio_set_param();
 int radio_print_ver();
 int radio_set_mode(radio_mode_type mode);
 

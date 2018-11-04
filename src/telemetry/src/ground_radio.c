@@ -9,12 +9,26 @@ int radio_config()
   INP_GPIO(mode_1);
   OUT_GPIO(mode_1);
 
-  radio_set_mode(NORMAL);
+  radio_set_mode(SLEEP);
+/*  radio_set_mode(NORMAL);*/
 
   return 0;
 }
 
-int radio_print_parm()
+int radio_set_param()
+{
+  radio_set_mode(SLEEP);
+  unsigned char  buff[6];
+  buff[0] = 0xC0;
+  buff[1] = 0x00;
+  buff[2] = 0x00;
+  buff[3] = 0x3a; // 115200
+  buff[4] = 0x17;
+  buff[5] = 0x44;
+//c0 0 0 1a 6 44
+  uart_write(uart_filestream, buff, 6);
+}
+int radio_print_param()
 {
   radio_set_mode(SLEEP);
 

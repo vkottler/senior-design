@@ -9,21 +9,38 @@
 
 int main ()
 {
-  int uart_filestream = uart_config();
-  char c;
+  uart_filestream = uart_config(B9600);
+  char cmd[100];
+  int size;
 
-/*  uart_write(uart_filestream, "Hello world\r\n", 13);*/
-  unsigned char  buff[3];
-  buff[0] = 0xc3;
-  buff[1] = 0xc3;
-  buff[2] = 0xc3;
-
-  uart_write(uart_filestream, buff, 3);
+  gpio_config();
+  radio_config();
 
   while(1)
   {
-    c = fgetc(stdin);
-    uart_write(uart_filestream, (char*)&c, 1);
+    printf("> ");
+    fgets(cmd, 100, stdin);
+    if (strcmp(cmd, "param\n") == 0)
+    {
+      radio_print_param();
+    }
+    else if (strcmp(cmd, "version\n") == 0)
+    {
+      radio_print_ver();
+    }
+    else if (strcmp(cmd, "set param\n") == 0)
+    {
+      radio_set_param();
+    }
+    else if (strcmp(cmd, "mode normal\n") == 0)
+    {
+      radio_set_mode(NORMAL);
+    }
+    else
+    {
+      printf("Sending \r\n");
+      uart_write(uart_filestream, (char*)cmd, strlen(cmd));
+    }
   }
 
   close(uart_filestream);

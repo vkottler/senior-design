@@ -9,14 +9,15 @@
 
 int main ()
 {
-  char rx_buffer[20];
-  uart_filestream = uart_config();
+  char rx_buffer[1024];
+/*  uart_filestream = uart_config(B9600);*/
+  uart_filestream = uart_config(B115200);
   int length = 0;
   int i = 0;
 
   gpio_config();
   radio_config();
-/*  radio_print_parm();*/
+/*  uart_filestream = uart_config(B115200);*/
 
   while(1)
   {
@@ -27,6 +28,7 @@ int main ()
         printf("%x", rx_buffer[i]);
         fflush(stdout);
       }
+      printf("\n");
     }
   }
 
