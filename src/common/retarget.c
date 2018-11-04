@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "pcbuffer.h"
 #include "usart.h"
+#include "board.h"
 
 #define BLOCK	true
 
