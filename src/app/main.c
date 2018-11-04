@@ -7,7 +7,7 @@ int main(void)
 
     while (1)
     {
-        blink_handler(250);
+        blink_handler(500);
     }
 
     return 0;
