@@ -1,0 +1,1 @@
+SRCS += common/board.c
