@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Socket IO Telemetry</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    </head>
+    <body>
+      	<h1 align="center">Quadcopter Telemetry Viewing</h1>
+      <div id="chartContainer" style="height: 360px; width: 100%;"></div>
+      <script>
+      var data = []; 
+   
+      var chart = new CanvasJS.Chart("chartContainer", {
+        zoomEnabled: true,
+        title :{
+          text: "Voltage v. Time"
+        },
+        axisY: {	
+          title: "Voltage (V)",
+          includeZero: true
+        },
+        axisX: {
+          title:"Time (s)",
+          includeZero: false
+        },         
+        data: [
+        {	
+          type: "line",
+          dataPoints: data,
+          showInLegend: true,
+          legendText: "Motor -y", 
+          color: "blue"
+        }
+        ]
+      });
+     
+      $(function () {
+          var socket = io();
+          socket.on('dataLine', (data_set) =>
+          {
+            console.log("incoming data set", data_set);
+            console.log("incoming telem x: ",data_set[0].x);
+            console.log("incoming telem y: ",data_set[0].y);
+
+               data.push({
+                x: data_set[0].x,
+                y: data_set[0].y
+              });
+            
+            chart.render();
+          });
+        });
+  
+        console.log("the data points: ",data)
+
+        </script> 
+    </body>
+</html>
+

@@ -69,7 +69,7 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	title :{
 		text: "Voltage v. Time"
 	},
-	axisY: {
+	axisY: {	
 		title: "Voltage (V)",
 		includeZero: true
 	},
@@ -165,6 +165,7 @@ setInterval(function(){updateChart()}, updateInterval);
 }
 </script>
 </head>
+<script> var socket = io();</script>
 <body>		
 	<h1 align="center">Quadcopter Telemetry Viewing</h1>
 	<th><div id="chartContainer2" style="height: 270px; max-width: 100%; margin: 3% auto;"></div> </th>
