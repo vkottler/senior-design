@@ -22,3 +22,7 @@ History
 __Previews
 __pycache__
 Project\ Outputs*
+**/.vscode/**
+**/node_modules/**
+desktop.ini
+
