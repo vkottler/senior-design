@@ -2,9 +2,7 @@ let express = require('express')
 var app = express();
 var http = require('http').Server(app);
 
-app.use(express.static('/public'))
-
-
+app.use(express.static("./JS"))
 
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -39,4 +37,4 @@ setInterval(function(){
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
-});
+});      
