@@ -245,10 +245,6 @@ DocumentUniqueId=
 DocumentPath=..\outputs\power\BOM\Bill of Materials-power_dist.xlsx
 DItemRevisionGUID=
 
-[GeneratedDocument2]
-DocumentPath=Project Outputs for power_dist\Design Rule Check - power_dist.html
-DItemRevisionGUID=
-
 [Configuration1]
 Name=Sources
 ParameterCount=0
@@ -371,7 +367,7 @@ OutputDefault20=0
 [OutputGroup2]
 Name=Simulator Outputs
 Description=
-TargetPrinter=Brother HL-L2320D series
+TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 
 [OutputGroup3]
