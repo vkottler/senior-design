@@ -4,7 +4,10 @@
 #include "gpio.h"
 #include "usart.h"
 #include "i2c.h"
+#include "timer.h"
 #include "accel.h"
+#include "cli.h"
+#include <unistd.h>
 
 void delay(uint32_t ms)
 {
@@ -79,6 +82,27 @@ int io_init(void) {
     gpio_openDrainState(GPIOB, 9, true);
     gpio_setPullupState(GPIOB, 9, PULL_UP);
 
+    // PWM
+    
+    gpio_setClock(GPIOB, true);
+    gpio_setMode(GPIOB, 4, ALT);
+    gpio_setSpeed(GPIOB, 4, MEDIUM_SPEED);
+    gpio_setAlternateFunc(GPIOB, 4, 2);
+
+    gpio_setClock(GPIOB, true);
+    gpio_setMode(GPIOB, 10, ALT);
+    gpio_setSpeed(GPIOB, 10, MEDIUM_SPEED);
+    gpio_setAlternateFunc(GPIOB, 10, 1);
+
+    gpio_setClock(GPIOB, true);
+    gpio_setMode(GPIOB, 3, ALT);
+    gpio_setSpeed(GPIOB, 3, MEDIUM_SPEED);
+    gpio_setAlternateFunc(GPIOB, 3, 1);
+
+    gpio_setClock(GPIOC, true);
+    gpio_setMode(GPIOC, 7, ALT);
+    gpio_setSpeed(GPIOC, 7, MEDIUM_SPEED);
+    gpio_setAlternateFunc(GPIOC, 7, 2);
     return ret;
 }
 
@@ -90,8 +114,8 @@ int periph_init(void) {
     /* USB UART */
     init_regs[0] = USART_CR1_RXNEIE;
 
-/*    ret += usart_config(USB_UART, SYSCLK, init_regs, 115200, true);*/
-/*    printf("USB USART2 INIT\r\n");*/
+    ret += usart_config(USB_UART, SYSCLK, init_regs, 115200, true);
+    printf("USB USART2 INIT\r\n");
 
     ret += usart_config(USART1, SYSCLK, init_regs, 115200, true); 
     printf("RADIO USART1 INIT\r\n");
@@ -132,7 +156,14 @@ int periph_init(void) {
     printf("I2C INIT\r\n");
 
     accel_config();
-    printf("0x%x\r\n", accel_who_am_i(CTRL_REG1_8652));
+    printf("WHO AM I 0x%x\r\n", accel_who_am_i(CTRL_REG1_8652));
+
+    TIM_PWM_Init(TIM3, 1, 100, 100);
+    TIM_PWM_Init(TIM2, 3, 100, 100);
+    TIM_PWM_Init(TIM2, 2, 100, 100);
+    TIM_PWM_Init(TIM3, 2, 100, 100);
+    printf("System Core Clock: %ld\r\n", SystemCoreClock);
+    printPrompt();
     return ret;
 }
 
@@ -152,14 +183,21 @@ void blink_handler(unsigned int blink_int) {
     if (curr != prev)
     {
         if (curr % 2) gpio_resetPin(GPIOA, 5);
-        else {
-            gpio_setPin(GPIOA, 5);
-/*            _putc(USART1, true, c);*/
-            printf("ACCEL\r\n");
-            printf("x: %d\r\n", accel_read_x());
-            printf("y: %d\r\n", accel_read_y());
-            printf("z: %d\n\r\n", accel_read_z());
-        }
+        else gpio_setPin(GPIOA, 5);
     }
     prev = curr;
+}
+
+void telem_handler(unsigned int interval) {
+    static uint32_t last_tick = 0;
+
+    if (!(ticks % interval) && ticks != last_tick)
+    {
+        last_tick = ticks;
+        uint16_t accel_data[3];
+        accel_data[0] = accel_read_x();
+        accel_data[1] = accel_read_y();
+        accel_data[2] = accel_read_z();
+        write(RADIO_FD, (void*)accel_data, 6);
+    }
 }
