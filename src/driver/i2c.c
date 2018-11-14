@@ -1,5 +1,7 @@
 #include "i2c.h"
 #include "stm32f3xx_ll_bus.h"
+#include "board.h"
+#include <stdio.h>
 
 #define IS_LL_I2C_PERIPHERAL_MODE(__VALUE__)    (((__VALUE__) == LL_I2C_MODE_I2C)          || \
                                                  ((__VALUE__) == LL_I2C_MODE_SMBUS_HOST)   || \
@@ -18,6 +20,65 @@
 
 #define IS_LL_I2C_OWN_ADDRSIZE(__VALUE__)       (((__VALUE__) == LL_I2C_OWNADDRESS1_7BIT) || \
                                                  ((__VALUE__) == LL_I2C_OWNADDRESS1_10BIT))
+
+void i2c_write(uint8_t addr, uint8_t* data, uint8_t size, uint8_t stop)
+{
+    LL_I2C_SetSlaveAddr(I2C1, addr<<1);
+    LL_I2C_SetTransferSize(I2C1, size);
+    LL_I2C_SetTransferRequest(I2C1, LL_I2C_REQUEST_WRITE);
+    LL_I2C_GenerateStartCondition(I2C1);
+
+    while(!LL_I2C_IsActiveFlag_TC(I2C1)) {
+        if(LL_I2C_IsActiveFlag_NACK(I2C1))
+            return;
+        if(LL_I2C_IsActiveFlag_TXIS(I2C1))
+            LL_I2C_TransmitData8(I2C1, *data++);
+    }
+
+    if(stop) {
+        LL_I2C_GenerateStopCondition(I2C1);
+        while(!LL_I2C_IsActiveFlag_STOP(I2C1));
+    }
+
+}
+
+void i2c_read(uint8_t addr, uint8_t *data, uint8_t size)
+{
+    LL_I2C_SetSlaveAddr(I2C1, addr<<1);
+    LL_I2C_SetTransferSize(I2C1, size);
+    LL_I2C_SetTransferRequest(I2C1, LL_I2C_REQUEST_READ);
+    LL_I2C_GenerateStartCondition(I2C1);
+    while(size)
+        if(LL_I2C_IsActiveFlag_RXNE(I2C1)) {
+            *data++ = LL_I2C_ReceiveData8(I2C1);
+            size--;
+        }
+
+    LL_I2C_GenerateStopCondition(I2C1);
+    while(!LL_I2C_IsActiveFlag_STOP(I2C1));
+
+}
+
+uint32_t i2c_scan(){
+
+    LL_I2C_ClearFlag_NACK(I2C1);
+
+    // SCAN I2C address
+    for (int i = 0; i < 128; i ++)
+    {
+        LL_I2C_SetSlaveAddr(I2C1, i << 1);
+        LL_I2C_GenerateStartCondition(I2C1);
+
+        delay(20);
+        if(!LL_I2C_IsActiveFlag_NACK(I2C1))
+        {
+          printf("Addr 0x%x\r\n",i);
+        }
+          LL_I2C_GenerateStopCondition(I2C1);
+        LL_I2C_ClearFlag_NACK(I2C1);
+    }
+    return 0;
+}
 
 
 /**

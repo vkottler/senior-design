@@ -2130,3 +2130,7 @@ __STATIC_INLINE void LL_I2C_TransmitData8(I2C_TypeDef *I2Cx, uint8_t Data)
 uint32_t LL_I2C_Init(I2C_TypeDef *I2Cx, LL_I2C_InitTypeDef *I2C_InitStruct);
 uint32_t LL_I2C_DeInit(I2C_TypeDef *I2Cx);
 void LL_I2C_StructInit(LL_I2C_InitTypeDef *I2C_InitStruct);
+void i2c_read(uint8_t addr, uint8_t *data, uint8_t size);
+void i2c_write(uint8_t addr, uint8_t* data, uint8_t size, uint8_t stop);
+uint32_t i2c_scan();
+

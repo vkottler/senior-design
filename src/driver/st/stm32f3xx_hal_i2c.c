@@ -4714,8 +4714,15 @@ static void I2C_TransferConfig(I2C_HandleTypeDef *hi2c,  uint16_t DevAddress, ui
   assert_param(IS_TRANSFER_REQUEST(Request));
 
   /* update CR2 register */
-  MODIFY_REG(hi2c->Instance->CR2, ((I2C_CR2_SADD | I2C_CR2_NBYTES | I2C_CR2_RELOAD | I2C_CR2_AUTOEND | (I2C_CR2_RD_WRN & (uint32_t)(Request >> (31U - I2C_CR2_RD_WRN_Pos))) | I2C_CR2_START | I2C_CR2_STOP)), \
-             (uint32_t)(((uint32_t)DevAddress & I2C_CR2_SADD) | (((uint32_t)Size << I2C_CR2_NBYTES_Pos) & I2C_CR2_NBYTES) | (uint32_t)Mode | (uint32_t)Request));
+  MODIFY_REG(hi2c->Instance->CR2, 
+          
+          ((I2C_CR2_SADD | I2C_CR2_NBYTES | I2C_CR2_RELOAD | I2C_CR2_AUTOEND | (I2C_CR2_RD_WRN & (uint32_t)(Request >> (31U - I2C_CR2_RD_WRN_Pos))) | I2C_CR2_START | I2C_CR2_STOP)),
+         
+         
+          \
+             (uint32_t)(((uint32_t)DevAddress & I2C_CR2_SADD) | 
+                 (((uint32_t)Size << I2C_CR2_NBYTES_Pos) & I2C_CR2_NBYTES) | 
+                 (uint32_t)Mode | (uint32_t)Request));
 }
 
 /**
