@@ -11,15 +11,17 @@
       	<h1 align="center">Quadcopter Telemetry Viewing</h1>
       <div id="chartContainer" style="height: 360px; width: 100%;"></div>
       <script>
-      var data = []; 
+      var data_accelx = [];
+      var data_accely = []; 
+      var data_accelz = []; 
    
       var chart = new CanvasJS.Chart("chartContainer", {
         zoomEnabled: true,
         title :{
-          text: "Voltage v. Time"
+          text: "Accelerometer v. Time"
         },
         axisY: {	
-          title: "Voltage (V)",
+          title: "Accelerometer (m/s^2)",
           includeZero: true
         },
         axisX: {
@@ -27,12 +29,29 @@
           includeZero: false
         },         
         data: [
+          //accel x 
         {	
           type: "line",
-          dataPoints: data,
+          dataPoints: data_accelx,
           showInLegend: true,
-          legendText: "Motor -y", 
+          legendText: "Accel X", 
           color: "blue"
+        },
+        //accel y 
+        {	
+          type: "line",
+          dataPoints: data_accely,
+          showInLegend: true,
+          legendText: "Accel X", 
+          color: "green"
+        },
+        //accel z 
+        {	
+          type: "line",
+          dataPoints: data_accelz,
+          showInLegend: true,
+          legendText: "Accel Z", 
+          color: "red"
         }
         ]
       });
@@ -41,20 +60,27 @@
           var socket = io();
           socket.on('dataLine', (data_set) =>
           {
-            console.log("incoming data set", data_set);
+            console.log("incoming data set -- ")
             console.log("incoming telem x: ",data_set[0].x);
             console.log("incoming telem y: ",data_set[0].y);
+            console.log("incoming telem y: ",data_set[0].y);
+            console.log("-------------------- ")
 
-               data.push({
+              data_accelx.push({
                 x: data_set[0].x,
-                y: data_set[0].y
+              });
+              data_accely.push({
+                x: data_set[0].y,
+              });
+              data_accelz.push({
+                x: data_set[0].z,
               });
             
             chart.render();
           });
         });
   
-        console.log("the data points: ",data)
+        //console.log("the data points: ",data)
 
         </script> 
     </body>

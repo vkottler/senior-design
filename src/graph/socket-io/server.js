@@ -36,15 +36,16 @@ console.log('listening on port: '+ PORT)
 server.on('connection', function(sock) {
     console.log('CONNECTED to TCP');
     sock.on('data', function(data) {
-     // for (const b of data) {
+
       console.log(data.readInt32LE(0));
       console.log(data.readInt32LE(4));
       console.log(data.readInt32LE(8));
-     // }
+
       var incoming_data = []
       incoming_data.push({
-        x: data[0], 
-        y: data[1] 
+        x: data[data.readInt32LE(0)], 
+        y: data[data.readInt32LE(4)], 
+        z: data[data.readInt32LE(8)]
       });
       io_3000.emit('dataLine', incoming_data); 
     }); 
