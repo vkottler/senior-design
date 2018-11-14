@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 
 //TCP SHIT
 var net = require('net');
-var HOST = 'localhost';
+var HOST = '10.42.0.79';
 var PORT = 5000;
 
 app.use(express.static("./JS"))
