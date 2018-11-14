@@ -24,6 +24,13 @@ include mk/rules.mk
 
 DEV_BIN       = venv/bin
 PYTHON_BIN    ?= python3
+telem:
+	gcc  telemetry/app/main.c telemetry/src/*.c -I telemetry/include/ -o telemetry/main.bin
+	./telemetry/main.bin
+
+send_telem:
+	gcc telemetry/app/send_main.c telemetry/src/*.c -I telemetry/include/ -o telemetry/send_main.bin
+	./telemetry/send_main.bin
 
 test-sim: venv
 	@$(DEV_BIN)/nosetests py
