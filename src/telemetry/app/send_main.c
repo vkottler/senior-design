@@ -9,7 +9,7 @@
 
 int main ()
 {
-  uart_filestream = uart_config(B9600);
+  uart_filestream = uart_config(B115200);
   char cmd[100];
   int size;
 
@@ -18,7 +18,7 @@ int main ()
 
   while(1)
   {
-    printf("> ");
+    printf("=> ");
     fgets(cmd, 100, stdin);
     if (strcmp(cmd, "param\n") == 0)
     {
