@@ -15,11 +15,14 @@ client.connect(PORT, HOST, function() {
     console.log('CONNECTED TO: ' + HOST + ':' + PORT);
     /*SENDING RANDOM DATA*/
     var count = 0; 
+    
     setInterval(function(){
-    var x = count++ 
+    var x = count++    
     var y =  getRandomIntInclusive(1,4)
     const buf = Buffer.from([x, y]);
     client.write(buf);
     }, 1000);
+
+    
 });
 
