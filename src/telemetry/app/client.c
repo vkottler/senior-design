@@ -59,10 +59,11 @@ int main(int argc, char **argv)
     int num_read = uart_read(uart_filestream, buff);
     if (num_read > 0)
     {
+      /*
       for (int i = 0; i < num_read; i ++) printf("%x ", buff[i]);
       printf("\n");
       fflush(stdout);
-
+      */
       send(network_socket, buff, num_read, 0);
     }
   }
