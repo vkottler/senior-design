@@ -4,6 +4,7 @@
 #include "gpio.h"
 #include "usart.h"
 #include "i2c.h"
+#include "accel.h"
 
 void delay(uint32_t ms)
 {
@@ -33,16 +34,17 @@ int io_init(void) {
     gpio_setMode(GPIOA, 10, ALT);
     gpio_setSpeed(GPIOA, 10, MEDIUM_SPEED);
     gpio_setAlternateFunc(GPIOA, 10, 7);
+
     // Radio mode 0
-    gpio_setClock(GPIOB, true);
-    gpio_setMode(GPIOB, 8, OUTPUT);
-    gpio_setSpeed(GPIOB, 8, LOW_SPEED);
-    gpio_setPin(GPIOB, 8);
+    gpio_setClock(GPIOC, true);
+    gpio_setMode(GPIOC, 4, OUTPUT);
+    gpio_setSpeed(GPIOC, 4, LOW_SPEED);
+    gpio_resetPin(GPIOC, 4);
     // Radio mode 1
     gpio_setClock(GPIOB, true);
-    gpio_setMode(GPIOB, 9, OUTPUT);
-    gpio_setSpeed(GPIOB, 9, LOW_SPEED);
-    gpio_setPin(GPIOB, 9);
+    gpio_setMode(GPIOB, 1, OUTPUT);
+    gpio_setSpeed(GPIOB, 1, LOW_SPEED);
+    gpio_resetPin(GPIOB, 1);
 
     //USB UART
     // USART 2 TX pin A2
@@ -88,8 +90,8 @@ int periph_init(void) {
     /* USB UART */
     init_regs[0] = USART_CR1_RXNEIE;
 
-    ret += usart_config(USB_UART, SYSCLK, init_regs, 115200, true);
-    printf("USB USART2 INIT\r\n");
+/*    ret += usart_config(USB_UART, SYSCLK, init_regs, 115200, true);*/
+/*    printf("USB USART2 INIT\r\n");*/
 
     ret += usart_config(USART1, SYSCLK, init_regs, 115200, true); 
     printf("RADIO USART1 INIT\r\n");
@@ -108,15 +110,16 @@ int periph_init(void) {
             clk_high_period,
             clk_low_period);
 
+
+    LL_I2C_Disable(I2C1);
     LL_I2C_InitTypeDef handle;
     handle.AnalogFilter = LL_I2C_ANALOGFILTER_ENABLE;
-    handle.DigitalFilter = I2C_CR1_DNF;
+    handle.DigitalFilter = 0x00;
     handle.Timing = i2c_timing;
-    handle.OwnAddress1 = 0x01;
+    handle.OwnAddress1 = 0x02;
     handle.OwnAddrSize = LL_I2C_OWNADDRESS1_7BIT;
     handle.PeripheralMode = LL_I2C_MODE_I2C;
-    handle.TypeAcknowledge = 0; // we want ack
-
+    handle.TypeAcknowledge = LL_I2C_NACK; //slave only 
 
     if(LL_I2C_Init(I2C1, &handle) != SUCCESS)
     {
@@ -125,27 +128,12 @@ int periph_init(void) {
         printf("Error I2C init\r\n");
         return -1;
     }
+    LL_I2C_Enable(I2C1);
     printf("I2C INIT\r\n");
 
-
-    LL_I2C_ClearFlag_NACK(I2C1);
-
-    // SCAN I2C address
-    for (int i = 0; i < 40; i ++)
-    {
-        LL_I2C_SetSlaveAddr(I2C1, i << 1);
-        LL_I2C_GenerateStartCondition(I2C1);
-
-        delay(20);
-        if(!LL_I2C_IsActiveFlag_NACK(I2C1))
-        {
-          printf("Addr 0x%x\r\n",i);
-        }
-          LL_I2C_GenerateStopCondition(I2C1);
-        LL_I2C_ClearFlag_NACK(I2C1);
-    }
-
-return ret;
+    accel_config();
+    printf("0x%x\r\n", accel_who_am_i(CTRL_REG1_8652));
+    return ret;
 }
 
 
@@ -166,6 +154,11 @@ void blink_handler(unsigned int blink_int) {
         if (curr % 2) gpio_resetPin(GPIOA, 5);
         else {
             gpio_setPin(GPIOA, 5);
+/*            _putc(USART1, true, c);*/
+            printf("ACCEL\r\n");
+            printf("x: %d\r\n", accel_read_x());
+            printf("y: %d\r\n", accel_read_y());
+            printf("z: %d\n\r\n", accel_read_z());
         }
     }
     prev = curr;

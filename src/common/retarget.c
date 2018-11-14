@@ -12,7 +12,7 @@
 int _write(int fd, const void *buf, size_t count) {
     const char * buf_ptr = buf;
 	for (fd = 0; (size_t) fd < count; fd++) {
-		if (_putc(USB_UART, BLOCK, *((char *) buf_ptr++)))
+		if (_putc(USART1, BLOCK, *((char *) buf_ptr++)))
 			return fd;
 	}
 	return count;
@@ -21,7 +21,7 @@ int _write(int fd, const void *buf, size_t count) {
 int _read(int fd, const void *buf, size_t count) {
     const char * buf_ptr = buf;
 	for (fd = 0; (size_t) fd < count; fd++) {
-		if (_getc(USB_UART, BLOCK, (char *) buf_ptr++))
+		if (_getc(USART1, BLOCK, (char *) buf_ptr++))
 			return fd;
 	}
 	return count;

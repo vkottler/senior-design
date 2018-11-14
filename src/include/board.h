@@ -7,6 +7,7 @@
 
 int io_init(void);
 int periph_init(void);
+void delay(uint32_t ms);
 void blink_handler(unsigned int blink_int);
 
 #endif
