@@ -60,20 +60,24 @@
           var socket = io();
           socket.on('dataLine', (data_set) =>
           {
+            var incoming_x = data_set[0].x
+            var incoming_y = data_set[0].y
+            var incoming_z = data_set[0].z
+
             console.log("incoming data set -- ")
-            console.log("incoming telem x: ",data_set[0].x);
-            console.log("incoming telem y: ",data_set[0].y);
-            console.log("incoming telem y: ",data_set[0].y);
+            console.log("incoming telem x: ",incoming_x);
+            console.log("incoming telem y: ",incoming_y);
+            console.log("incoming telem y: ",incoming_z);
             console.log("-------------------- ")
 
               data_accelx.push({
-                x: data_set[0].x,
+                x: incoming_x 
               });
               data_accely.push({
-                x: data_set[0].y,
+                x: incoming_y
               });
               data_accelz.push({
-                x: data_set[0].z,
+                x: incoming_z
               });
             
             chart.render();
