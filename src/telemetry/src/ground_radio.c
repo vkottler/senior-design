@@ -9,8 +9,8 @@ int radio_config()
   INP_GPIO(mode_1);
   OUT_GPIO(mode_1);
 
-  radio_set_mode(SLEEP);
-/*  radio_set_mode(NORMAL);*/
+/*  radio_set_mode(SLEEP);*/
+  radio_set_mode(NORMAL);
 
   return 0;
 }

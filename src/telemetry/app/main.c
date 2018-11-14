@@ -24,11 +24,11 @@ int main ()
     length = uart_read(uart_filestream, rx_buffer);
     if (length > 0)
     {
-/*      for (i = 0; i < length; i ++) {*/
-        printf("%s", rx_buffer);
+      for (i = 0; i < length; i ++) {
+        printf("%c", rx_buffer[i]);
         fflush(stdout);
-/*      }*/
-/*      printf("\n");*/
+      }
+      printf("\n");
     }
   }
 
