@@ -249,11 +249,11 @@ static inline void USART_Handler(
         else if ((*prev != 0x5B && *prev2 != 0x1B) && curr != 0x1B && curr != 0x5B) {
             if (NEWLINE_GUARD(curr, *prev)) rx->message_available++;
             if (!pc_buffer_full(rx)) pc_buffer_add(rx, curr);
-			if (!pc_buffer_full(tx)) {
-				pc_buffer_add(tx, curr);
-				if (curr == '\r') pc_buffer_add(tx, '\n');
-				usart->CR1 |= USART_CR1_TXEIE;
-			}
+/*			if (!pc_buffer_full(tx)) {*/
+/*				pc_buffer_add(tx, curr);*/
+/*				if (curr == '\r') pc_buffer_add(tx, '\n');*/
+/*				usart->CR1 |= USART_CR1_TXEIE;*/
+/*			}*/
         }
 
 		*prev2 = *prev;
