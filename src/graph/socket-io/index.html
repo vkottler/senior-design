@@ -9,19 +9,25 @@
     </head>
     <body>
       	<h1 align="center">Quadcopter Telemetry Viewing</h1>
-      <div id="chartContainer" style="height: 360px; width: 100%;"></div>
+      <div id="chartContainerX" style="height: 360px; width: 100%;"></div>
+      <h>"Acceleration (X): " <span id="accel_x"></span></h>
+      <div id="chartContainerY" style="height: 360px; width: 100%;"></div>
+      <h>"Acceleration (Y): " <span id="accel_y"></span></h>
+      <div id="chartContainerZ" style="height: 360px; width: 100%;"></div>
+      <h>"Acceleration (Z): " <span id="accel_z"></span></h>
+
       <script>
       var data_accelx = [];
       var data_accely = []; 
       var data_accelz = []; 
    
-      var chart = new CanvasJS.Chart("chartContainer", {
+      var chart_x = new CanvasJS.Chart("chartContainerX", {
         zoomEnabled: true,
         title :{
-          text: "Accelerometer v. Time"
+          text: "Accelerometer (X) v. Time"
         },
         axisY: {	
-          title: "Accelerometer (m/s^2)",
+          title: "Accel (X) (m/s^2)",
           includeZero: true
         },
         axisX: {
@@ -36,26 +42,60 @@
           showInLegend: true,
           legendText: "Accel X", 
           color: "blue"
+        }
+        ]
+      });
+     
+      var chart_y = new CanvasJS.Chart("chartContainerY", {
+        zoomEnabled: true,
+        title :{
+          text: "Accelerometer (Y) v. Time"
         },
-        //accel y 
+        axisY: {	
+          title: "Accel (Y) (m/s^2)",
+          includeZero: true
+        },
+        axisX: {
+          title:"Time (s)",
+          includeZero: false
+        },         
+        data: [
+          //accel y 
         {	
           type: "line",
           dataPoints: data_accely,
           showInLegend: true,
-          legendText: "Accel X", 
-          color: "green"
+          legendText: "Accel Y", 
+          color: "red"
+        }
+        ]
+      });
+      
+      var chart_z = new CanvasJS.Chart("chartContainerZ", {
+        zoomEnabled: true,
+        title :{
+          text: "Accelerometer (Z) v. Time"
         },
-        //accel z 
+        axisY: {	
+          title: "Accel (Z) (m/s^2)",
+          includeZero: true
+        },
+        axisX: {
+          title:"Time (s)",
+          includeZero: false
+        },         
+        data: [
+          //accel z 
         {	
           type: "line",
           dataPoints: data_accelz,
           showInLegend: true,
           legendText: "Accel Z", 
-          color: "red"
+          color: "green"
         }
         ]
       });
-     
+
       $(function () {
           var socket = io();
           socket.on('dataLine', (data_set) =>
@@ -63,6 +103,11 @@
             var incoming_x = data_set[0].x
             var incoming_y = data_set[0].y
             var incoming_z = data_set[0].z
+            
+            document.getElementById("accel_x").innerHTML = incoming_x;
+            document.getElementById("accel_y").innerHTML = incoming_y;
+            document.getElementById("accel_z").innerHTML = incoming_z;
+
 
             console.log("incoming data set -- ")
             console.log("incoming telem x: ",incoming_x);
@@ -80,11 +125,11 @@
                 x: incoming_z
               });
             
-            chart.render();
+            chart_x.render();
+            chart_y.render();
+            chart_z.render();
           });
         });
-  
-        //console.log("the data points: ",data)
 
         </script> 
     </body>
