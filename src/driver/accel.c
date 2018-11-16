@@ -3,7 +3,7 @@
 #include "board.h"
 
 
-uint8_t accel_who_am_i(uint8_t addr)
+uint8_t accel_who_am_i()
 {
     uint8_t data[1];
     data[0] = WHO_AM_I_8652;

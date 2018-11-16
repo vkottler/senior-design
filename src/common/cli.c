@@ -6,6 +6,7 @@
 #include "pcbuffer.h"
 #include "cli.h"
 #include "accel.h"
+#include "esc.h"
 #include "timer.h"
 
 char buffer[BUFSIZ];
@@ -22,11 +23,12 @@ void process_input(char *buffer) {
         printf("z: %d\r\n", accel_read_z());
     }
     else if(buffer[0] == 'p' && buffer[1] == 'w' && buffer[2] == 'm')
-    {   uint32_t pulse = atoi(&buffer[4]);
-        TIM_PWM_set_pulse(TIM3, 1, 20000, pulse);
-        TIM_PWM_set_pulse(TIM3, 2, 20000, pulse);
-        TIM_PWM_set_pulse(TIM2, 3, 20000, pulse);
-        TIM_PWM_set_pulse(TIM2, 2, 20000, pulse);
+    {
+        uint32_t pulse = atoi(&buffer[4]);
+        esc_set_pulse(ESC_TABLE[0], pulse);
+        esc_set_pulse(ESC_TABLE[1], pulse);
+        esc_set_pulse(ESC_TABLE[2], pulse);
+        esc_set_pulse(ESC_TABLE[3], pulse);
     }
 }
 
@@ -36,8 +38,8 @@ inline void printPrompt(void) {
 }
 
 void check_input(void) {
-    if (pc_buffer_messageAvailable(rx_buf[0])) {
-        pc_buffer_getMessage(rx_buf[0], buffer, 128);
+    if (pc_buffer_messageAvailable(rx_buf[1])) {
+        pc_buffer_getMessage(rx_buf[1], buffer, 128);
         if (buffer[0] != '\0') {
             process_input(buffer);
         }
