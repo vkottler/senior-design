@@ -32,8 +32,8 @@ typedef enum {
 typedef enum {
 	OTHER =		0x01,
 	SENSOR =	0x02,
-	VALVE =		0x04,
-	RETRO =		0x08,
+	MOTOR =		0x04,
+	RADIO =		0x08,
 	LED =		0x10,
 	I2C =		0x20,
 	PRESSURE =	0x40

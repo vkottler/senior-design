@@ -68,7 +68,7 @@
 uint16_t accel_read_x();
 uint16_t accel_read_y();
 uint16_t accel_read_z();
-uint8_t accel_who_am_i(uint8_t i);
+uint8_t accel_who_am_i();
 uint16_t accel_config();
 
 #endif /* ACCEL_H */
