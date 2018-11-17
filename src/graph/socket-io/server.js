@@ -88,6 +88,10 @@ server.on('connection', function(sock) {
         /* send (and print) the variables if they're ready */
         if (x_ready && y_ready && z_ready)
         {
+          console.log(x_data)
+          console.log(y_data)
+          console.log(z_data)
+
           send_and_print(x_data, y_data, z_data);
           x_ready = false;
           y_ready = false;

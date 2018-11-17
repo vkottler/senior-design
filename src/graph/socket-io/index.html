@@ -10,11 +10,11 @@
     <body>
       	<h1 align="center">Quadcopter Telemetry Viewing</h1>
       <div id="chartContainerX" style="height: 360px; width: 100%;"></div>
-      <h>"Acceleration (X): " <span id="accel_x"></span></h>
+      <h>Acceleration (X): <span id="accel_x"></span></h>
       <div id="chartContainerY" style="height: 360px; width: 100%;"></div>
-      <h>"Acceleration (Y): " <span id="accel_y"></span></h>
+      <h>Acceleration (Y): <span id="accel_y"></span></h>
       <div id="chartContainerZ" style="height: 360px; width: 100%;"></div>
-      <h>"Acceleration (Z): " <span id="accel_z"></span></h>
+      <h>Acceleration (Z): <span id="accel_z"></span></h>
 
       <script>
       var data_accelx = [];
@@ -116,13 +116,13 @@
             console.log("-------------------- ")
 
               data_accelx.push({
-                x: incoming_x 
+                y: incoming_x 
               });
               data_accely.push({
-                x: incoming_y
+                y: incoming_y
               });
               data_accelz.push({
-                x: incoming_z
+                y: incoming_z
               });
             
             chart_x.render();
