@@ -18,9 +18,9 @@ void process_input(char *buffer) {
     if(strcmp(buffer, "accel") == 0)
     {
         printf("ACCEL\r\n");
-        printf("x: %d\r\n", accel_read_x());
-        printf("y: %d\r\n", accel_read_y());
-        printf("z: %d\r\n", accel_read_z());
+/*        printf("x: %d\r\n", accel_read_x());*/
+/*        printf("y: %d\r\n", accel_read_y());*/
+/*        printf("z: %d\r\n", accel_read_z());*/
     }
     else if(buffer[0] == 'p' && buffer[1] == 'w' && buffer[2] == 'm')
     {

@@ -2,6 +2,7 @@
 #define _BOARD__H__
 
 #include <stdbool.h>
+#include <handlers.h>
 
 #define USB_UART USART2
 
