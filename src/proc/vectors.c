@@ -103,25 +103,25 @@ void FLASH_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void RCC_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void EXTI0_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void EXTI1_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void EXTI2_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void EXTI2_TSC_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void EXTI3_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void EXTI4_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream0_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream1_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream2_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream3_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream4_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream5_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream6_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void ADC_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN1_TX_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN1_RX0_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN1_RX1_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN1_SCE_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel1_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel2_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel3_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel4_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel5_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel6_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA1_Channel7_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void ADC1_2_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void USB_HP_CAN_TX_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void USB_LP_CAN_RX0_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void CAN_RX1_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void CAN_SCE_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void EXTI9_5_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM1_BRK_TIM9_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM1_UP_TIM10_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM1_TRG_COM_TIM11_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM1_BRK_TIM15_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM1_UP_TIM16_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM1_TRG_COM_TIM17_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void TIM1_CC_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void TIM2_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void TIM3_Handler(void) __attribute__((weak, alias("Default_Handler")));
@@ -137,45 +137,38 @@ void USART2_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void USART3_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void EXTI15_10_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void RTC_Alarm_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void OTG_FS_WKUP_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM8_BRK_TIM12_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM8_UP_TIM13_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM8_TRG_COM_TIM14_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void USBWakeUp_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM8_BRK_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM8_UP_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM8_TRG_COM_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void TIM8_CC_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA1_Stream7_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void FSMC_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void SDIO_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void TIM5_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void ADC3_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void FMC_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void SPI3_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void UART4_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void UART5_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void TIM6_DAC_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void TIM7_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream0_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream1_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream2_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream3_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream4_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void ETH_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void ETH_WKUP_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN2_TX_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN2_RX0_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN2_RX1_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void CAN2_SCE_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void OTG_FS_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream5_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream6_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DMA2_Stream7_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void USART6_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA2_Channel1_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA2_Channel2_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA2_Channel3_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA2_Channel4_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DMA2_Channel5_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void ADC4_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void COMP1_2_3_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void COMP4_5_6_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void COMP7_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void I2C3_EV_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void I2C3_ER_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void OTG_HS_EP1_OUT_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void OTG_HS_EP1_IN_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void OTG_HS_WKUP_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void OTG_HS_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void DCMI_Handler(void) __attribute__((weak, alias("Default_Handler")));
-void RNG_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void USB_HP_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void USB_LP_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void USBWakeUp_RMP_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM20_BRK_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM20_UP_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM20_TRG_COM_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void TIM20_CC_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void FPU_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void SPI4_Handler(void) __attribute__((weak, alias("Default_Handler")));
 const f_ptr __dev_vectors[] __attribute__((section(".device_vectors"))) =
 {
     WWDG_Handler,               /* Window WatchDog Interrupt */
@@ -186,25 +179,25 @@ const f_ptr __dev_vectors[] __attribute__((section(".device_vectors"))) =
     RCC_Handler,                /* RCC global Interrupt */
     EXTI0_Handler,              /* EXTI Line0 Interrupt */
     EXTI1_Handler,              /* EXTI Line1 Interrupt */
-    EXTI2_Handler,              /* EXTI Line2 Interrupt */
+    EXTI2_TSC_Handler,              /* EXTI Line2 Interrupt */
     EXTI3_Handler,              /* EXTI Line3 Interrupt */
     EXTI4_Handler,              /* EXTI Line4 Interrupt */
-    DMA1_Stream0_Handler,       /* DMA1 Stream 0 global Interrupt */
-    DMA1_Stream1_Handler,       /* DMA1 Stream 1 global Interrupt */
-    DMA1_Stream2_Handler,       /* DMA1 Stream 2 global Interrupt */
-    DMA1_Stream3_Handler,       /* DMA1 Stream 3 global Interrupt */
-    DMA1_Stream4_Handler,       /* DMA1 Stream 4 global Interrupt */
-    DMA1_Stream5_Handler,       /* DMA1 Stream 5 global Interrupt */
-    DMA1_Stream6_Handler,       /* DMA1 Stream 6 global Interrupt */
-    ADC_Handler,                /* ADC1, ADC2 and ADC3 global Interrupts */
-    CAN1_TX_Handler,            /* CAN1 TX Interrupt */
-    CAN1_RX0_Handler,           /* CAN1 RX0 Interrupt */
-    CAN1_RX1_Handler,           /* CAN1 RX1 Interrupt */
-    CAN1_SCE_Handler,           /* CAN1 SCE Interrupt */
+    DMA1_Channel1_Handler,       /* DMA1 Stream 0 global Interrupt */
+    DMA1_Channel2_Handler,       /* DMA1 Stream 1 global Interrupt */
+    DMA1_Channel3_Handler,       /* DMA1 Stream 2 global Interrupt */
+    DMA1_Channel4_Handler,       /* DMA1 Stream 3 global Interrupt */
+    DMA1_Channel5_Handler,       /* DMA1 Stream 4 global Interrupt */
+    DMA1_Channel6_Handler,       /* DMA1 Stream 5 global Interrupt */
+    DMA1_Channel7_Handler,       /* DMA1 Stream 6 global Interrupt */
+    ADC1_2_Handler,                /* ADC1, ADC2 and ADC3 global Interrupts */
+    USB_HP_CAN_TX_Handler,
+    USB_LP_CAN_RX0_Handler,
+    CAN_RX1_Handler,
+    CAN_SCE_Handler,
     EXTI9_5_Handler,            /* External Line[9:5] Interrupts */
-    TIM1_BRK_TIM9_Handler,      /* TIM1 Break interrupt and TIM9 global interrupt */
-    TIM1_UP_TIM10_Handler,      /* TIM1 Update Interrupt and TIM10 global interrupt */
-    TIM1_TRG_COM_TIM11_Handler, /* TIM1 Trigger and Commutation Interrupt and TIM11 global interrupt */
+    TIM1_BRK_TIM15_Handler,
+    TIM1_UP_TIM16_Handler,
+    TIM1_TRG_COM_TIM17_Handler,
     TIM1_CC_Handler,            /* TIM1 Capture Compare Interrupt */
     TIM2_Handler,               /* TIM2 global Interrupt */
     TIM3_Handler,               /* TIM3 global Interrupt */
@@ -220,44 +213,38 @@ const f_ptr __dev_vectors[] __attribute__((section(".device_vectors"))) =
     USART3_Handler,             /* USART3 global Interrupt */
     EXTI15_10_Handler,          /* External Line[15:10] Interrupts */
     RTC_Alarm_Handler,          /* RTC Alarm (A and B) through EXTI Line Interrupt */
-    OTG_FS_WKUP_Handler,        /* USB OTG FS Wakeup through EXTI line interrupt */
-    TIM8_BRK_TIM12_Handler,     /* TIM8 Break Interrupt and TIM12 global interrupt */
-    TIM8_UP_TIM13_Handler,      /* TIM8 Update Interrupt and TIM13 global interrupt */
-    TIM8_TRG_COM_TIM14_Handler, /* TIM8 Trigger and Commutation Interrupt and TIM14 global interrupt */
+    USBWakeUp_Handler,
+    TIM8_BRK_Handler,     /* TIM8 Break Interrupt and TIM12 global interrupt */
+    TIM8_UP_Handler,      /* TIM8 Update Interrupt and TIM13 global interrupt */
+    TIM8_TRG_COM_Handler, /* TIM8 Trigger and Commutation Interrupt and TIM14 global interrupt */
     TIM8_CC_Handler,            /* TIM8 Capture Compare global interrupt */
-    DMA1_Stream7_Handler,       /* DMA1 Stream7 Interrupt */
-    FSMC_Handler,               /* FSMC global Interrupt */
-    SDIO_Handler,               /* SDIO global Interrupt */
-    TIM5_Handler,               /* TIM5 global Interrupt */
+    ADC3_Handler,
+    FMC_Handler,               /* FSMC global Interrupt */
     SPI3_Handler,               /* SPI3 global Interrupt */
     UART4_Handler,              /* UART4 global Interrupt */
     UART5_Handler,              /* UART5 global Interrupt */
     TIM6_DAC_Handler,           /* TIM6 global and DAC1&2 underrun error  interrupts */
     TIM7_Handler,               /* TIM7 global interrupt */
-    DMA2_Stream0_Handler,       /* DMA2 Stream 0 global Interrupt */
-    DMA2_Stream1_Handler,       /* DMA2 Stream 1 global Interrupt */
-    DMA2_Stream2_Handler,       /* DMA2 Stream 2 global Interrupt */
-    DMA2_Stream3_Handler,       /* DMA2 Stream 3 global Interrupt */
-    DMA2_Stream4_Handler,       /* DMA2 Stream 4 global Interrupt */
-    ETH_Handler,                /* Ethernet global Interrupt */
-    ETH_WKUP_Handler,           /* Ethernet Wakeup through EXTI line Interrupt */
-    CAN2_TX_Handler,            /* CAN2 TX Interrupt */
-    CAN2_RX0_Handler,           /* CAN2 RX0 Interrupt */
-    CAN2_RX1_Handler,           /* CAN2 RX1 Interrupt */
-    CAN2_SCE_Handler,           /* CAN2 SCE Interrupt */
-    OTG_FS_Handler,             /* USB OTG FS global Interrupt */
-    DMA2_Stream5_Handler,       /* DMA2 Stream 5 global interrupt */
-    DMA2_Stream6_Handler,       /* DMA2 Stream 6 global interrupt */
-    DMA2_Stream7_Handler,       /* DMA2 Stream 7 global interrupt */
-    USART6_Handler,             /* USART6 global interrupt */
-    I2C3_EV_Handler,            /* I2C3 event interrupt */
-    I2C3_ER_Handler,            /* I2C3 error interrupt */
-    OTG_HS_EP1_OUT_Handler,     /* USB OTG HS End Point 1 Out global interrupt */
-    OTG_HS_EP1_IN_Handler,      /* USB OTG HS End Point 1 In global interrupt */
-    OTG_HS_WKUP_Handler,        /* USB OTG HS Wakeup through EXTI interrupt */
-    OTG_HS_Handler,             /* USB OTG HS global interrupt */
-    DCMI_Handler,               /* DCMI global interrupt */
-    0,
-    RNG_Handler,                /* RNG global Interrupt */
+    DMA2_Channel1_Handler,       /* DMA2 Stream 0 global Interrupt */
+    DMA2_Channel2_Handler,       /* DMA2 Stream 1 global Interrupt */
+    DMA2_Channel3_Handler,       /* DMA2 Stream 2 global Interrupt */
+    DMA2_Channel4_Handler,       /* DMA2 Stream 3 global Interrupt */
+    DMA2_Channel5_Handler,       /* DMA2 Stream 4 global Interrupt */
+    ADC4_Handler,
+    COMP1_2_3_Handler,          /*!< COMP1, COMP2 and COMP3 global Interrupt via EXTI Line21, 22 and 29*/
+    COMP4_5_6_Handler,          /*!< COMP4, COMP5 and COMP6 global Interrupt via EXTI Line30, 31 and 32*/
+    COMP7_Handler,              /*!< COMP7 global Interrupt via EXTI Line33                            */
+    I2C3_EV_Handler,            /*!< I2C3 event interrupt                                              */
+    I2C3_ER_Handler,            /*!< I2C3 Error Interrupt                                              */
+    USB_HP_Handler,             /*!< USB High Priority global Interrupt                                */
+    USB_LP_Handler,             /*!< USB Low Priority global Interrupt                                 */
+    USBWakeUp_RMP_Handler,      /*!< USB Wakeup Interrupt remap                                        */
+    TIM20_BRK_Handler,          /*!< TIM20 Break Interrupt                                              */
+    TIM20_UP_Handler,           /*!< TIM20 Update Interrupt                                             */
+    TIM20_TRG_COM_Handler,      /*!< TIM20 Trigger and Commutation Interrupt                            */
+    TIM20_CC_Handler,           /*!< TIM20 Capture Compare Interrupt                                    */
     FPU_Handler,                /* FPU global interrupt */
+    0,
+    0,
+    SPI4_Handler,               /*!< SPI4 global Interrupt                                             */   
 };

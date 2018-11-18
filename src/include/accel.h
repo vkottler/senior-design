@@ -61,13 +61,13 @@
 #define CTRL_REG3_8652          0x2C
 #define CTRL_REG4_8652          0x2D
 #define CTRL_REG5_8652          0x2E
-#define OFF_X_8652              0x3F
+#define OFF_X_8652              0x2F
 #define OFF_Y_8652              0x30
 #define OFF_Z_8652              0x31
 
-uint16_t accel_read_x();
-uint16_t accel_read_y();
-uint16_t accel_read_z();
+int16_t accel_read_x();
+int16_t accel_read_y();
+int16_t accel_read_z();
 uint8_t accel_who_am_i();
 uint16_t accel_config();
 
