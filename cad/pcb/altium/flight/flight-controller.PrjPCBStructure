@@ -1,4 +1,1 @@
-Record=TopLevelDocument|FileName=top_level.SchDoc
-Record=SheetSymbol|SourceDocument=top_level.SchDoc|Designator=ESC Interface|SchDesignator=ESC Interface|FileName=motor_control.SchDoc|SymbolType=Normal|RawFileName=motor_control.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
-Record=SheetSymbol|SourceDocument=top_level.SchDoc|Designator=I2C Accelerometer|SchDesignator=I2C Accelerometer|FileName=accelerometer.SchDoc|SymbolType=Normal|RawFileName=accelerometer.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
-Record=SheetSymbol|SourceDocument=top_level.SchDoc|Designator=SPI Gyroscope|SchDesignator=SPI Gyroscope|FileName=gyro.SchDoc|SymbolType=Normal|RawFileName=gyro.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=TopLevelDocument|FileName=accelerometer.SchDoc
