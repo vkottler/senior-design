@@ -326,6 +326,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=POPPKEWU
 
+[Document18]
+DocumentPath=flight_controller_jobs.OutJob
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [GeneratedDocument1]
 DocumentPath=Project Outputs for flight-controller\Design Rule Check - flight-controller.html
 DItemRevisionGUID=
