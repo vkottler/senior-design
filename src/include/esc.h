@@ -4,7 +4,7 @@
 #include "stm32f303xe.h"
 #include "timer.h"
 
-#define ESC_PERIOD 20000
+#define ESC_PERIOD 4000
 
 #define ESC_1_TIM TIM3
 #define ESC_2_TIM TIM3
