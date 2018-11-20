@@ -261,7 +261,6 @@ static inline void USART_Handler(
 		*prev2 = *prev;
 		*prev = curr;
 	}
-
 	/* character ready to be sent */
 	if (usart->ISR & USART_ISR_TXE) {
 		if (!pc_buffer_empty(tx))
