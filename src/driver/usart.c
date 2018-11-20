@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "usart.h"
-/*#include "rcc.h"*/
 #include "pcbuffer.h"
 
 PC_Buffer *tx_buf[2], *rx_buf[2];
@@ -95,8 +94,7 @@ static int usart_bufferInit(USART_TypeDef* usart) {
 			return -1;
 		break;
 
-
-	default: return -1;	
+	default: return -1;
 
 	}
 
@@ -104,10 +102,10 @@ static int usart_bufferInit(USART_TypeDef* usart) {
 }
 
 static int usart_setClock(USART_TypeDef* usart, bool state) {
-	
+
 	__IO uint32_t *reg;
 	uint8_t bit;
-	
+
 	switch ((uint32_t) usart) {
 
 	case USART1_BASE:
@@ -120,29 +118,28 @@ static int usart_setClock(USART_TypeDef* usart, bool state) {
 		bit = RCC_APB1ENR_USART2EN_Pos;
 		break;
 
-
 	default: return -1;
 
 	}
-	
+
 	if (state) *reg |= 0x1 << bit;
 	else *reg &= ~(0x1 << bit);
-	
+
 	return 0;
 }
 /*
 static int usart_setClockSource(USART_TypeDef* usart, usart_clk_src_t src) {
-	
+
 	uint8_t pin_num = 0;
-	
+
 	switch ((uint32_t) usart) {
 		case USART1_BASE:	pin_num =  0; break;
 		case USART2_BASE:	pin_num =  2; break;
 		default: return -1;
 	}
-	
-	RCC->CIR |= (src << pin_num); // CCIPR 
-	
+
+	RCC->CIR |= (src << pin_num); // CCIPR
+
 	return 0;
 }
 */
@@ -151,45 +148,45 @@ int usart_config(
 	USART_TypeDef* usart, usart_clk_src_t src, uint32_t control[3],
 	uint32_t baud, bool ie
 ) {
-	
+
 	uint32_t usartDiv, fck = 0, remainder;
-	
+
 	/* turn this USART off if it's on */
 	if (usart->CR1 & USART_CR1_UE) {
 		usart->CR1 &= ~USART_CR1_UE;
 		while (usart->CR1 & USART_CR1_UE) {
-			
+
 			printf("loop\n\r");}
 	}
-	
+
 /*	if (usart_setClockSource(usart, src) || usart_bufferInit(usart))*/
 	if (usart_bufferInit(usart))
 		return -1;
-	
+
 	usart_setClock(usart, true);
-	
+
 	usart->ICR |= 0x121BDF;	/* clear any pending interrupts */
-	
+
 	if (control) {
 		/* don't set TE, RE, UE yet */
 		usart->CR1 = control[0] & ~(USART_CR1_TE | USART_CR1_RE | USART_CR1_UE);
 		usart->CR2 = control[1];
 		usart->CR3 = control[2];
 	}
-	
+
 	if (ie) {
 		NVIC_SetPriority(uart_get_irq_num(usart), USART_INT_PRIO);
 		NVIC_EnableIRQ(uart_get_irq_num(usart));
 	}
-	
+
 	/* setup baud, fck / USARTDIV */
 	switch (src) {
-		case APBX:		
+		case APBX:
 /*			fck = rcc_get_APB1();*/
 /*			if (usart == USART1)*/
 /*		    fck = rcc_get_APB2();*/
 			break;
-		case SYSCLK:	
+		case SYSCLK:
 			fck = SystemCoreClock;
 			break;
 		case HSI_SRC:	/* check if enabled */
@@ -244,13 +241,13 @@ static inline void USART_Handler(
 				usart->CR1 |= USART_CR1_TXEIE;
 			}
 		}
-		
+
 		/* otherwise add the character, don't allow arrow keys or other escaped characters */
         else if ((*prev != 0x5B && *prev2 != 0x1B) && curr != 0x1B && curr != 0x5B) {
             if (NEWLINE_GUARD(curr, *prev)) rx->message_available++;
             if (!pc_buffer_full(rx)) pc_buffer_add(rx, curr);
 
-#ifndef RADIO_USART_BUFF 
+#ifndef RADIO_USART_BUFF
             // don't forward with RADIO USART
             // telem is forwarding
 			if (!pc_buffer_full(tx)) {
@@ -264,7 +261,7 @@ static inline void USART_Handler(
 		*prev2 = *prev;
 		*prev = curr;
 	}
-	
+
 	/* character ready to be sent */
 	if (usart->ISR & USART_ISR_TXE) {
 		if (!pc_buffer_empty(tx))

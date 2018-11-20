@@ -40,10 +40,10 @@ int periph_init(void) {
 
     ret += usart_config(USB_UART, SYSCLK, init_regs, 115200, true);
     printf("USB USART2 INIT\r\n");
-    
+
     ret += usart_config(USART1, SYSCLK, init_regs, 115200, true);
     printf("RADIO USART1 INIT\r\n");
-    
+
     i2c_config();
     printf("I2C INIT\r\n");
     accel_config();

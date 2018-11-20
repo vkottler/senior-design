@@ -26,7 +26,6 @@ void telem_handler(unsigned int interval) {
     if (!(ticks % interval) && ticks != last_tick)
     {
         last_tick = ticks;
-        printf("ACCEL\r\n");
         short accel_data[3];
         accel_data[0] = accel_read_x();
         accel_data[1] = accel_read_y();
@@ -35,13 +34,6 @@ void telem_handler(unsigned int interval) {
         gyro_data[0] = gyro_read_x();
         gyro_data[1] = gyro_read_y();
         gyro_data[2] = gyro_read_z();
-        printf("x: %d\r\n", (short)accel_data[0]);
-        printf("y: %d\r\n", (short)accel_data[1]);
-        printf("z: %d\r\n", (short)accel_data[2]);
-        printf("GYRO\r\n");
-        printf("x: %d\r\n", (short)gyro_data[0]);
-        printf("y: %d\r\n", (short)gyro_data[1]);
-        printf("z: %d\r\n", (short)gyro_data[2]);
         write(RADIO_FD, (void*)accel_data, 6);
         write(RADIO_FD, (void*)gyro_data, 6);
     }

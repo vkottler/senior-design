@@ -3,7 +3,7 @@
 #include <string.h>
 
 const GPIO GPIO_TABLE[] = {
-	
+
 	/* Nucleo I/O */
 	FILL_GPIO("LED",			GPIOA, 5, OUTPUT, LOW_SPEED, NONE, true, LED)
 
@@ -29,7 +29,7 @@ const GPIO GPIO_TABLE[] = {
 	FILL_AFIO("MOTOR 3",		GPIOB,  3, ALT, 1, LOW_SPEED, NONE, true, MOTOR)
 	/* TIM 2 Ch 3*/
 	FILL_AFIO("MOTOR 4",		GPIOC,  7, ALT, 2, LOW_SPEED, NONE, true, MOTOR)
-	
+
 	/* Application I2C */
 	FILL_AFIO("SCL",		GPIOB, 8, ALT, 4, LOW_SPEED, PULL_UP, true, I2C)
 	FILL_AFIO("SDA",		GPIOB, 9, ALT, 4, LOW_SPEED, PULL_UP, true, I2C)

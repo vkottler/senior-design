@@ -17,7 +17,7 @@ typedef enum {
 	HSI_SRC =	2,
 	LSE_SRC =	3
 } usart_clk_src_t;
-			
+
 int usart_config(
 	USART_TypeDef* usart, usart_clk_src_t src, uint32_t control[3],
 	uint32_t baud, bool ie
