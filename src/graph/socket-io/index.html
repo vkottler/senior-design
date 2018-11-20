@@ -6,22 +6,56 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+        <style>
+        </style>
     </head>
     <body>
-      	<h1 align="center">Quadcopter Telemetry Viewing</h1>
-      <div id="chartContainerX" style="height: 360px; width: 100%;"></div>
-      <h>Acceleration (X): <span id="accel_x"></span></h>
-      <div id="chartContainerY" style="height: 360px; width: 100%;"></div>
-      <h>Acceleration (Y): <span id="accel_y"></span></h>
-      <div id="chartContainerZ" style="height: 360px; width: 100%;"></div>
-      <h>Acceleration (Z): <span id="accel_z"></span></h>
+        <h1 align="center">Quadcopter Telemetry Viewing</h1>
+        <table cellspacing="0" style="width:100%" >
+            <col width="50%">
+            <col width="50%">
+            <tr>
+              <td> 
+                  <div id="accelX_chartContainer" style="height: 250px; width: 100%;"></div>
+                  <h>Acceleration (X): <span id="accel_x"></span></h>
+              </td>
+              <td>
+                  <div id="gyroX_chartContainer" style="height: 250px; width: 100%;"></div>
+                  <h>Gyro (X): <span id="gyro_x"></span></h>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                  <div id="accelY_chartContainer" style="height: 250px; width: 100%;"></div>
+                  <h>Acceleration (Y): <span id="accel_y"></span></h>
+              </td>
+              <td>
+                  <div id="gyroY_chartContainer" style="height: 250px; width: 100%;"></div>
+                  <h>Gyro (Y): <span id="gyro_y"></span></h>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                  <div id="accelZ_chartContainer" style="height: 250px; width: 100%;"></div>
+                  <h>Acceleration (Z): <span id="accel_z"></span></h>
+              </td>
+              <td>
+                  <div id="gyroZ_chartContainer" style="height: 250px; width: 100%;"></div>
+                  <h>Gyro (Z): <span id="gyro_z"></span></h>
+              </td>
+            </tr>
+        </table>
 
       <script>
-      var data_accelx = [];
-      var data_accely = []; 
-      var data_accelz = []; 
-   
-      var chart_x = new CanvasJS.Chart("chartContainerX", {
+      var data_accel_x = [];
+      var data_accel_y = []; 
+      var data_accel_z = [];
+      
+      var data_gyro_x = [];
+      var data_gyro_y = []; 
+      var data_gyro_z = []; 
+    
+      var accel_chart_x = new CanvasJS.Chart("accelX_chartContainer", {
         zoomEnabled: true,
         title :{
           text: "Accelerometer (X) v. Time"
@@ -38,7 +72,7 @@
           //accel x 
         {	
           type: "line",
-          dataPoints: data_accelx,
+          dataPoints: data_accel_x,
           showInLegend: true,
           legendText: "Accel X", 
           color: "blue"
@@ -46,7 +80,7 @@
         ]
       });
      
-      var chart_y = new CanvasJS.Chart("chartContainerY", {
+      var accel_chart_y = new CanvasJS.Chart("accelY_chartContainer", {
         zoomEnabled: true,
         title :{
           text: "Accelerometer (Y) v. Time"
@@ -63,7 +97,7 @@
           //accel y 
         {	
           type: "line",
-          dataPoints: data_accely,
+          dataPoints: data_accel_y,
           showInLegend: true,
           legendText: "Accel Y", 
           color: "red"
@@ -71,7 +105,7 @@
         ]
       });
       
-      var chart_z = new CanvasJS.Chart("chartContainerZ", {
+      var accel_chart_z = new CanvasJS.Chart("accelZ_chartContainer", {
         zoomEnabled: true,
         title :{
           text: "Accelerometer (Z) v. Time"
@@ -88,9 +122,84 @@
           //accel z 
         {	
           type: "line",
-          dataPoints: data_accelz,
+          dataPoints: data_accel_z,
           showInLegend: true,
           legendText: "Accel Z", 
+          color: "green"
+        }
+        ]
+      });
+
+      var gyro_chart_x = new CanvasJS.Chart("gyroX_chartContainer", {
+        zoomEnabled: true,
+        title :{
+          text: "Gyro (X) v. Time"
+        },
+        axisY: {	
+          title: "Gyro (X) (deg/sec)",
+          includeZero: true
+        },
+        axisX: {
+          title:"Time (s)",
+          includeZero: false
+        },         
+        data: [
+          //gyro x 
+        {	
+          type: "line",
+          dataPoints: data_gyro_x,
+          showInLegend: true,
+          legendText: "Gyro X", 
+          color: "blue"
+        }
+        ]
+      });
+      
+      var gyro_chart_y = new CanvasJS.Chart("gyroY_chartContainer", {
+        zoomEnabled: true,
+        title :{
+          text: "Gyro (Y) v. Time"
+        },
+        axisY: {	
+          title: "Gyro (Y) (deg/sec)",
+          includeZero: true
+        },
+        axisX: {
+          title:"Time (s)",
+          includeZero: false
+        },         
+        data: [
+          //gyro y 
+        {	
+          type: "line",
+          dataPoints: data_gyro_y,
+          showInLegend: true,
+          legendText: "Gyro Y", 
+          color: "red"
+        }
+        ]
+      });
+      
+      var gyro_chart_z = new CanvasJS.Chart("gyroZ_chartContainer", {
+        zoomEnabled: true,
+        title :{
+          text: "Gyro (Z) v. Time"
+        },
+        axisY: {	
+          title: "Gyro (Z) (deg/sec)",
+          includeZero: true
+        },
+        axisX: {
+          title:"Time (s)",
+          includeZero: false
+        },         
+        data: [
+          //gyro z 
+        {	
+          type: "line",
+          dataPoints: data_gyro_z,
+          showInLegend: true,
+          legendText: "Gyro Z", 
           color: "green"
         }
         ]
@@ -115,19 +224,31 @@
             console.log("incoming telem z: ",incoming_z);
             console.log("-------------------- ")
 
-              data_accelx.push({
+              //PUSH ACCEL VALUES TO RESPECTIVE GRAPH DATA SETS
+              data_accel_x.push({
                 y: incoming_x 
               });
-              data_accely.push({
+              data_accel_y.push({
                 y: incoming_y
               });
-              data_accelz.push({
+              data_accel_z.push({
                 y: incoming_z
               });
-            
-            chart_x.render();
-            chart_y.render();
-            chart_z.render();
+
+              //TODO: PUSH GYRO VALUES TO RESPECTIVE GRAPH DATA SETS 
+              //data_gyro_x
+              //data_gyro_y
+              //data_gyro_z
+
+              accel_chart_x.render();
+              accel_chart_y.render();
+              accel_chart_z.render();
+              
+              gyro_chart_x.render();
+              gyro_chart_y.render();
+              gyro_chart_z.render();
+
+
           });
         });
 
