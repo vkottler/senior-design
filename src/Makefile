@@ -29,11 +29,12 @@ PYTHON_BIN    ?= python3
 test-sim: venv
 	@$(DEV_BIN)/nosetests py
 
-sim:
+sim: venv
 	@$(DEV_BIN)/$(PYTHON_BIN) sim.py
 
-serve: 
-	@$(DEV_BIN)/$(PYTHON_BIN) sim.py --server
+#@$(DEV_BIN)/$(PYTHON_BIN) sim.py --server
+serve: venv
+	@$(DEV_BIN)/$(PYTHON_BIN) telemetry.py
 
 venv:
 	@virtualenv --python=$(PYTHON_BIN) venv
