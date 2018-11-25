@@ -22,7 +22,11 @@ History
 __Previews
 __pycache__
 Project\ Outputs*
+<<<<<<< HEAD
 **/.vscode/**
 **/node_modules/**
 desktop.ini
 
+=======
+Status\ Report*
+>>>>>>> master

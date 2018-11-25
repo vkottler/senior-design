@@ -6,4 +6,4 @@ LFLAGS    += --specs=nosys.specs -Tproc/link.ld
 # -lc -lm -lnosys
 
 SRCS += proc/vectors.c
-SRCS += proc/system_stm32f4xx.c
+SRCS += proc/system_stm32f3xx.c

@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: flight-controller.PcbDoc   11/18/2018  6:29:34 PM
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Component Side to Solder Side
+ASCII RoundHoles File : flight-controller-RoundHoles.TXT
+ASCII SlotHoles File : flight-controller-SlotHoles.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      16mil (0.4mm)                                             Round             108       PTH        0.00inch (0.00mm)
+T2      20mil (0.5mm)                                             Slot              2         PTH        0.00inch (0.00mm)
+T3      24mil (0.6mm)                                             Round             8         PTH        0.00inch (0.00mm)
+T4      35mil (0.889mm)                                           Round             34        PTH        0.00inch (0.00mm)
+T5      157mil (4mm)                                              Round             4         NPTH       0.00inch (0.00mm)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              156
+
+Total Processing Time (hh:mm:ss) : 00:00:00

@@ -1,5 +1,6 @@
 OBJ_DIR   = bin
 TOOLCHAIN = arm-none-eabi-
-INCLUDES += -I include -I proc -I include/cmsis
+INCLUDES += -I include -I proc -I include/cmsis -I include/st
 CFLAGS   += $(INCLUDES) -Wall -Werror -pedantic -std=c99
+CFLAGS   += -D_POSIX_C_SOURCE=200809L   
 LFLAGS   += -Wl,--gc-sections
