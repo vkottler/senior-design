@@ -1,12 +1,21 @@
-let express = require('express')
-let process = require('process');
-let util = require('util');
+var express = require('express')
+var process = require('process');
+var util = require('util');
 var app = express();
 var http = require('http').Server(app);
 
-//TCP SHIT
+
+//TESTING UI LOOK, REMOVE 
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
+//TCP Connection 
 var net = require('net');
-var HOST = '10.42.0.79';
+//var HOST = '10.42.0.79';
+var HOST = 'localhost'
 var PORT = 5000;
 
 app.use(express.static("./JS"))
@@ -21,6 +30,17 @@ app.get('/', function(req, res){
 
 io_3000.on('connection', (socket) => {
   console.log('A user is connected to receive data -- id = ' + socket.id);
+  /*TESTING PURPOSE, REMOVE*/ 
+  
+  setInterval(function(){  
+    var incoming_data = []
+    incoming_data.push({
+      y: getRandomIntInclusive(1,4)
+    });
+    io_3000.emit('testdataLine', incoming_data);  
+  }, 1000);
+  /*TESTING PURPOSE, REMOVE*/ 
+
   socket.on('disconnect', function(){
     console.log('A user is disconnected to receive data -- id = ' + socket.id);
   });
@@ -51,21 +71,21 @@ function send_and_print(x_data, y_data, z_data)
 
 server.on('connection', function(sock) {
     console.log('CONNECTED to TCP');
-    let x_data = -1;
-    let y_data = -1;
-    let z_data = -1;
-    let x_ready = false;
-    let y_ready = false;
-    let z_ready = false;
-    let bytes_recv = 0;
+    var x_data = -1;
+    var y_data = -1;
+    var z_data = -1;
+    var x_ready = false;
+    var y_ready = false;
+    var z_ready = false;
+    var bytes_recv = 0;
     sock.on('data', (data) => {
 
-      let bytes_consumed = 0;
-      let initial_offset = bytes_recv % 6;
+      var bytes_consumed = 0;
+      var initial_offset = bytes_recv % 6;
 
       while (bytes_consumed < data.length)
       {
-        let curr_var = (initial_offset + bytes_consumed) % 6;
+        var curr_var = (initial_offset + bytes_consumed) % 6;
 
         if (curr_var == 0)
         {
@@ -107,3 +127,5 @@ server.on('disconnect', function() {
   console.log('TCP connection closed');
 });
 
+
+//testing to visualize final ui layout (send random number every second, every telem will use same data)

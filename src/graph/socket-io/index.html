@@ -6,253 +6,769 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-        <style>
+        <style>          
+          .tab {
+              overflow: hidden;
+              border: 2px solid #ccc;
+              background-color: #f1f1f1;
+          }
+          
+          .tab button {
+              background-color: inherit;
+              float: center;
+              border: none;
+              outline: none;
+              cursor: pointer;
+              padding: 14px 16px;
+              transition: 0.3s;
+              font-size: 17px;
+          }
+          .tab button:hover {
+              background-color: #ddd;
+          }
+          
+          .tab button.active {
+              background-color: #ccc;
+          }
+          
+          .tabcontent {
+              display: none;
+              padding-top: 30px;
+              padding-bottom: 40px;
+              border: 2px solid #ccc;
+              border-top: none;
+          }
+          h2{
+            font-size: 20px;
+            color: red; 
+          }
+          td h
+          {
+            font-size: 18px;          
+          }
         </style>
     </head>
     <body>
-        <h1 align="center">Quadcopter Telemetry Viewing</h1>
-        <table cellspacing="0" style="width:100%" >
-            <col width="50%">
-            <col width="50%">
-            <tr>
-              <td> 
-                  <div id="accelX_chartContainer" style="height: 250px; width: 100%;"></div>
-                  <h>Acceleration (X): <span id="accel_x"></span></h>
-              </td>
-              <td>
-                  <div id="gyroX_chartContainer" style="height: 250px; width: 100%;"></div>
-                  <h>Gyro (X): <span id="gyro_x"></span></h>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                  <div id="accelY_chartContainer" style="height: 250px; width: 100%;"></div>
-                  <h>Acceleration (Y): <span id="accel_y"></span></h>
-              </td>
-              <td>
-                  <div id="gyroY_chartContainer" style="height: 250px; width: 100%;"></div>
-                  <h>Gyro (Y): <span id="gyro_y"></span></h>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                  <div id="accelZ_chartContainer" style="height: 250px; width: 100%;"></div>
-                  <h>Acceleration (Z): <span id="accel_z"></span></h>
-              </td>
-              <td>
-                  <div id="gyroZ_chartContainer" style="height: 250px; width: 100%;"></div>
-                  <h>Gyro (Z): <span id="gyro_z"></span></h>
-              </td>
-            </tr>
-        </table>
+        <h1 align="center">Quadcopter Telemetry</h1>
+        <div class="tab">
+          <button class="tablinks" onclick="openTab(event, 'Accel_Gyro_Graphs')">Accel/Gyro Graphs</button>
+          <button class="tablinks" onclick="openTab(event, 'PID_Graphs')">PID Graphs</button>
+          <button class="tablinks" onclick="openTab(event, 'ESC_Graphs')">ESC Graphs</button>
+          <button class="tablinks" onclick="openTab(event, 'Raw Data')">All Raw Telem</button>
+        </div>
 
-      <script>
-      var data_accel_x = [];
-      var data_accel_y = []; 
-      var data_accel_z = [];
-      
-      var data_gyro_x = [];
-      var data_gyro_y = []; 
-      var data_gyro_z = []; 
+        <!-- Accel/Gyro Graph Tab -->
+        <div id="Accel_Gyro_Graphs" class="tabcontent">
+          <table cellspacing="0" style="width:100%" >
+              <col width="50%">
+              <col width="50%">
+              <tr>
+                <td> 
+                    <div id="accelX_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Acceleration (X): <span name = "accel_x"></span></h>
+                </td>
+                <td>
+                    <div id="gyroX_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Gyro (X): <span name="gyro_x"></span></h>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <div id="accelY_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Acceleration (Y): <span name="accel_y"></span></h>
+                </td>
+                <td>
+                    <div id="gyroY_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Gyro (Y): <span name="gyro_y"></span></h>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <div id="accelZ_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Acceleration (Z): <span name="accel_z"></span></h>
+                </td>
+                <td>
+                    <div id="gyroZ_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Gyro (Z): <span name="gyro_z"></span></h>
+                </td>
+              </tr>
+          </table>
+        </div>
+
+        <!-- PID Graph Tab -->
+        <div id="PID_Graphs" class="tabcontent">
+            <div id="pidpitch_chartContainer" style="height: 250px; width: 100%;"></div>
+            <h>PID Pitch: <span name = "pid_pitch"></span></h>
     
-      var accel_chart_x = new CanvasJS.Chart("accelX_chartContainer", {
-        zoomEnabled: true,
-        title :{
-          text: "Accelerometer (X) v. Time"
-        },
-        axisY: {	
-          title: "Accel (X) (m/s^2)",
-          includeZero: true
-        },
-        axisX: {
-          title:"Time (s)",
-          includeZero: false
-        },         
-        data: [
-          //accel x 
-        {	
-          type: "line",
-          dataPoints: data_accel_x,
-          showInLegend: true,
-          legendText: "Accel X", 
-          color: "blue"
-        }
-        ]
-      });
+            <div id="pidyaw_chartContainer" style="height: 250px; width: 100%;"></div>
+            <h>PID Yaw: <span name="pid_roll"></span></h>
+       
+            <div id="pidroll_chartContainer" style="height: 250px; width: 100%;"></div>
+            <h>PID Roll: <span name="pid_yaw"></span></h>
+       </div>
+        
+      <!-- ESC Graph Tab -->
+      <div id="ESC_Graphs" class="tabcontent">
+          <table cellspacing="0" style="width:100%" >
+              <col width="50%">
+              <tr>
+                <td> 
+                    <div id="esc_front_left_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>ESC Front Left: <span name = "esc_front_left"></span></h>
+                </td>
+                <td>
+                    <div id="esc_back_left_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>ESC Back Left: <span name="esc_back_left"></span></h>
+                </td>
+              </tr>
+              <tr>
+                  <td>
+                      <div id="esc_front_right_chartContainer" style="height: 250px; width: 100%;"></div>
+                      <h>ESC Front Right: <span name="esc_front_right"></span></h>
+                  </td>
+                <td>
+                    <div id="esc_back_right_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>ESC Back Right: <span name="esc_back_right"></span></h>
+                </td>
+              </tr>
+          </table>
+        </div>
+
      
-      var accel_chart_y = new CanvasJS.Chart("accelY_chartContainer", {
-        zoomEnabled: true,
-        title :{
-          text: "Accelerometer (Y) v. Time"
-        },
-        axisY: {	
-          title: "Accel (Y) (m/s^2)",
-          includeZero: true
-        },
-        axisX: {
-          title:"Time (s)",
-          includeZero: false
-        },         
-        data: [
-          //accel y 
-        {	
-          type: "line",
-          dataPoints: data_accel_y,
-          showInLegend: true,
-          legendText: "Accel Y", 
-          color: "red"
-        }
-        ]
-      });
-      
-      var accel_chart_z = new CanvasJS.Chart("accelZ_chartContainer", {
-        zoomEnabled: true,
-        title :{
-          text: "Accelerometer (Z) v. Time"
-        },
-        axisY: {	
-          title: "Accel (Z) (m/s^2)",
-          includeZero: true
-        },
-        axisX: {
-          title:"Time (s)",
-          includeZero: false
-        },         
-        data: [
-          //accel z 
-        {	
-          type: "line",
-          dataPoints: data_accel_z,
-          showInLegend: true,
-          legendText: "Accel Z", 
-          color: "green"
-        }
-        ]
-      });
-
-      var gyro_chart_x = new CanvasJS.Chart("gyroX_chartContainer", {
-        zoomEnabled: true,
-        title :{
-          text: "Gyro (X) v. Time"
-        },
-        axisY: {	
-          title: "Gyro (X) (deg/sec)",
-          includeZero: true
-        },
-        axisX: {
-          title:"Time (s)",
-          includeZero: false
-        },         
-        data: [
-          //gyro x 
-        {	
-          type: "line",
-          dataPoints: data_gyro_x,
-          showInLegend: true,
-          legendText: "Gyro X", 
-          color: "blue"
-        }
-        ]
-      });
-      
-      var gyro_chart_y = new CanvasJS.Chart("gyroY_chartContainer", {
-        zoomEnabled: true,
-        title :{
-          text: "Gyro (Y) v. Time"
-        },
-        axisY: {	
-          title: "Gyro (Y) (deg/sec)",
-          includeZero: true
-        },
-        axisX: {
-          title:"Time (s)",
-          includeZero: false
-        },         
-        data: [
-          //gyro y 
-        {	
-          type: "line",
-          dataPoints: data_gyro_y,
-          showInLegend: true,
-          legendText: "Gyro Y", 
-          color: "red"
-        }
-        ]
-      });
-      
-      var gyro_chart_z = new CanvasJS.Chart("gyroZ_chartContainer", {
-        zoomEnabled: true,
-        title :{
-          text: "Gyro (Z) v. Time"
-        },
-        axisY: {	
-          title: "Gyro (Z) (deg/sec)",
-          includeZero: true
-        },
-        axisX: {
-          title:"Time (s)",
-          includeZero: false
-        },         
-        data: [
-          //gyro z 
-        {	
-          type: "line",
-          dataPoints: data_gyro_z,
-          showInLegend: true,
-          legendText: "Gyro Z", 
-          color: "green"
-        }
-        ]
-      });
-
-      $(function () {
-          var socket = io();
-          socket.on('dataLine', (data_set) =>
-          {
-            var incoming_x = data_set[0].x
-            var incoming_y = data_set[0].y
-            var incoming_z = data_set[0].z
-            
-            document.getElementById("accel_x").innerHTML = incoming_x;
-            document.getElementById("accel_y").innerHTML = incoming_y;
-            document.getElementById("accel_z").innerHTML = incoming_z;
+        <!-- All Telem Tab -->
+        <div id="Raw Data" class="tabcontent">
+          <table cellspacing="0" style="width:100%" >
+              <col width="33%">
+              <tr>
+                  <td> 
+                      <h2> Acceleration (m/s^2)</h2>
+                  </td>
+                  <td>
+                      <h2> Gyro (deg/sec)</h2>
+                  </td>
+                  <td>
+                      <h2> PID (deg/sec)</h2>
+                  </td>
+                </tr>
+              <tr>
+                <td> 
+                    <h>Acceleration (X): <span name = "accel_x"></span></h>
+                </td>
+                <td>
+                    <h>Gyro (X): <span name="gyro_x"></span></h>
+                </td>
+                <td>
+                    <h>PID Pitch: <span name="pid_pitch"></span></h>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                   <h>Acceleration (Y): <span name="accel_y"></span></h>
+               </td>
+               <td>
+                   <h>Gyro (Y): <span name="gyro_y"></span></h>
+                </td>
+                <td>
+                    <h>PID Roll: <span name="pid_roll"></span></h>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h>Acceleration (Z): <span name="accel_z"></span></h>
+                </td>
+                <td>
+                  <h>Gyro (Z): <span name="gyro_z"></span></h>
+              </td>
+              <td>
+                  <h>PID Yaw: <span name="pid_yaw"></span></h>
+                </td>
+              </tr>
+          </table>
+          <br> </br>
+          <br> </br>
+          <table cellspacing="0" style="width:100%" >
+                <col width="33%">
+                <tr>
+                    <td> 
+                        <h2> ESC Values (percent) </span> </h2>
+                    </td>
+                    <td>
+                        <h2> Battery Voltage (Volts) </h2>
+                    </td>
+                    <td>
+                        <h2> Battery Current (Amps) </h2>
+                    </td>
+                  </tr>
+                <tr>
+                  <td> 
+                      <h>ESC Front Left: <span name="esc_front_left"></span></h>
+                  </td>
+                  <td>
+                      <h>Battery Voltage Cell 1: <span name="batt_cell1"></span></h>
+                  </td>
+                  <td>
+                      <h>Battery Current (AMPS): <span name="batt_current"></span></h>
+                    </td>
+                </tr>
+                <tr>
+                  <td>
+                      <h>ESC Front Right: <span name="esc_front_right"></span></h>
+                 </td>
+                 <td>
+                    <h>Battery Voltage Cell 2: <span name="batt_cell2"></span></h>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <h>ESC Back Left: <span name="esc_back_left"></span></h>
+                  </td>
+                  <td>
+                      <h>Battery Voltage Cell 3: <span name="batt_cell3"></span></h>
+                 </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h>ESC Back Right: <span name="esc_back_right"></span></h>
+                      </td>
+                    <td>
+                        <h>Battery Voltage Total: <span name="batt_total"></span></h>
+                      </td>
+                  </tr>
+          </table>
 
 
-            console.log("incoming data set -- ")
-            console.log("incoming telem x: ",incoming_x);
-            console.log("incoming telem y: ",incoming_y);
-            console.log("incoming telem z: ",incoming_z);
-            console.log("-------------------- ")
 
-              //PUSH ACCEL VALUES TO RESPECTIVE GRAPH DATA SETS
-              data_accel_x.push({
-                y: incoming_x 
-              });
-              data_accel_y.push({
-                y: incoming_y
-              });
-              data_accel_z.push({
-                y: incoming_z
-              });
+        </div>
 
-              //TODO: PUSH GYRO VALUES TO RESPECTIVE GRAPH DATA SETS 
-              //data_gyro_x
-              //data_gyro_y
-              //data_gyro_z
+        <!-- JS FOR DATA -->
+        <script>
 
-              accel_chart_x.render();
-              accel_chart_y.render();
-              accel_chart_z.render();
-              
-              gyro_chart_x.render();
-              gyro_chart_y.render();
-              gyro_chart_z.render();
+          //DATA ARRAYS FOR GRAPH 
+          var data_accel_x = [];
+          var data_accel_y = []; 
+          var data_accel_z = [];
+          
+          var data_gyro_x = [];
+          var data_gyro_y = []; 
+          var data_gyro_z = []; 
 
+          var data_pitch = [];
+          var data_roll = []; 
+          var data_yaw = []; 
 
+          var data_esc_frontleft = [];
+          var data_esc_frontright = []; 
+          var data_esc_backleft = []; 
+          var data_esc_backright = [];
+
+        //THE GRAPH OBJECTS 
+          var accel_chart_x = new CanvasJS.Chart("accelX_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "Accelerometer (X) v. Time"
+            },
+            axisY: {	
+              title: "Accel (X) (m/s^2)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+              //accel x 
+            {	
+              type: "line",
+              dataPoints: data_accel_x,
+              showInLegend: true,
+              legendText: "Accel X", 
+              color: "blue"
+            }
+            ]
           });
-        });
+        
+          var accel_chart_y = new CanvasJS.Chart("accelY_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "Accelerometer (Y) v. Time"
+            },
+            axisY: {	
+              title: "Accel (Y) (m/s^2)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+              //accel y 
+            {	
+              type: "line",
+              dataPoints: data_accel_y,
+              showInLegend: true,
+              legendText: "Accel Y", 
+              color: "red"
+            }
+            ]
+          });
+          
+          var accel_chart_z = new CanvasJS.Chart("accelZ_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "Accelerometer (Z) v. Time"
+            },
+            axisY: {	
+              title: "Accel (Z) (m/s^2)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+              //accel z 
+            {	
+              type: "line",
+              dataPoints: data_accel_z,
+              showInLegend: true,
+              legendText: "Accel Z", 
+              color: "green"
+            }
+            ]
+          });
 
-        </script> 
+          var gyro_chart_x = new CanvasJS.Chart("gyroX_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "Gyro (X) v. Time"
+            },
+            axisY: {	
+              title: "Gyro (X) (deg/sec)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+              //gyro x 
+            {	
+              type: "line",
+              dataPoints: data_gyro_x,
+              showInLegend: true,
+              legendText: "Gyro X", 
+              color: "blue"
+            }
+            ]
+          });
+          
+          var gyro_chart_y = new CanvasJS.Chart("gyroY_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "Gyro (Y) v. Time"
+            },
+            axisY: {	
+              title: "Gyro (Y) (deg/sec)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+              //gyro y 
+            {	
+              type: "line",
+              dataPoints: data_gyro_y,
+              showInLegend: true,
+              legendText: "Gyro Y", 
+              color: "red"
+            }
+            ]
+          });
+          
+          var gyro_chart_z = new CanvasJS.Chart("gyroZ_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "Gyro (Z) v. Time"
+            },
+            axisY: {	
+              title: "Gyro (Z) (deg/sec)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+              //gyro z 
+            {	
+              type: "line",
+              dataPoints: data_gyro_z,
+              showInLegend: true,
+              legendText: "Gyro Z", 
+              color: "green"
+            }
+            ]
+          });
+          
+          var pid_pitch_chart = new CanvasJS.Chart("pidpitch_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "PID Pitch v. Time"
+            },
+            axisY: {	
+              title: "Pitch (deg/sec)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_pitch,
+              showInLegend: true,
+              legendText: "PID Pitch", 
+              color: "green"
+            }
+            ]
+          });
+          
+          var pid_roll_chart = new CanvasJS.Chart("pidroll_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "PID Roll v. Time"
+            },
+            axisY: {	
+              title: "Roll (deg/sec)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_roll,
+              showInLegend: true,
+              legendText: "PID Roll", 
+              color: "Red"
+            }
+            ]
+          });
+          
+          var pid_yaw_chart = new CanvasJS.Chart("pidyaw_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "PID Yaw v. Time"
+            },
+            axisY: {	
+              title: "Yaw (deg/sec)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_yaw,
+              showInLegend: true,
+              legendText: "PID Yaw", 
+              color: "Blue"
+            }
+            ]
+          });
+          
+          var esc_back_left_chart = new CanvasJS.Chart("esc_back_left_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "ESC Back Left v. Time"
+            },
+            axisY: {	
+              title: "ESC Back Left (%)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_esc_backleft,
+              showInLegend: true,
+              legendText: "ESC Back Left", 
+              color: "Blue"
+            }
+            ]
+          });
+          
+          var esc_back_right_chart = new CanvasJS.Chart("esc_back_right_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "ESC Back Right v. Time"
+            },
+            axisY: {	
+              title: "ESC Back Right (%)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_esc_backright,
+              showInLegend: true,
+              legendText: "ESC Back Right", 
+              color: "Red"
+            }
+            ]
+          });
+
+          var esc_front_left_chart = new CanvasJS.Chart("esc_front_left_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "ESC Front Left v. Time"
+            },
+            axisY: {	
+              title: "ESC Front Left (%)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_esc_frontleft,
+              showInLegend: true,
+              legendText: "ESC Front Left", 
+              color: "Green"
+            }
+            ]
+          });
+          
+          var esc_back_right_chart = new CanvasJS.Chart("esc_front_right_chartContainer", {
+            zoomEnabled: true,
+            title :{
+              text: "ESC Front Right v. Time"
+            },
+            axisY: {	
+              title: "ESC Front Right (%)",
+              includeZero: true
+            },
+            axisX: {
+              title:"Time (s)",
+              includeZero: false
+            },         
+            data: [
+            {	
+              type: "line",
+              dataPoints: data_esc_frontright,
+              showInLegend: true,
+              legendText: "ESC Front Right", 
+              color: "Red"
+            }
+            ]
+          });
+
+          //Real DATALINE Implementation 
+          $(function () {
+              var socket = io();
+              socket.on('dataLine', (data_set) =>
+              {
+                var incoming_x = data_set[0].x
+                var incoming_y = data_set[0].y
+                var incoming_z = data_set[0].z
+                
+                document.getElementById("accel_x").innerHTML = incoming_x;
+                document.getElementById("accel_y").innerHTML = incoming_y;
+                document.getElementById("accel_z").innerHTML = incoming_z;
+
+
+                console.log("incoming data set -- ")
+                console.log("incoming telem x: ",incoming_x);
+                console.log("incoming telem y: ",incoming_y);
+                console.log("incoming telem z: ",incoming_z);
+                console.log("-------------------- ")
+
+                  //PUSH ACCEL VALUES TO RESPECTIVE GRAPH DATA SETS
+                  data_accel_x.push({
+                    y: incoming_x 
+                  });
+                  data_accel_y.push({
+                    y: incoming_y
+                  });
+                  data_accel_z.push({
+                    y: incoming_z
+                  });
+
+                  //TODO: PUSH GYRO VALUES TO RESPECTIVE GRAPH DATA SETS 
+                  //data_gyro_x
+                  //data_gyro_y
+                  //data_gyro_z
+
+                  accel_chart_x.render();
+                  accel_chart_y.render();
+                  accel_chart_z.render();
+                  
+                  gyro_chart_x.render();
+                  gyro_chart_y.render();
+                  gyro_chart_z.render();
+
+
+              });
+            });
+          
+
+          //Function to display variable in html (iterates through all counts  of elements and sets values accordingly)
+          function displayVals(elm_name, value) {
+            var occurences = document.getElementsByName(elm_name).length;
+            console.log("occurences:"+occurences)
+            console.log(elm_name)
+            console.log(value)
+            for(i = 0; i < occurences;i++)
+            {
+              document.getElementsByName(elm_name)[i].innerHTML = value;
+            } 
+          }
+          
+          //Testing DATALINE Implementation 
+          $(function () {
+              var socket = io();
+              socket.on('testdataLine', (data_set) =>
+              {
+                var incoming_test_val = data_set[0].y
+                
+                var acceldata = incoming_test_val+1;
+                var gyrodata = incoming_test_val+2;
+                var piddata = incoming_test_val+3;
+                var escdata = incoming_test_val+4;
+                var battdata = incoming_test_val+5;
+
+                //Setting the UI values 
+                displayVals("accel_x",acceldata);
+                displayVals("accel_y",acceldata);
+                displayVals("accel_z",acceldata);
+                
+                displayVals("gyro_x",gyrodata);
+                displayVals("gyro_y",gyrodata);
+                displayVals("gyro_z",gyrodata);
+                
+                displayVals("pid_pitch",piddata);
+                displayVals("pid_roll",piddata);
+                displayVals("pid_yaw",piddata);
+                
+                displayVals("esc_front_left",escdata);
+                displayVals("esc_front_right",escdata);
+                displayVals("esc_back_left",escdata);
+                displayVals("esc_back_right",escdata);
+                
+                displayVals("batt_cell1",battdata);
+                displayVals("batt_cell2",battdata);
+                displayVals("batt_cell3",battdata);
+                displayVals("batt_total",battdata);
+                displayVals("batt_current",battdata);
+
+                //Logging to see if data is here 
+                console.log("incoming data set -- ")
+                console.log("incoming data: ",incoming_test_val);
+                console.log("-------------------- ")
+
+                  //PUSH ACCEL VALUES TO ARRAY
+                  data_accel_x.push({
+                    y: acceldata 
+                  });
+                  data_accel_y.push({
+                    y: acceldata
+                  });
+                  data_accel_z.push({
+                    y: acceldata
+                  });
+
+                  //PUSH GYRO VALS TO ARRAY 
+                  data_gyro_x.push({
+                    y: gyrodata 
+                  });
+                  data_gyro_y.push({
+                    y: gyrodata
+                  });
+                  data_gyro_z.push({
+                    y: gyrodata
+                  });
+                  
+                  //PUSH PID VALS TO ARRAY 
+                  data_pitch.push({
+                    y: piddata 
+                  });
+                  data_roll.push({
+                    y: piddata
+                  });
+                  data_yaw.push({
+                    y: piddata
+                  });
+                  
+                  //PUSH ESC VALS TO ARRAY 
+                  data_esc_frontleft.push({
+                    y: escdata 
+                  });
+                  data_esc_frontright.push({
+                    y: escdata
+                  });
+                  data_esc_backleft.push({
+                    y: escdata
+                  });
+                  data_esc_backright.push({
+                    y: escdata
+                  });
+
+                  //RENDER ALL CHARTS
+                  accel_chart_x.render();
+                  accel_chart_y.render();
+                  accel_chart_z.render();
+                  
+                  gyro_chart_x.render();
+                  gyro_chart_y.render();
+                  gyro_chart_z.render();
+
+                  pid_pitch_chart.render();
+                  pid_roll_chart.render();
+                  pid_yaw_chart.render();
+
+                  esc_front_left_chart.render();
+                  esc_front_right_chart.render();
+                  esc_back_left_chart.render();
+                  esc_back_right_chart.render();
+
+
+              });
+            });
+        </script>
+
+        <!-- JS FOR TABS -->  
+        <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        </script>
     </body>
 </html>
 
