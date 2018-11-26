@@ -25,15 +25,23 @@ include mk/rules.mk
 
 DEV_BIN       = venv/bin
 PYTHON_BIN    ?= python3
+BROWSER       ?= firefox
 
 test-sim: venv
 	@$(DEV_BIN)/nosetests py
 
-sim:
+sim: venv
 	@$(DEV_BIN)/$(PYTHON_BIN) sim.py
 
-serve: 
-	@$(DEV_BIN)/$(PYTHON_BIN) sim.py --server
+#@$(DEV_BIN)/$(PYTHON_BIN) sim.py --server
+serve: venv
+	@$(DEV_BIN)/$(PYTHON_BIN) telemetry.py
+
+serve-web:
+	@$(PYTHON_BIN) -m http.server
+
+view-web:
+	@$(BROWSER) http://localhost:8000/web/websocket_client.html
 
 venv:
 	@virtualenv --python=$(PYTHON_BIN) venv

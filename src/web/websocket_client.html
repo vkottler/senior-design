@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Websocket Client</title>
+        <meta name="description" content="Websocket client demo page.">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="websocket_client.css">
+    </head>
+    <body>
+        <div class="frow">
+            <div class="fcol pad">
+                <div class="center">
+                    <h1>Control</h1>
+                </div>
+                <div class="pad">
+                    Host: <input id="host" type="text" value="localhost">
+                </div>
+                <div class="pad">
+                    Port: <input id="port" type="text" value="10020">
+                </div>
+                <div class="pad">
+                    Connection State: <span id="state">N/A</span>
+                </div>
+                <div class="pad center">
+                    <button id="connect-button">Connect</button>
+                    <button id="disconnect-button">Disconnect</button>
+                </div>
+                <div class="pad">
+                    <input id="to-send" type="text" value="hello">
+                    <button id="send-button">Send</button>
+                </div>
+            </div>
+            <div class="fcol pad">
+                <h1>Log</h1>
+                <div class="log" id="activity-log"></div>
+                <div class="pad">
+                    <button id="activity-log-clear">Clear</button>
+                </div>
+            </div>
+            <div class="fcol pad">
+                <h1>Data</h1>
+                <div class="log" id="data-log"></div>
+                <div class="pad">
+                    <button id="data-log-clear">Clear</button>
+                </div>
+            </div>
+        </div>
+        <script src="websocket_client.js"></script>
+    </body>
+</html>
