@@ -12,18 +12,10 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
 }
 
-//TCP Connection 
-var net = require('net');
-//var HOST = '10.42.0.79';
-var HOST = 'localhost'
-var PORT = 5000;
-
 app.use(express.static("./JS"))
 
 //port to receive data 
 var io_3000 = require('socket.io')(http);
-
-
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -47,85 +39,94 @@ io_3000.on('connection', (socket) => {
 });
 
 http.listen(3000, function(){
-  console.log('listening on *:3000');
+  console.log('Listening on HTTP port: 3000');
 });   
 
-//TCP CONNECTION 
-var server = net.createServer();
-server.listen(PORT, HOST);
-console.log('listening on port: '+ PORT)
+//ABOVE = UI CONFIG 
+//BELOW = TCP CONNECTION TO QUADCOPTER 
 
-function send_and_print(x_data, y_data, z_data)
+//TCP CONFIG 
+var net = require('net');
+var HOST = '192.168.1.20';    //CHANGE WHEN IP CHANGES 
+var MANIFEST_PORT = 5000;
+var DATA_PORT = 6000; 
+
+var ind_buff_size = 256; 
+ 
+//MANNIFEST TCP CONNECTION SETUP
+var manifest_server = net.createServer();
+manifest_server.listen(MANIFEST_PORT, HOST);
+console.log('Listening on Manifest Port: '+ MANIFEST_PORT)
+
+//DATA server
+var data_server = net.createServer();
+
+//DATA TCP CONNECTION SETUP
+data_server.listen(DATA_PORT, HOST);
+console.log('listening on Data port: '+ DATA_PORT)
+
+//MANIFEST TABLE 
+var manifest_arr = [];
+
+//GET INCOMING MANIFESET DATA 
+manifest_server.on('connection', function(sock) {
+    console.log('CONNECTED to TCP on port 5000');
+    sock.on('data', (data) => {
+		var byte_len = data.byteLength
+		
+		//indexing into buffer (vaughn will throw up, need to change these in future)
+		var max_str_len = 32; 
+		var manifest_byte_offset = 4;
+		
+		console.log("Total buffer size: " + byte_len);
+		for(i = 0; i < byte_len; i += ind_buff_size)	
+		{	
+			var channel_index = data.readUInt32LE(i)  
+			var channel_type = data.readUInt32LE(i+manifest_byte_offset)
+			var channel_size = data.readUInt32LE(i+(2*manifest_byte_offset))
+			var channel_string = data.toString('utf8',i,i+max_str_len);
+			var split = channel_string.split(',');
+			var channel_name = split[0]; 
+			var channel_units = split[1];
+			var channel_object = { 
+				"index"  	:  channel_index, 
+				"data_type"	:  channel_type, 
+				"size"      :  channel_size,
+				"name"      :  channel_name,
+				"units"     :  channel_units
+			  }
+			manifest_arr.push(channel_object)
+		}
+    print_array(manifest_arr);
+    io_3000.emit('manifestLine', manifest_arr); 
+    manifest_arr = []; 
+    });
+	sock.on('close', (data) => {
+		console.log('TCP connection closed with Manifest Server');	
+	});
+});
+
+
+//GET INCOMING STREAM OF DATA 
+data_server.on('connection', function(sock) {
+    console.log('CONNECTED to TCP via port 6000');
+    sock.on('data', (data) => {
+		console.log('data incoming: '+ data.toString());
+	});
+});
+
+
+function print_array(arr)
 {
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
-  process.stdout.write(util.format("x: %i\ty: %i\tz: %i", x_data, y_data, z_data));
-  var incoming_data = []
-  incoming_data.push({
-    x: x_data,
-    y: y_data,
-    z: z_data
-  });
-  io_3000.emit('dataLine', incoming_data);
+	for(i = 0; i<arr.length;i++)
+	{
+		console.log("-------------------------------------------")
+		console.log("Channel Index: " + arr[i].index)
+		console.log("Channel Type: " + arr[i].data_type)
+		console.log("Channel Size: " + arr[i].size)
+		console.log("Channel Name: " + arr[i].name)
+		console.log("Channel Units: " + arr[i].units)
+	}
+
 }
 
-server.on('connection', function(sock) {
-    console.log('CONNECTED to TCP');
-    var x_data = -1;
-    var y_data = -1;
-    var z_data = -1;
-    var x_ready = false;
-    var y_ready = false;
-    var z_ready = false;
-    var bytes_recv = 0;
-    sock.on('data', (data) => {
-
-      var bytes_consumed = 0;
-      var initial_offset = bytes_recv % 6;
-
-      while (bytes_consumed < data.length)
-      {
-        var curr_var = (initial_offset + bytes_consumed) % 6;
-
-        if (curr_var == 0)
-        {
-          x_data = data.readInt16LE(bytes_consumed);
-          x_ready = true;
-        }
-        else if (curr_var == 2)
-        {
-          y_data = data.readInt16LE(bytes_consumed);
-          y_ready = true;
-        }
-        else if (curr_var == 4)
-        {
-          z_data = data.readInt16LE(bytes_consumed);
-          z_ready = true;
-        }
-
-        bytes_consumed += 2;
-
-        /* send (and print) the variables if they're ready */
-        if (x_ready && y_ready && z_ready)
-        {
-          console.log(x_data)
-          console.log(y_data)
-          console.log(z_data)
-
-          send_and_print(x_data, y_data, z_data);
-          x_ready = false;
-          y_ready = false;
-          z_ready = false;
-        }
-      }
-
-      bytes_recv += data.length;
-    });
-
-});
-server.on('disconnect', function() {
-  console.log('TCP connection closed');
-});
-
-
-//testing to visualize final ui layout (send random number every second, every telem will use same data)

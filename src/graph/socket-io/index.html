@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>Socket IO Telemetry</title>
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -46,6 +46,9 @@
           {
             font-size: 18px;          
           }
+          .manifest_table{
+
+          }
         </style>
     </head>
     <body>
@@ -55,6 +58,8 @@
           <button class="tablinks" onclick="openTab(event, 'PID_Graphs')">PID Graphs</button>
           <button class="tablinks" onclick="openTab(event, 'ESC_Graphs')">ESC Graphs</button>
           <button class="tablinks" onclick="openTab(event, 'Raw Data')">All Raw Telem</button>
+          <button class="tablinks" onclick="openTab(event, 'Manifest')">Channel Manifest</button>
+
         </div>
 
         <!-- Accel/Gyro Graph Tab -->
@@ -105,10 +110,10 @@
        
             <div id="pidroll_chartContainer" style="height: 250px; width: 100%;"></div>
             <h>PID Roll: <span name="pid_yaw"></span></h>
-       </div>
+        </div>
         
-      <!-- ESC Graph Tab -->
-      <div id="ESC_Graphs" class="tabcontent">
+        <!-- ESC Graph Tab -->
+        <div id="ESC_Graphs" class="tabcontent">
           <table cellspacing="0" style="width:100%" >
               <col width="50%">
               <tr>
@@ -240,6 +245,28 @@
 
         </div>
 
+        <!-- Channel Manifest -->
+        <div id="Manifest" class="tabcontent">
+          <table cellspacing="0" style="width:100%" id = "manifest_table">
+            <tr>
+              <td> 
+                  <h2> Channel Index</h2>
+              </td>
+              <td>
+                  <h2> Channel Type</h2>
+              </td>
+              <td>
+                  <h2> Channel Size</h2>
+              </td>
+              <td>
+                <h2> Channel Name</h2>
+            </td>
+            <td>
+              <h2> Channel Units</h2>
+            </td>
+             </tr>
+          </table>
+        </div>
         <!-- JS FOR DATA -->
         <script>
 
@@ -261,7 +288,7 @@
           var data_esc_backleft = []; 
           var data_esc_backright = [];
 
-        //THE GRAPH OBJECTS 
+          //THE GRAPH OBJECTS 
           var accel_chart_x = new CanvasJS.Chart("accelX_chartContainer", {
             zoomEnabled: true,
             title :{
@@ -556,7 +583,7 @@
             ]
           });
           
-          var esc_back_right_chart = new CanvasJS.Chart("esc_front_right_chartContainer", {
+          var esc_front_right_chart = new CanvasJS.Chart("esc_front_right_chartContainer", {
             zoomEnabled: true,
             title :{
               text: "ESC Front Right v. Time"
@@ -632,9 +659,6 @@
           //Function to display variable in html (iterates through all counts  of elements and sets values accordingly)
           function displayVals(elm_name, value) {
             var occurences = document.getElementsByName(elm_name).length;
-            console.log("occurences:"+occurences)
-            console.log(elm_name)
-            console.log(value)
             for(i = 0; i < occurences;i++)
             {
               document.getElementsByName(elm_name)[i].innerHTML = value;
@@ -677,11 +701,6 @@
                 displayVals("batt_cell3",battdata);
                 displayVals("batt_total",battdata);
                 displayVals("batt_current",battdata);
-
-                //Logging to see if data is here 
-                console.log("incoming data set -- ")
-                console.log("incoming data: ",incoming_test_val);
-                console.log("-------------------- ")
 
                   //PUSH ACCEL VALUES TO ARRAY
                   data_accel_x.push({
@@ -751,6 +770,53 @@
 
               });
             });
+
+          $(function () {
+            var socket = io();
+            socket.on('manifestLine', (data_set) =>
+            {
+              table = document.getElementById("manifest_table")
+              for(i = 0; i < data_set.length;i++)
+              {
+                var tr = document.createElement('tr');
+                var td1 = document.createElement('td');
+                var td2 = document.createElement('td');
+                var td3 = document.createElement('td');
+                var td4 = document.createElement('td');
+                var td5 = document.createElement('td');
+
+                var td_index = document.createTextNode(data_set[i].index);         // Create a text node
+                var td_type = document.createTextNode(data_set[i].data_type);
+                var td_size = document.createTextNode(data_set[i].size);
+                var td_name = document.createTextNode(data_set[i].name);
+                var td_units = document.createTextNode(data_set[i].units);
+                
+
+                td1.appendChild(td_index)
+                td2.appendChild(td_type) 
+                td3.appendChild(td_size)
+                td4.appendChild(td_name)
+                td5.appendChild(td_units)
+                
+                tr.appendChild(td1)
+                tr.appendChild(td2)
+                tr.appendChild(td3)
+                tr.appendChild(td4)
+                tr.appendChild(td5)
+                
+                table.append(tr)
+                
+                /*
+                console.log("-------------------------------------------")
+                console.log("Channel Index: " + data_set[i].index)
+                console.log("Channel Type: " + data_set[i].data_type)
+                console.log("Channel Size: " + data_set[i].size)
+                console.log("Channel Name: " + data_set[i].name)
+                console.log("Channel Units: " + data_set[i].units)*/
+                
+              }
+            });
+          });
         </script>
 
         <!-- JS FOR TABS -->  
