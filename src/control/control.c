@@ -8,6 +8,10 @@
 
 #include "control.h"
 
+#include "gyro.h"
+#include "esc.h"
+#include "timer.h"
+
 const float gyro_deg_per_lsb[GYRO_NUM_RANGES] =
 {
     /* 250  deg/s  */ 250.0f  / (float) (2 << GYRO_BITS),
@@ -121,4 +125,103 @@ bool control_init(uint8_t gyro_range_idx, uint8_t imu_range_idx,
                   state->gyro_roll_len);
 
     return true;
+}
+
+#define X_AXIS 0
+#define Y_AXIS 1
+#define Z_AXIS 2
+
+#define ROLL_AXIS   X_AXIS
+#define PITCH_AXIS  Y_AXIS
+#define YAW_AXIS    Z_AXIS
+
+int32_t raw_output_roll;
+int32_t raw_output_pitch;
+int32_t raw_output_yaw;
+
+uint32_t pid_output_roll;
+uint32_t pid_output_pitch;
+uint32_t pid_output_yaw;
+
+bool calc_pid()
+{
+    pid_output_roll = raw_output_roll;
+    pid_output_pitch= raw_output_pitch;
+    pid_output_yaw= raw_output_yaw;
+    return true;
+}
+
+/*****************************************************************************/
+/* ESC_0 (CW)    ESC_1 (CCW)                                                 */
+/*      \       /                                                            */
+/*       \     /                                                             */
+/*        \   /                     |Y+                                      */
+/*         \ /                      |                                        */
+/*          x                    Z+ o___X+                                   */
+/*         / \                                                               */
+/*        /   \                                                              */
+/*       /     \                                                             */
+/*      /       \                                                            */
+/* ESC_2 (CCW)   ESC_3 (CW)                                                  */
+/*****************************************************************************/
+bool control_loop( int32_t input_roll, int32_t input_pitch,
+                   int32_t input_yaw, int16_t input_thrst )
+{
+    int16_t gyro_data[3];
+    uint16_t esc_front_left_val;
+    uint16_t esc_front_right_val;
+    uint16_t esc_back_left_val;
+    uint16_t esc_back_right_val;
+
+    // SYSTEM_RATE loop
+    static uint32_t last_tick = 0;
+
+    if (!(ticks % 2000) && ticks != last_tick)
+    {
+/*    while(1)*/
+/*    {*/
+        // Wait for interrupt on gyro or timeout
+        /*    while(!gpio_readPin(GPIOB, 5)) { }*/
+
+        // Read Gyro
+        gyro_data[X_AXIS] = gyro_read_x() / 10;
+        gyro_data[Y_AXIS] = gyro_read_y() / 10;
+        gyro_data[Z_AXIS] = gyro_read_z() / 10;
+        printf("\r\nGyro\r\n");
+        printf("Gyro X %d\r\n", gyro_data[X_AXIS]);
+        printf("Gyro Y %d\r\n", gyro_data[Y_AXIS]);
+        printf("Gyro Z %d\r\n", gyro_data[Z_AXIS]);
+
+        // Calculate difference Roll, Pitch and Yaw
+        raw_output_roll = gyro_data[ROLL_AXIS] - input_roll;
+        raw_output_pitch =  gyro_data[PITCH_AXIS] - input_pitch;
+        raw_output_yaw =  gyro_data[YAW_AXIS] - input_yaw;
+
+        // PID tunning
+        calc_pid();
+        printf("PID\r\n");
+        printf("pid_output_roll %ld\r\n", pid_output_roll);
+        printf("pid_output_pitch %ld\r\n", pid_output_pitch);
+        printf("pid_output_yaw %ld\r\n", pid_output_yaw);
+
+        // Calculate pulse
+        esc_front_left_val = input_thrst - pid_output_roll - pid_output_pitch + pid_output_yaw;
+        esc_front_right_val = input_thrst + pid_output_roll - pid_output_pitch - pid_output_yaw;
+        esc_back_left_val = input_thrst - pid_output_roll + pid_output_pitch - pid_output_yaw;
+        esc_back_right_val = input_thrst + pid_output_roll + pid_output_pitch + pid_output_yaw;
+
+        printf("ESC\r\n");
+        printf("front_left %d\r\n", esc_front_left_val);
+        printf("front_right %d\r\n", esc_front_right_val);
+        printf("back_left %d\r\n", esc_back_left_val);
+        printf("back_right %d\r\n", esc_back_right_val);
+
+        // Write Motors
+        esc_set_pulse(ESC_TABLE[0], esc_front_left_val);
+        esc_set_pulse(ESC_TABLE[1], esc_front_right_val);
+        esc_set_pulse(ESC_TABLE[2], esc_back_left_val);
+        esc_set_pulse(ESC_TABLE[3], esc_back_right_val);
+    }
+    return true;
+
 }

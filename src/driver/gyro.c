@@ -78,7 +78,7 @@ void gyro_read_fifo()
 
 uint16_t gyro_config()
 {
-    uint8_t CTRL0, CTRL1, CTRL2, F_SETUP;
+  /*  uint8_t CTRL0, CTRL1, CTRL2, F_SETUP;
 
     CTRL1 = SOFT_RESET_21002 | MODE_STANDBY_21002;
     gyro_write(CTRL_REG1_21002, CTRL1);
@@ -97,7 +97,8 @@ uint16_t gyro_config()
 
     CTRL1 = MODE_ACTIVE_21002;
     gyro_write(CTRL_REG1_21002, CTRL1);
-
+*/
+    gyro_write(CTRL_REG1_21002, MODE_ACTIVE_21002);
     return 0;
 }
 
