@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+}
+
+.pad {
+    padding: 0.5em;
+}
+
+h1 {
+    padding: 0.5em;
+    margin: 0;
+}
+
+.frow {
+    display: flex;
+    flex-direction: row;
+}
+
+.fcol {
+    display: flex;
+    flex-direction: column;
+}
+
+.center {
+    text-align: center;
+}
+
+.log {
+    width: 20em;
+    height: 10em;
+    max-height: 10em;
+    overflow-y: scroll;
+    border: 1px solid;
+}
