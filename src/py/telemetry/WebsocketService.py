@@ -14,21 +14,33 @@ from .Daemon import Daemon
 import websockets
 
 @asyncio.coroutine
-def WebsocketHandler():
+def WebsocketHandler(websocket, path):
     """ Handle a websocket connection. """
 
-    name = yield from websocket.recv()
-    print("< {}".format(name))
+    WebsocketService.log_client_action(websocket.remote_address, "connected")
 
-    greeting = "Hello {}!".format(name)
+    while True:
+        try:
+            message = yield from websocket.recv()
+        except websockets.exceptions.ConnectionClosed:
+            WebsocketService.log_client_action(websocket.remote_address,
+                                               "closed connection")
+            return
 
-    yield from websocket.send(greeting)
-    print("> {}".format(greeting))
+        print("websocket: " + message)
+        yield from websocket.send(message)
 
 class WebsocketService(Daemon):
     """ Websocket server daemon. """
 
     log = logging.getLogger(__name__)
+
+    @staticmethod
+    def log_client_action(client, action):
+        """ Convenient logging abstraction. """
+
+        WebsocketService.log.info("websocket client %s: %s:%d", action,
+                                  client[0], client[1])
 
     def start_generator(self, server, loop):
         """ Generate a startup function for a websocket server. """
