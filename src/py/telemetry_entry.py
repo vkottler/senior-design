@@ -12,6 +12,7 @@ from .telemetry.ServiceManager import ServiceManager
 from .telemetry.HttpService import HttpService
 from .telemetry.TcpDataService import TcpDataService
 from .telemetry.TcpCommandService import TcpCommandService
+from .telemetry.WebsocketService import WebsocketService
 
 def main(argv):
     """ Telemetry service hosting entry. """
@@ -35,6 +36,7 @@ def main(argv):
     manager.add_service(HttpService(args.http_port))
     manager.add_service(TcpDataService(args.tcp_data_port))
     manager.add_service(TcpCommandService(args.tcp_cmd_port))
+    manager.add_service(WebsocketService(args.ws_port))
 
     # run all services
     if not manager.run_forever():
