@@ -56,7 +56,7 @@ class TcpTelemetryHandler(StreamRequestHandler):
                 return
 
             # operate on the data
-            self.server.service_handler(data, self.wfile)
+            self.server.service_handler(data, self.wfile, self.server.stream)
 
 class TcpTelemetryService(TelemetryService):
     """ Wrapper for servers leveraging ThreadingTCPServer. """
@@ -88,7 +88,7 @@ class TcpTelemetryService(TelemetryService):
 
         sleep(TcpTelemetryService.poll_sleep_ms)
 
-    def __init__(self, port, service_name, service_handler):
+    def __init__(self, port, service_name, service_handler, stream):
         """ Initialize the tcp telemetry-service daemon. """
 
         self.address = ("", port)
@@ -96,4 +96,5 @@ class TcpTelemetryService(TelemetryService):
         self.server = ThreadingTCPServer(self.address, TcpTelemetryHandler)
         self.server.service_handler = service_handler
         self.server.service_name = service_name
+        self.server.stream = stream
         super().__init__(service_name, self.server, str(port))

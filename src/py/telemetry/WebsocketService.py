@@ -9,26 +9,18 @@ import logging
 
 # internal
 from .Daemon import Daemon
+from .TelemetryService import TelemetryService
 
 # third-party
 import websockets
 
-@asyncio.coroutine
-def WebsocketHandler(websocket, path):
-    """ Handle a websocket connection. """
+class WebsocketWriter():
+    """ Thin class so that we can have an object with a 'write' attribute. """
 
-    WebsocketService.log_client_action(websocket.remote_address, "connected")
+    def __init__(self, write_fn):
+        """ Constructor. """
 
-    while True:
-        try:
-            message = yield from websocket.recv()
-        except websockets.exceptions.ConnectionClosed:
-            WebsocketService.log_client_action(websocket.remote_address,
-                                               "closed connection")
-            return
-
-        print("websocket: " + message)
-        yield from websocket.send(message)
+        self.write = write_fn
 
 class WebsocketService(Daemon):
     """ Websocket server daemon. """
@@ -70,7 +62,40 @@ class WebsocketService(Daemon):
 
         return stop_fn
 
-    def __init__(self, port, name="websocket"):
+    def handler_generator(self, telemetry_stream, command_stream, loop):
+        """
+        Generate a websocket handler that will work with the websockets
+        package.
+        """
+
+        @asyncio.coroutine
+        def handler(websocket, path):
+            """ Handle a websocket connection. """
+
+            WebsocketService.log_client_action(websocket.remote_address, "connected")
+
+            # set this client up as a telemetry subscriber
+            def websocket_writer(message):
+                asyncio.run_coroutine_threadsafe(websocket.send(message),
+                                                 loop=loop)
+            client_str = TelemetryService.client_address_str(websocket.remote_address)
+            telemetry_stream.add_output(client_str, WebsocketWriter(websocket_writer))
+
+            # forward incoming client data to the command stream 
+            while True:
+                try:
+                    message = yield from websocket.recv()
+                except websockets.exceptions.ConnectionClosed:
+                    WebsocketService.log_client_action(websocket.remote_address,
+                                                       "closed connection")
+                    telemetry_stream.remove_output(client_str)
+                    return
+
+                command_stream.write(message)
+
+        return handler
+
+    def __init__(self, port, telemetry_stream, command_stream, name="websocket"):
         """ Initialize the websocket server daemon. """
 
         self.name = name
@@ -79,7 +104,9 @@ class WebsocketService(Daemon):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        server = websockets.serve(WebsocketHandler, '', port)
+        handler = self.handler_generator(telemetry_stream, command_stream, loop)
+
+        server = websockets.serve(handler, '', port)
         run_fn = self.start_generator(server, loop)
         stop_fn = self.stop_generator(loop)
         super().__init__(self.name, run_fn, stop_fn)
