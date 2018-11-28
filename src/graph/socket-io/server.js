@@ -4,6 +4,12 @@ var util = require('util');
 var app = express();
 var http = require('http').Server(app);
 
+const accel_data_line = "accel_line"
+const gyro_data_line = "gyro_line"
+const pid_data_line = "pid_line"
+const esc_data_line = "esc_line"
+const batt_data_line = "batt_line"
+
 
 //TESTING UI LOOK, REMOVE 
 function getRandomIntInclusive(min, max) {
@@ -47,7 +53,7 @@ http.listen(3000, function(){
 
 //TCP CONFIG 
 var net = require('net');
-var HOST = '192.168.1.20';    //CHANGE WHEN IP CHANGES 
+var HOST = '192.168.1.2';    //CHANGE WHEN IP CHANGES 
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000; 
 
@@ -111,6 +117,11 @@ manifest_server.on('connection', function(sock) {
 data_server.on('connection', function(sock) {
     console.log('CONNECTED to TCP via port 6000');
     sock.on('data', (data) => {
+		
+		//Determine the index of incoming data 
+		 	
+
+
 		console.log('data incoming: '+ data.toString());
 	});
 });
