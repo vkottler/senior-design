@@ -28,16 +28,16 @@ app.get('/', function(req, res){
 
 io_3000.on('connection', (socket) => {
   console.log('A user is connected to receive data -- id = ' + socket.id);
-  /*TESTING PURPOSE, REMOVE*/ 
-  
-  setInterval(function(){  
-    var incoming_data = []
-    incoming_data.push({
-      y: getRandomIntInclusive(1,4)
-    });
-    io_3000.emit('testdataLine', incoming_data);  
-  }, 1000);
-  /*TESTING PURPOSE, REMOVE*/ 
+	//DEMO PURPOSE TO POPULATE GRAPH 
+	/*setInterval(function(){  
+		var incoming_accelgyro_data = []
+		incoming_accelgyro_data.push({
+			x: getRandomIntInclusive(1,3),
+			y: getRandomIntInclusive(4,6),
+			z: getRandomIntInclusive(7,9)
+		});
+		io_3000.emit(accel_data_line, incoming_accelgyro_data); 		
+	}, 100);*/
 
   socket.on('disconnect', function(){
     console.log('A user is disconnected to receive data -- id = ' + socket.id);
@@ -53,7 +53,8 @@ http.listen(3000, function(){
 
 //TCP CONFIG 
 var net = require('net');
-var HOST = '192.168.1.2';    //CHANGE WHEN IP CHANGES 
+//var HOST = '192.168.1.2';    //PI IP
+var HOST = '10.141.65.106';		 //death-star IP
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000; 
 
@@ -118,19 +119,65 @@ data_server.on('connection', function(sock) {
     console.log('CONNECTED to TCP via port 6000');
     sock.on('data', (data) => {
 		
-		//Determine the index of incoming data 
-		 	
-
-
-		console.log('data incoming: '+ data.toString());
+		//TODO: See what type of data is coming in, forward it on that line (check indexs and size)
+		var curr_byte = 0 
+		var channel_count = data.readUInt32LE(curr_byte);	//see number of channels in packet
+		curr_byte = curr_byte + 4
+		var packet_total_size = data.readUInt32LE(curr_byte)
+		curr_byte = curr_byte + 4
+		var channel_indexes = []; //see all the channels in packet
+		//find the indexs of the channels 
+		for(i = 0; i < channel_count;i++ ){
+			channel_indexes[i] = data.readUInt32LE(curr_byte)
+			curr_byte = curr_byte + 4
+		}
+		//should be at the start of data bytes 
+		switch(true) {
+			//ACCEL DATA
+			case (channel_indexes[0] < 3):
+				var data_size_arr = []
+			  for(i = 0; i < channel_count;i++){
+					data_size_arr[i] = manifest_arr[channel_indexes[i].size]
+				}
+				var incoming_accel_data = []
+				//using the manifest and corresponding data size, index packet to get data vals 
+				var accel_x = data.readUInt32LE(curr_byte ,data_size_arr[0])
+				curr_byte = curr_byte + data_size_arr[0]; 
+				var accel_y = data.readUInt32LE(curr_byte,data_size_arr[1])
+				curr_byte = curr_byte + data_size_arr[1]; 
+				var accel_z = data.readUInt32LE(curr_byte,data_size_arr[2])
+				incoming_accelgyro_data.push({
+					x: accel_x,
+					y: accel_y,
+					z: accel_z
+				})
+				io_3000.emit(accel_data_line, incoming_accel_data); 		
+				break;
+			//GYRO DATA
+			case (channel_indexes[0] < 6):
+				io_3000.emit(gyro_data_line, data); 		
+				break;	
+			//PID DATA
+			case (channel_indexes[0] < 9):
+				io_3000.emit(pid_data_line, data); 		
+				break;
+			//ESC DATA
+			case (channel_indexes[0] < 13):
+				io_3000.emit(esc_data_line, data); 		
+				break;	
+			//BATT DATA
+			case (channel_indexes[0] < 18):
+				io_3000.emit(batt_data_line, data); 		
+				break;	
+			default:
+					console.log('No telem found')
+			}	
 	});
 });
 
 
-function print_array(arr)
-{
-	for(i = 0; i<arr.length;i++)
-	{
+function print_array(arr){
+	for(i = 0; i<arr.length;i++){
 		console.log("-------------------------------------------")
 		console.log("Channel Index: " + arr[i].index)
 		console.log("Channel Type: " + arr[i].data_type)
@@ -138,6 +185,9 @@ function print_array(arr)
 		console.log("Channel Name: " + arr[i].name)
 		console.log("Channel Units: " + arr[i].units)
 	}
+}
 
+function find_telem_category(index){
+	return manifest_arr[index].name;
 }
 

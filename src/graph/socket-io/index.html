@@ -61,7 +61,6 @@
           <button class="tablinks" onclick="openTab(event, 'Manifest')">Channel Manifest</button>
 
         </div>
-
         <!-- Accel/Gyro Graph Tab -->
         <div id="Accel_Gyro_Graphs" class="tabcontent">
           <table cellspacing="0" style="width:100%" >
@@ -139,7 +138,6 @@
           </table>
         </div>
 
-     
         <!-- All Telem Tab -->
         <div id="Raw Data" class="tabcontent">
           <table cellspacing="0" style="width:100%" >
@@ -245,7 +243,7 @@
 
         </div>
 
-        <!-- Channel Manifest -->
+        <!-- Channel Manifest Tab -->
         <div id="Manifest" class="tabcontent">
           <table cellspacing="0" style="width:100%" id = "manifest_table">
             <tr>
@@ -607,7 +605,7 @@
             ]
           });
 
-          //Real DATALINE Implementation 
+          //Real DATALINE Implementation (WILL REMOVE) 
           $(function () {
               var socket = io();
               socket.on('dataLine', (data_set) =>
@@ -650,11 +648,170 @@
                   gyro_chart_x.render();
                   gyro_chart_y.render();
                   gyro_chart_z.render();
-
-
               });
-            });
+            });        
           
+          const accel_data_line = "accel_line"
+          const gyro_data_line = "gyro_line"
+          const pid_data_line = "pid_line"
+          const esc_data_line = "esc_line"
+          const batt_data_line = "batt_line"
+          
+          //Accel Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(accel_data_line, (data_set) =>
+            {
+              var incoming_accel_x = data_set[0].x
+              var incoming_accel_y = data_set[0].y
+              var incoming_accel_z = data_set[0].z
+              
+              console.log("--incoming accel data set -- ")
+              console.log("incoming accel x: ",incoming_accel_x);
+              console.log("incoming accel y: ",incoming_accel_y);
+              console.log("incoming accel z: ",incoming_accel_z);
+              console.log("-------------------- ")
+              
+              //Method to find all instances of accel vals and sets it accordinly in html
+              displayVals("accel_x",incoming_accel_x);
+              displayVals("accel_y",incoming_accel_y);
+              displayVals("accel_z",incoming_accel_z);
+
+                //PUSH ACCEL VALUES TO RESPECTIVE GRAPH DATA SETS
+                data_accel_x.push({
+                  y: incoming_accel_x 
+                });
+                data_accel_y.push({
+                  y: incoming_accel_y
+                });
+                data_accel_z.push({
+                  y: incoming_accel_z
+                });
+                
+                accel_chart_x.render();
+                accel_chart_y.render();
+                accel_chart_z.render();
+              });
+            });   
+
+          //Gyro Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(gyro_data_line, (data_set) =>
+            {
+              var incoming_gyro_x = data_set[0].x
+              var incoming_gyro_y = data_set[0].y
+              var incoming_gyro_z = data_set[0].z
+              
+              //Method to find all instances of gyro vals and sets it accordinly in html
+              displayVals("gyro_x",incoming_gyro_x);
+              displayVals("gyro_y",incoming_gyro_y);
+              displayVals("gyro_z",incoming_gyro_z);
+
+              //PUSH GYRO VALS TO ARRAY 
+              data_gyro_x.push({
+                y: incoming_gyro_x 
+              });
+              data_gyro_y.push({
+                y: incoming_gyro_y
+              });
+              data_gyro_z.push({
+                y: incoming_gyro_z
+              });
+                
+              gyro_chart_x.render();
+              gyro_chart_y.render();
+              gyro_chart_z.render();
+            });
+          });   
+            
+          //PID Dataline Implementation 
+           $(function () {
+            var socket = io();
+            socket.on(pid_data_line, (data_set) =>
+            {
+              var incoming_pid_pitch = data_set[0].pitch
+              var incoming_pid_roll = data_set[0].roll
+              var incoming_pid_yaw = data_set[0].yaw
+                            
+              //Method to find all instances of pid vals and sets it accordinly in html
+              displayVals("pid_pitch",incoming_pid_pitch);
+              displayVals("pid_roll",incoming_pid_roll);
+              displayVals("pid_yaw",incoming_pid_yaw);
+
+                  //PUSH GYRO VALS TO ARRAY 
+              data_pitch.push({
+                y: incoming_pid_pitch 
+              });
+              data_roll.push({
+                y: incoming_pid_roll
+              });
+              data_yaw.push({
+                y: incoming_pid_yaw
+              });
+                
+              pid_pitch_chart.render();
+              pid_roll_chart.render();
+              pid_yaw_chart.render();
+            });
+          });   
+               
+          //ESC Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(esc_data_line, (data_set) =>
+            {
+              var incoming_esc_FL = data_set[0].FL
+              var incoming_esc_FR = data_set[0].FR
+              var incoming_esc_BL = data_set[0].BL
+              var incoming_esc_BR = data_set[0].BR
+                            
+              //Method to find all instances of esc vals and sets it accordinly in html
+              displayVals("esc_front_left",incoming_esc_FL);
+              displayVals("esc_front_right",incoming_esc_FR);
+              displayVals("esc_back_left",incoming_esc_BL);
+              displayVals("esc_back_right",incoming_esc_BR);
+
+              //PUSH ESC VALS TO ARRAY 
+              data_esc_frontleft.push({
+                y: incoming_esc_FL 
+              });
+              data_esc_frontright.push({
+                y: incoming_esc_FR
+              });
+              data_esc_backleft.push({
+                y: incoming_esc_BL
+              });
+              data_esc_backright.push({
+                y: incoming_esc_BR
+              });
+                
+              esc_front_left_chart.render();
+              esc_front_right_chart.render();
+              esc_back_left_chart.render();
+              esc_back_right_chart.render();
+            });
+          });
+          
+          //Batt Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(esc_data_line, (data_set) =>
+            {
+              var batt_total = data_set[0].batt_total
+              var batt_cell1 = data_set[0].batt_cell1
+              var batt_cell2 = data_set[0].batt_cell2
+              var batt_cell3 = data_set[0].batt_cell3
+              var batt_current = data_set[0].batt_current
+
+              //Method to find all instances of batt vals and sets it accordinly in html
+              displayVals("batt_cell1",batt_cell1);
+              displayVals("batt_cell2",batt_cell2);
+              displayVals("batt_cell3",batt_cell3);
+              displayVals("batt_total",batt_total);
+              displayVals("batt_current",batt_current);
+            });
+          });
 
           //Function to display variable in html (iterates through all counts  of elements and sets values accordingly)
           function displayVals(elm_name, value) {
@@ -667,110 +824,111 @@
           
           //Testing DATALINE Implementation 
           $(function () {
-              var socket = io();
-              socket.on('testdataLine', (data_set) =>
-              {
-                var incoming_test_val = data_set[0].y
+            var socket = io();
+            socket.on('testdataLine', (data_set) =>
+            {
+              var incoming_test_val = data_set[0].y
+              
+              var acceldata = incoming_test_val+1;
+              var gyrodata = incoming_test_val+2;
+              var piddata = incoming_test_val+3;
+              var escdata = incoming_test_val+4;
+              var battdata = incoming_test_val+5;
+
+              //Setting the UI values 
+              displayVals("accel_x",acceldata);
+              displayVals("accel_y",acceldata);
+              displayVals("accel_z",acceldata);
+              
+              displayVals("gyro_x",gyrodata);
+              displayVals("gyro_y",gyrodata);
+              displayVals("gyro_z",gyrodata);
+              
+              displayVals("pid_pitch",piddata);
+              displayVals("pid_roll",piddata);
+              displayVals("pid_yaw",piddata);
+              
+              displayVals("esc_front_left",escdata);
+              displayVals("esc_front_right",escdata);
+              displayVals("esc_back_left",escdata);
+              displayVals("esc_back_right",escdata);
+              
+              displayVals("batt_cell1",battdata);
+              displayVals("batt_cell2",battdata);
+              displayVals("batt_cell3",battdata);
+              displayVals("batt_total",battdata);
+              displayVals("batt_current",battdata);
+
+                //PUSH ACCEL VALUES TO ARRAY
+                data_accel_x.push({
+                  y: acceldata 
+                });
+                data_accel_y.push({
+                  y: acceldata
+                });
+                data_accel_z.push({
+                  y: acceldata
+                });
+
+                //PUSH GYRO VALS TO ARRAY 
+                data_gyro_x.push({
+                  y: gyrodata 
+                });
+                data_gyro_y.push({
+                  y: gyrodata
+                });
+                data_gyro_z.push({
+                  y: gyrodata
+                });
                 
-                var acceldata = incoming_test_val+1;
-                var gyrodata = incoming_test_val+2;
-                var piddata = incoming_test_val+3;
-                var escdata = incoming_test_val+4;
-                var battdata = incoming_test_val+5;
-
-                //Setting the UI values 
-                displayVals("accel_x",acceldata);
-                displayVals("accel_y",acceldata);
-                displayVals("accel_z",acceldata);
+                //PUSH PID VALS TO ARRAY 
+                data_pitch.push({
+                  y: piddata 
+                });
+                data_roll.push({
+                  y: piddata
+                });
+                data_yaw.push({
+                  y: piddata
+                });
                 
-                displayVals("gyro_x",gyrodata);
-                displayVals("gyro_y",gyrodata);
-                displayVals("gyro_z",gyrodata);
+                //PUSH ESC VALS TO ARRAY 
+                data_esc_frontleft.push({
+                  y: escdata 
+                });
+                data_esc_frontright.push({
+                  y: escdata
+                });
+                data_esc_backleft.push({
+                  y: escdata
+                });
+                data_esc_backright.push({
+                  y: escdata
+                });
+
+                //RENDER ALL CHARTS
+                accel_chart_x.render();
+                accel_chart_y.render();
+                accel_chart_z.render();
                 
-                displayVals("pid_pitch",piddata);
-                displayVals("pid_roll",piddata);
-                displayVals("pid_yaw",piddata);
-                
-                displayVals("esc_front_left",escdata);
-                displayVals("esc_front_right",escdata);
-                displayVals("esc_back_left",escdata);
-                displayVals("esc_back_right",escdata);
-                
-                displayVals("batt_cell1",battdata);
-                displayVals("batt_cell2",battdata);
-                displayVals("batt_cell3",battdata);
-                displayVals("batt_total",battdata);
-                displayVals("batt_current",battdata);
+                gyro_chart_x.render();
+                gyro_chart_y.render();
+                gyro_chart_z.render();
 
-                  //PUSH ACCEL VALUES TO ARRAY
-                  data_accel_x.push({
-                    y: acceldata 
-                  });
-                  data_accel_y.push({
-                    y: acceldata
-                  });
-                  data_accel_z.push({
-                    y: acceldata
-                  });
+                pid_pitch_chart.render();
+                pid_roll_chart.render();
+                pid_yaw_chart.render();
 
-                  //PUSH GYRO VALS TO ARRAY 
-                  data_gyro_x.push({
-                    y: gyrodata 
-                  });
-                  data_gyro_y.push({
-                    y: gyrodata
-                  });
-                  data_gyro_z.push({
-                    y: gyrodata
-                  });
-                  
-                  //PUSH PID VALS TO ARRAY 
-                  data_pitch.push({
-                    y: piddata 
-                  });
-                  data_roll.push({
-                    y: piddata
-                  });
-                  data_yaw.push({
-                    y: piddata
-                  });
-                  
-                  //PUSH ESC VALS TO ARRAY 
-                  data_esc_frontleft.push({
-                    y: escdata 
-                  });
-                  data_esc_frontright.push({
-                    y: escdata
-                  });
-                  data_esc_backleft.push({
-                    y: escdata
-                  });
-                  data_esc_backright.push({
-                    y: escdata
-                  });
-
-                  //RENDER ALL CHARTS
-                  accel_chart_x.render();
-                  accel_chart_y.render();
-                  accel_chart_z.render();
-                  
-                  gyro_chart_x.render();
-                  gyro_chart_y.render();
-                  gyro_chart_z.render();
-
-                  pid_pitch_chart.render();
-                  pid_roll_chart.render();
-                  pid_yaw_chart.render();
-
-                  esc_front_left_chart.render();
-                  esc_front_right_chart.render();
-                  esc_back_left_chart.render();
-                  esc_back_right_chart.render();
+                esc_front_left_chart.render();
+                esc_front_right_chart.render();
+                esc_back_left_chart.render();
+                esc_back_right_chart.render();
 
 
-              });
             });
-
+          });
+          
+          //MANIFEST DATALINE
           $(function () {
             var socket = io();
             socket.on('manifestLine', (data_set) =>
