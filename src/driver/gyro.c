@@ -1,5 +1,5 @@
 #include "gyro.h"
-#include "i2c.h"
+#include "spi.h"
 #include "board.h"
 #include <string.h>
 
@@ -7,26 +7,52 @@ uint8_t buff[WATERMARK_SIZE];
 
 void gyro_write(uint8_t reg, uint8_t data)
 {
-    delay(10);
-    uint8_t data_send[2];
-    data_send[0] = reg;
-    data_send[1] = data;
-    i2c_write(GYRO_ADDR, data_send, 2, 1);
+ uint8_t tx_buff[2];
+ tx_buff[0] = reg;
+ tx_buff[1] = data;
+ uint8_t len = 2;
+
+ SET_BIT(SPI1->CR1, SPI_CR1_BIDIOE);                  // Tx direction, clock off
+ SET_BIT(SPI1->CR1, SPI_CR1_SPE);                     // SPI On
+ for (uint16_t cnt = 0; cnt < len; cnt++ )
+  {
+   while ( (SPI1->SR & SPI_SR_TXE) != SPI_SR_TXE)     // Control TX fifo is empty
+    {}
+   LL_SPI_TransmitData8(SPI1,tx_buff[cnt]);
+  }  
+ while ( SPI1->SR & SPI_SR_BSY )                      // Control the BSY flag
+  {}
+ CLEAR_BIT(SPI1->CR1, SPI_CR1_SPE);                   // SPI Off
+LL_SPI_ReceiveData16(SPI1);
+LL_SPI_ReceiveData16(SPI1);
+
+
 }
 
 void gyro_read(uint8_t reg, uint8_t *data)
 {
-    delay(10);
-    data[0] = reg;
-    i2c_write(GYRO_ADDR, data, 1, 0);
-    i2c_read(GYRO_ADDR, data, 1);
+ uint8_t tx_buff[2];
+ tx_buff[0] = 0x80 | reg;
+ tx_buff[1] = 0x00;
+ uint8_t len = 2;
+ SET_BIT(SPI1->CR1, SPI_CR1_BIDIOE);                  // Tx direction, clock off
+ SET_BIT(SPI1->CR1, SPI_CR1_SPE);                     // SPI On
+ for (uint16_t cnt = 0; cnt < len; cnt++ )
+  {
+   while ( (SPI1->SR & SPI_SR_TXE) != SPI_SR_TXE)     // Control TX fifo is empty
+    {}
+   LL_SPI_TransmitData16(SPI1,tx_buff[cnt]);
+  }  
+ while ( SPI1->SR & SPI_SR_BSY )                      // Control the BSY flag
+  {}
+ CLEAR_BIT(SPI1->CR1, SPI_CR1_SPE);                   // SPI Off
+/* printf("DR 0x%x\r\n", (uint8_t)SPI1->DR);*/
+    *data = (SPI1->DR)>> 8;
+    SPI1->DR;
 }
 
 void gyro_read_multiple(uint8_t reg, uint8_t *data, uint16_t size)
 {
-    data[0] = reg;
-    i2c_write(GYRO_ADDR, data, 1, 0);
-    i2c_read(GYRO_ADDR, data, size);
 }
 
 uint8_t gyro_who_am_i()
@@ -39,9 +65,11 @@ uint8_t gyro_who_am_i()
 int16_t gyro_read_x()
 {
     uint8_t data_msb[1];
+    printf("MSB\r\n");
     gyro_read(OUT_X_MSB_21002, data_msb);
 
     uint8_t data_lsb[1];
+    printf("LSB\r\n");
     gyro_read(OUT_X_LSB_21002, data_lsb);
 
     return (int16_t) (data_msb[0] << 8 | data_lsb[0]);
@@ -98,7 +126,10 @@ uint16_t gyro_config()
     CTRL1 = MODE_ACTIVE_21002;
     gyro_write(CTRL_REG1_21002, CTRL1);
 */
+    uint8_t data[1];
     gyro_write(CTRL_REG1_21002, MODE_ACTIVE_21002);
+    gyro_read(CTRL_REG1_21002, data);
+    printf("CTRL_REG1 0x%x\r\n", data[0]);
     return 0;
 }
 

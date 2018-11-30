@@ -5,3 +5,5 @@ SRCS += driver/accel.c
 SRCS += driver/gyro.c
 SRCS += driver/esc.c
 SRCS += driver/timer.c
+SRCS += driver/adc.c
+SRCS += driver/spi.c

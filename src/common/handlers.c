@@ -4,6 +4,7 @@
 #include "gyro.h"
 #include "board.h"
 #include "i2c.h"
+#include "spi.h"
 #include "gpio.h"
 #include <unistd.h>
 
@@ -14,8 +15,8 @@ void blink_handler(unsigned int blink_int) {
     curr = ticks / blink_int;
     if (curr != prev)
     {
-        if (curr % 2) gpio_resetPin(GPIOA, 5);
-        else gpio_setPin(GPIOA, 5);
+        if (curr % 2) gpio_resetPin(GPIOA, 1);
+        else gpio_setPin(GPIOA, 1);
     }
     prev = curr;
 }
@@ -26,16 +27,9 @@ void telem_handler(unsigned int interval) {
     if (!(ticks % interval) && ticks != last_tick)
     {
         last_tick = ticks;
-        short accel_data[3];
-        accel_data[0] = accel_read_x();
-        accel_data[1] = accel_read_y();
-        accel_data[2] = accel_read_z();
-        short gyro_data[3];
-        gyro_data[0] = gyro_read_x();
-        gyro_data[1] = gyro_read_y();
-        gyro_data[2] = gyro_read_z();
-        write(RADIO_FD, (void*)accel_data, 6);
-        write(RADIO_FD, (void*)gyro_data, 6);
+    printf("X: %d\r\n", gyro_read_x());
+    printf("Y: %d\r\n", gyro_read_y());
+    printf("Z: %d\r\n", gyro_read_z());
     }
 }
 

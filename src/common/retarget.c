@@ -11,10 +11,10 @@
 
 int _write(int fd, const void *buf, size_t count) {
     const char * buf_ptr = buf;
-    USART_TypeDef* interface = USB_UART;
+    USART_TypeDef* interface = USART1;
 
     if(RADIO_FD == fd) {
-        interface = USART1;
+        interface = USART2;
     }
 
 	for (fd = 0; (size_t) fd < count; fd++) {
@@ -26,7 +26,7 @@ int _write(int fd, const void *buf, size_t count) {
 
 int _read(int fd, const void *buf, size_t count) {
     const char * buf_ptr = buf;
-    USART_TypeDef* interface = USB_UART;
+    USART_TypeDef* interface = USART1;
 
     if(RADIO_FD == fd) {
         interface = USART1;

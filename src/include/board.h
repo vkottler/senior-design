@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <handlers.h>
 
-#define USB_UART USART2
-
 #define RADIO_FD 55
 
 int io_init(void);

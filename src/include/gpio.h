@@ -36,7 +36,7 @@ typedef enum {
 	RADIO =		0x08,
 	LED =		0x10,
 	I2C =		0x20,
-	PRESSURE =	0x40
+	SPI =	0x40
 } GPIO_GROUP;
 
 typedef struct _GPIO {

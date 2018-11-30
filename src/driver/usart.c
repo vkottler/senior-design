@@ -2,12 +2,14 @@
 #include "usart.h"
 #include "pcbuffer.h"
 
-PC_Buffer *tx_buf[2], *rx_buf[2];
+PC_Buffer *tx_buf[3], *rx_buf[3];
 
 inline PC_Buffer *get_tx(USART_TypeDef* usart) {
 	switch ((uint32_t) usart) {
 	case USART1_BASE:  return tx_buf[0];
 	case USART2_BASE:  return tx_buf[1];
+	case USART3_BASE:  return tx_buf[2];
+/*	case UART4_BASE:  return tx_buf[2];*/
 	}
 	return NULL;
 }
@@ -16,6 +18,8 @@ inline PC_Buffer *get_rx(USART_TypeDef* usart) {
 	switch ((uint32_t) usart) {
 	case USART1_BASE:  return rx_buf[0];
 	case USART2_BASE:  return rx_buf[1];
+	case USART3_BASE:  return rx_buf[2];
+/*	case UART4_BASE:  return rx_buf[2];*/
 	}
 	return NULL;
 }
@@ -63,6 +67,8 @@ static IRQn_Type uart_get_irq_num(USART_TypeDef* usart) {
 	switch((uint32_t) usart) {
 		case USART1_BASE:	return USART1_IRQn;
 		case USART2_BASE:	return USART2_IRQn;
+		case USART3_BASE:	return USART3_IRQn;
+/*		case UART4_BASE:	return UART4_IRQn;*/
 		/* don't tamper with a random IRQ */
 		default:			return USART1_IRQn;
 	}
@@ -94,6 +100,27 @@ static int usart_bufferInit(USART_TypeDef* usart) {
 			return -1;
 		break;
 
+	case USART3_BASE:
+		tx_buf[2] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
+		rx_buf[2] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
+		if (!tx_buf[2] || !rx_buf[2])
+			return -1;
+		if (!pc_buffer_init(tx_buf[2], USART_BUF))
+			return -1;
+		if (!pc_buffer_init(rx_buf[2], USART_BUF))
+			return -1;
+		break;
+/*	case UART4_BASE:*/
+/*		tx_buf[2] = (PC_Buffer *) malloc(sizeof(PC_Buffer));*/
+/*		rx_buf[2] = (PC_Buffer *) malloc(sizeof(PC_Buffer));*/
+/*		if (!tx_buf[2] || !rx_buf[2])*/
+/*			return -1;*/
+/*		if (!pc_buffer_init(tx_buf[2], USART_BUF))*/
+/*			return -1;*/
+/*		if (!pc_buffer_init(rx_buf[2], USART_BUF))*/
+/*			return -1;*/
+/*		break;*/
+
 	default: return -1;
 
 	}
@@ -117,6 +144,16 @@ static int usart_setClock(USART_TypeDef* usart, bool state) {
 		reg = &RCC->APB1ENR;
 		bit = RCC_APB1ENR_USART2EN_Pos;
 		break;
+
+	case USART3_BASE:
+		reg = &RCC->APB1ENR;
+		bit = RCC_APB1ENR_USART3EN_Pos;
+		break;
+
+/*	case UART4_BASE:*/
+/*		reg = &RCC->APB1ENR;*/
+/*		bit = RCC_APB1ENR_UART4EN_Pos;*/
+/*		break;*/
 
 	default: return -1;
 
@@ -279,3 +316,13 @@ void USART2_Handler(void) {
 	static char prev1 = '\0', prev2 = '\0';
 	USART_Handler(USART2, tx_buf[1], rx_buf[1], &prev1, &prev2);
 }
+
+void USART3_Handler(void) {
+	static char prev1 = '\0', prev2 = '\0';
+	USART_Handler(USART3, tx_buf[2], rx_buf[2], &prev1, &prev2);
+}
+
+/*void UART4_Handler(void) {*/
+/*	static char prev1 = '\0', prev2 = '\0';*/
+/*	USART_Handler(UART4, tx_buf[2], rx_buf[2], &prev1, &prev2);*/
+/*}*/

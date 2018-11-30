@@ -12,7 +12,7 @@ int main(void)
     {
         blink_handler(500);
         telem_handler(1000);
-        check_input();
+/*        check_input();*/
     }
 
     return 0;
