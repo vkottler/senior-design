@@ -54,7 +54,7 @@ http.listen(3000, function(){
 //TCP CONFIG 
 var net = require('net');
 //var HOST = '192.168.1.2';    //PI IP
-var HOST = '10.141.65.106';		 //death-star IP
+var HOST = '172.16.42.157';		 //death-star IP
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000; 
 
@@ -115,6 +115,7 @@ manifest_server.on('connection', function(sock) {
 
 
 //GET INCOMING STREAM OF DATA 
+/* This is the rought impl of incomign data 
 data_server.on('connection', function(sock) {
     console.log('CONNECTED to TCP via port 6000');
     sock.on('data', (data) => {
@@ -131,6 +132,9 @@ data_server.on('connection', function(sock) {
 			channel_indexes[i] = data.readUInt32LE(curr_byte)
 			curr_byte = curr_byte + 4
 		}
+		console.log(channel_count)
+		console.log(packet_total_size)
+		console.log(channel_count[1])
 		//should be at the start of data bytes 
 		switch(true) {
 			//ACCEL DATA
@@ -174,6 +178,18 @@ data_server.on('connection', function(sock) {
 			}	
 	});
 });
+*/
+data_server.on('connection', function(sock) {
+    console.log('CONNECTED to TCP via port 6000');
+    sock.on('data', (data) => {
+		console.log("this is the size of the incoming buffer: " + data.length)
+		for(i = 0; i < data.length-32; i++){
+		console.log(data.readUInt32LE(i))	//see number of channels in packet
+		console.log(data.toString('utf8',i,i+20));
+
+	}
+	});
+});
 
 
 function print_array(arr){
@@ -186,8 +202,3 @@ function print_array(arr){
 		console.log("Channel Units: " + arr[i].units)
 	}
 }
-
-function find_telem_category(index){
-	return manifest_arr[index].name;
-}
-
