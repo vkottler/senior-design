@@ -16,56 +16,6 @@
 
 void i2c_config();
 void spi_config();
-void SPI1WriteRead(uint8_t *pData, uint8_t *dstData, uint16_t len)
-{
- SET_BIT(SPI1->CR1, SPI_CR1_BIDIOE);                  // Tx direction, clock off
- SET_BIT(SPI1->CR1, SPI_CR1_SPE);                     // SPI On
- for (uint16_t cnt = 0; cnt < len; cnt++ )
-  {
-   while ( (SPI1->SR & SPI_SR_TXE) != SPI_SR_TXE)     // Control TX fifo is empty
-    {}
-   LL_SPI_TransmitData8(SPI1,*pData++);
-  } 
- while ( SPI1->SR & SPI_SR_BSY )                      // Control the BSY flag
-  {}
- CLEAR_BIT(SPI1->CR1, SPI_CR1_SPE);                   // SPI Off
-/*   printf("DR 0x%lx\r\n", SPI1->DR);*/
-    *dstData = (SPI1->DR)>> 8;
-}
-
-void SPI1Write(uint8_t *pData, uint16_t len)
-{
- SET_BIT(SPI1->CR1, SPI_CR1_BIDIOE);                  // Tx direction, clock off
- SET_BIT(SPI1->CR1, SPI_CR1_SPE);                     // SPI On
- for (uint16_t cnt = 0; cnt < len; cnt++ )
-  {
-   while ( (SPI1->SR & SPI_SR_TXE) != SPI_SR_TXE)     // Control TX fifo is empty
-    {}
-   LL_SPI_TransmitData8(SPI1,*pData++);
-  }
- while ( SPI1->SR & SPI_SR_BSY )                      // Control the BSY flag
-  {}
- CLEAR_BIT(SPI1->CR1, SPI_CR1_SPE);                   // SPI Off
-}
-//---------------------------------------------------------------------------------------------------
-void SPI1Read(uint8_t *pData, uint16_t len)
-{
-/* uint32_t tmp;*/
- while ( SPI1->SR & SPI_SR_RXNE )                      // Clear FIFO
-  { SPI1->DR;
-  }
- CLEAR_BIT(SPI1->CR1, SPI_CR1_BIDIOE);                // Rx direction
- SET_BIT(SPI1->CR2, SPI_CR2_FRXTH);                   // 1/4 Fifo = 8-bit
- SET_BIT(SPI1->CR1, SPI_CR1_SPE);                     // SPI On
- for (uint16_t cnt = 0; cnt < len; cnt++ )
-  {while ( (SPI1->SR & SPI_SR_RXNE) != SPI_SR_RXNE)
-    {}
-   *pData++ = LL_SPI_ReceiveData8(SPI1);
-  }
- CLEAR_BIT(SPI1->CR1, SPI_CR1_SPE);                   // SPI Off
- while ( SPI1->SR & SPI_SR_BSY )          
-  {}
-}
 
 void delay(uint32_t ms)
 {
@@ -97,20 +47,9 @@ int periph_init(void) {
     spi_config();
     printf("SPI INIT\r\n");
 
-/*    uint8_t tx_buff[2];*/
-/*    uint8_t rx_buff[2];*/
-    
-/*    tx_buff[0] = 0x8C;*/
-/*    tx_buff[1] = 0x00;*/
-
-/*    SPI1WriteRead(tx_buff, rx_buff, 2);*/
-/*    SPI1Write(tx_buff, 2);*/
-/*    SPI1Read(rx_buff, 2);*/
-
-/*    printf("WHO AM I 0x%x\r\n", rx_buff[0]);*/
 
     gyro_config();
-    printf("X: 0x%x\r\n", gyro_read_x());
+/*    printf("X: 0x%x\r\n", gyro_read_x());*/
     printf("System Core Clock: %ld\r\n", SystemCoreClock);
     printPrompt();
 
@@ -160,22 +99,27 @@ void i2c_config()
 
 void spi_config()
 {
+    NVIC_SetPriority(SPI1_IRQn, 0);
+    NVIC_EnableIRQ(SPI1_IRQn);
 
-  LL_SPI_InitTypeDef SPI_InitStruct;
+    LL_SPI_InitTypeDef SPI_InitStruct;
 
-  RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+    RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 
-  SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
-  SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
-  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
-  SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
-  SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
-  SPI_InitStruct.NSS = LL_SPI_NSS_HARD_OUTPUT;
-  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV8;
-  SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
-  SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
-  SPI_InitStruct.CRCPoly = 7;
-LL_SPI_Init(SPI1, &SPI_InitStruct);
+    SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
+    SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
+    SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
+    SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
+    SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
+    SPI_InitStruct.NSS = LL_SPI_NSS_HARD_OUTPUT;
+    SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV8;
+    SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
+    SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
+    SPI_InitStruct.CRCPoly = 7;
+    LL_SPI_Init(SPI1, &SPI_InitStruct);
+    LL_SPI_EnableIT_RXNE(SPI1);
+    LL_SPI_EnableIT_TXE(SPI1);
+    LL_SPI_EnableIT_ERR(SPI1);
 }
 
 
