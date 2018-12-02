@@ -10,6 +10,8 @@ const pid_data_line = "pid_line"
 const esc_data_line = "esc_line"
 const batt_data_line = "batt_line"
 
+const buffer_offset = 4;
+
 
 //TESTING UI LOOK, REMOVE 
 function getRandomIntInclusive(min, max) {
@@ -38,9 +40,12 @@ io_3000.on('connection', (socket) => {
 		});
 		io_3000.emit(accel_data_line, incoming_accelgyro_data); 		
 	}, 100);*/
-
+   var server_status = 1 
+   io_3000.emit("server_status", server_status); 		
   socket.on('disconnect', function(){
-    console.log('A user is disconnected to receive data -- id = ' + socket.id);
+	  server_status = 0;
+	console.log('A user is disconnected to receive data -- id = ' + socket.id);
+	io_3000.emit("server_status", server_status); 		
   });
 });
 
@@ -53,8 +58,9 @@ http.listen(3000, function(){
 
 //TCP CONFIG 
 var net = require('net');
-//var HOST = '192.168.1.2';    //PI IP
-var HOST = '172.16.42.157';		 //death-star IP
+//var HOST = '192.168.1.2';    	//PI IP
+//var HOST = '10.141.65.106';		//death-star IP
+var HOST = '172.16.42.157';		//apt IP 
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000; 
 
@@ -83,14 +89,13 @@ manifest_server.on('connection', function(sock) {
 		
 		//indexing into buffer (vaughn will throw up, need to change these in future)
 		var max_str_len = 32; 
-		var manifest_byte_offset = 4;
 		
 		console.log("Total buffer size: " + byte_len);
 		for(i = 0; i < byte_len; i += ind_buff_size)	
 		{	
 			var channel_index = data.readUInt32LE(i)  
-			var channel_type = data.readUInt32LE(i+manifest_byte_offset)
-			var channel_size = data.readUInt32LE(i+(2*manifest_byte_offset))
+			var channel_type = data.readUInt32LE(i+buffer_offset)
+			var channel_size = data.readUInt32LE(i+(2*buffer_offset))
 			var channel_string = data.toString('utf8',i,i+max_str_len);
 			var split = channel_string.split(',');
 			var channel_name = split[0]; 
@@ -138,24 +143,7 @@ data_server.on('connection', function(sock) {
 		//should be at the start of data bytes 
 		switch(true) {
 			//ACCEL DATA
-			case (channel_indexes[0] < 3):
-				var data_size_arr = []
-			  for(i = 0; i < channel_count;i++){
-					data_size_arr[i] = manifest_arr[channel_indexes[i].size]
-				}
-				var incoming_accel_data = []
-				//using the manifest and corresponding data size, index packet to get data vals 
-				var accel_x = data.readUInt32LE(curr_byte ,data_size_arr[0])
-				curr_byte = curr_byte + data_size_arr[0]; 
-				var accel_y = data.readUInt32LE(curr_byte,data_size_arr[1])
-				curr_byte = curr_byte + data_size_arr[1]; 
-				var accel_z = data.readUInt32LE(curr_byte,data_size_arr[2])
-				incoming_accelgyro_data.push({
-					x: accel_x,
-					y: accel_y,
-					z: accel_z
-				})
-				io_3000.emit(accel_data_line, incoming_accel_data); 		
+			case (channel_indexes[0] < 3):		
 				break;
 			//GYRO DATA
 			case (channel_indexes[0] < 6):
@@ -179,15 +167,94 @@ data_server.on('connection', function(sock) {
 	});
 });
 */
+
+function increment_byte_index(curr_byte,max_byte){
+	if(curr_byte < max_byte)
+	{
+		curr_byte += 4;	//get next chunk of data (32 bits, 4 bytes)
+	}
+	return curr_byte;
+}
+
 data_server.on('connection', function(sock) {
     console.log('CONNECTED to TCP via port 6000');
     sock.on('data', (data) => {
-		console.log("this is the size of the incoming buffer: " + data.length)
-		for(i = 0; i < data.length-32; i++){
-		console.log(data.readUInt32LE(i))	//see number of channels in packet
-		console.log(data.toString('utf8',i,i+20));
+		console.log("Size of the incoming buffer: " + data.length)
+		var byte_index = 0; 
+		var max_byte = data.length;
+		var channel_count = data.readUInt32LE(byte_index);
+		byte_index = increment_byte_index(byte_index,max_byte);
+		var total_datasize_bytes = data.readUInt32LE(byte_index);
+		byte_index = increment_byte_index(byte_index,max_byte);
+		var checksum = data.readUInt32LE(byte_index);
+		byte_index = increment_byte_index(byte_index,max_byte);
+		var channel_index_arr = []
+		var data_arr = []
+		//LOOP ONE TO CREATE CHANNEL INDEX ARRAY 
+		for(i = 0; i<channel_count; i++)
+		{
+			var index = data.readUInt32LE(byte_index);
+			channel_index_arr.push(index)
+			byte_index = increment_byte_index(byte_index,max_byte);
+		}
+		//LOOP TWO TO EXTRACT ALL OF THE DATA
+		for(i = 0; i<channel_count; i++)
+		{
+			var curr_data = data.readUInt32LE(byte_index);
+			data_arr.push(curr_data)
+			byte_index = increment_byte_index(byte_index,max_byte);
+		}
 
-	}
+		//FORWARD DATA ON CORRESPONDING LINE  
+		switch(channel_index_arr.length) {
+			//ACCEL DATA/GYRO
+			case (6):
+				console.log('here')
+				var incoming_accel_data = []
+				incoming_accel_data.push({
+					x: data_arr[0],
+					y: data_arr[1],
+					z: data_arr[2]
+				})
+				var incoming_gyro_data = []
+				incoming_gyro_data.push({
+					x: data_arr[3],
+					y: data_arr[4],
+					z: data_arr[5]
+				})
+				io_3000.emit(accel_data_line, incoming_accel_data);
+				io_3000.emit(gyro_data_line, incoming_gyro_data); 			
+				break;	
+			//PID DATA
+			case (4): //need to change to 3 
+				io_3000.emit(pid_data_line, data); 		
+				break;
+			//ESC DATA
+			case (4):
+				io_3000.emit(esc_data_line, data); 		
+				break;	
+			//BATT DATA
+			case (5):
+				io_3000.emit(batt_data_line, data); 		
+				break;	
+			default:
+					console.log('No telem found')
+			}	
+
+		/*for(i = 0; i < data.length-3; i+=buffer_offset)
+		{
+			console.log('data: ' + data.readUInt32LE(i))
+		}*/
+
+
+		var data_status = 1 
+   		io_3000.emit("data_status", data_status); 	
+	
+	});
+	sock.on('close', (data) => {
+		data_status = 0 
+		io_3000.emit("data_status", data_status); 
+		console.log('TCP connection closed with Manifest Server');	
 	});
 });
 

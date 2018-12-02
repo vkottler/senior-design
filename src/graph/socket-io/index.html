@@ -6,7 +6,21 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-        <style>          
+        <style>   
+          .dot_server {
+            height: 25px;
+            width: 25px;
+            background-color:red;
+            border-radius: 50%;
+            display: inline-block;
+          } 
+          .dot_data {
+            height: 25px;
+            width: 25px;
+            background-color:red;
+            border-radius: 50%;
+            display: inline-block;
+          }       
           .tab {
               overflow: hidden;
               border: 2px solid #ccc;
@@ -46,13 +60,17 @@
           {
             font-size: 18px;          
           }
-          .manifest_table{
-
-          }
         </style>
     </head>
     <body>
-        <h1 align="center">Quadcopter Telemetry</h1>
+        <div>
+          <h1 align="center">Quadcopter Telemetry</h1>
+          <h>Server Status</h>
+          <span id = "server_sign" float = "right" class="dot_server"></span>
+          <br></br>
+          <h>Data Status</h>
+          <span id = "data_sign" float = "right" class="dot_data"></span>
+        </div>
         <div class="tab">
           <button class="tablinks" onclick="openTab(event, 'Accel_Gyro_Graphs')">Accel/Gyro Graphs</button>
           <button class="tablinks" onclick="openTab(event, 'PID_Graphs')">PID Graphs</button>
@@ -64,7 +82,6 @@
         <!-- Accel/Gyro Graph Tab -->
         <div id="Accel_Gyro_Graphs" class="tabcontent">
           <table cellspacing="0" style="width:100%" >
-              <col width="50%">
               <col width="50%">
               <tr>
                 <td> 
@@ -975,6 +992,40 @@
               }
             });
           });
+
+           //Server Connection Status 
+           $(function () {
+            var socket = io();
+            socket.on('server_status', (incoming_status) =>
+            {
+              var status = incoming_status
+              if(status == 1){
+                document.getElementById("server_sign").style.backgroundColor = "green";
+              }
+              else
+              {
+                document.getElementById("server_sign").style.backgroundColor = "red";
+              }
+            });
+          });
+
+            //Data Connection Status 
+            $(function () {
+            var socket = io();
+            socket.on('data_status', (incoming_status) =>
+            {
+              var status = incoming_status
+              if(status == 1){
+                document.getElementById("data_sign").style.backgroundColor = "green";
+              }
+              else
+              {
+                document.getElementById("data_sign").style.backgroundColor = "red";
+              }
+            });
+          });
+
+
         </script>
 
         <!-- JS FOR TABS -->  
