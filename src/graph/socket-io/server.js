@@ -226,16 +226,37 @@ data_server.on('connection', function(sock) {
 				io_3000.emit(gyro_data_line, incoming_gyro_data); 			
 				break;	
 			//PID DATA
-			case (4): //need to change to 3 
-				io_3000.emit(pid_data_line, data); 		
+			case (3): //need to change to 3 
+				var incoming_pid_data = []
+				incoming_pid_data.push({
+					pitch: data_arr[0],
+					roll: data_arr[1],
+					yaw: data_arr[2]
+				})
+				io_3000.emit(pid_data_line, incoming_pid_data); 		
 				break;
 			//ESC DATA
 			case (4):
-				io_3000.emit(esc_data_line, data); 		
+				var incoming_esc_data = []
+				incoming_esc_data.push({
+					FL: data_arr[0],
+					FR: data_arr[1],
+					BL: data_arr[2],
+					BR: data_arr[3]
+				})
+				io_3000.emit(esc_data_line, incoming_esc_data); 		
 				break;	
 			//BATT DATA
 			case (5):
-				io_3000.emit(batt_data_line, data); 		
+				var incoming_batt_data = []
+				incoming_batt_data.push({
+					batt_cell1: data_arr[0],
+					batt_cell2: data_arr[1],
+					batt_cell3: data_arr[2],
+					batt_total: data_arr[3],
+					batt_current: data_arr[4]
+				})
+				io_3000.emit(batt_data_line, incoming_batt_data); 		
 				break;	
 			default:
 					console.log('No telem found')
@@ -246,7 +267,7 @@ data_server.on('connection', function(sock) {
 			console.log('data: ' + data.readUInt32LE(i))
 		}*/
 
-
+		//green status update 
 		var data_status = 1 
    		io_3000.emit("data_status", data_status); 	
 	
