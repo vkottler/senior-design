@@ -2,6 +2,8 @@
 #include "usart.h"
 #include "pcbuffer.h"
 
+#define RADIO_USART_BUFF 1
+
 PC_Buffer *tx_buf[2], *rx_buf[2];
 
 inline PC_Buffer *get_tx(USART_TypeDef* usart) {

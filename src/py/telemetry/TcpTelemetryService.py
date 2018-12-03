@@ -41,9 +41,10 @@ class TcpTelemetryHandler(StreamRequestHandler):
             data = None
             while data is None and not self.server.telemetry_shutdown_request:
                 try:
+                    TcpTelemetryService.poll_sleep()
                     data = self.rfile.read()
                 except BlockingIOError:
-                    TcpTelemetryService.poll_sleep()
+                    pass
 
             # we want to exit
             if self.server.telemetry_shutdown_request:
@@ -61,7 +62,7 @@ class TcpTelemetryHandler(StreamRequestHandler):
 class TcpTelemetryService(TelemetryService):
     """ Wrapper for servers leveraging ThreadingTCPServer. """
 
-    poll_sleep_ms = 100
+    poll_sleep_ms = 0.05
 
     @staticmethod
     def log_client_action(service_name, client, action):
