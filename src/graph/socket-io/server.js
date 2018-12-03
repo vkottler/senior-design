@@ -48,8 +48,8 @@ http.listen(3000, function(){
 
 //TCP CONFIG 
 var net = require('net');
-//var HOST = '192.168.1.2';    	//PI IP
-var HOST = '10.141.65.106';		//death-star IP
+var HOST = '192.168.1.2';    	//PI IP
+//var HOST = '10.141.65.106';		//death-star IP
 //var HOST = '172.16.42.157';		//apt IP 
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000; 
