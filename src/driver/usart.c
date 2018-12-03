@@ -94,9 +94,9 @@ static int usart_bufferInit(USART_TypeDef* usart) {
 		rx_buf[1] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
 		if (!tx_buf[1] || !rx_buf[1])
 			return -1;
-		if (!pc_buffer_init(tx_buf[1], USART_BUF))
+		if (!pc_buffer_init(tx_buf[1], LIDAR_BUF))
 			return -1;
-		if (!pc_buffer_init(rx_buf[1], USART_BUF))
+		if (!pc_buffer_init(rx_buf[1], LIDAR_BUF))
 			return -1;
 		break;
 
@@ -105,9 +105,9 @@ static int usart_bufferInit(USART_TypeDef* usart) {
 		rx_buf[2] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
 		if (!tx_buf[2] || !rx_buf[2])
 			return -1;
-		if (!pc_buffer_init(tx_buf[2], USART_BUF))
+		if (!pc_buffer_init(tx_buf[2], LIDAR_BUF))
 			return -1;
-		if (!pc_buffer_init(rx_buf[2], USART_BUF))
+		if (!pc_buffer_init(rx_buf[2], LIDAR_BUF))
 			return -1;
 		break;
 /*	case UART4_BASE:*/

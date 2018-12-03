@@ -3,6 +3,7 @@
 #include "accel.h"
 #include "gyro.h"
 #include "battery.h"
+#include "lidar.h"
 #include "board.h"
 #include "board_config.h"
 #include "i2c.h"
@@ -51,6 +52,8 @@ void telem_handler(unsigned int interval) {
         gyro_read_xyz();
         batt_startConver();
         batt_getBattery();
+        lidar_readDist(1);
+        lidar_readDist(2);
 
     }
 }
