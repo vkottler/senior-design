@@ -59,7 +59,7 @@ class TelemetryClient
     send()
     {
         let to_send = this.input_element.value;
-        this.socket.send(to_send);
+        this.socket.send(to_send + '\n');
         this.log_activity(`sent: ${to_send}`);
     }
 

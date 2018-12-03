@@ -36,32 +36,42 @@ class TcpTelemetryHandler(StreamRequestHandler):
             TcpTelemetryHandler.log.error("couldn't set reads to non-blocking")
             return
 
+        stream_name = "{0}-{1}:{2}-input".format(self.server.service_name,
+                                                 self.client_address[0],
+                                                 self.client_address[1])
+        if self.server.input_stream is not None:
+            self.server.input_stream.add_output(stream_name, self.wfile)
+
         # continue awaiting 
         while True:
             data = None
             while data is None and not self.server.telemetry_shutdown_request:
                 try:
+                    TcpTelemetryService.poll_sleep()
                     data = self.rfile.read()
                 except BlockingIOError:
-                    TcpTelemetryService.poll_sleep()
+                    pass
 
             # we want to exit
             if self.server.telemetry_shutdown_request:
                 self.log_action("closed by us")
-                return
+                break
 
             # client closed the connection if we read 0 bytes
             if not len(data):
                 self.log_action("disconnected")
-                return
+                break
 
             # operate on the data
-            self.server.service_handler(data, self.wfile)
+            self.server.service_handler(data, self.wfile, self.server.stream)
+
+        if self.server.input_stream is not None:
+            self.server.input_stream.remove_output(stream_name)
 
 class TcpTelemetryService(TelemetryService):
     """ Wrapper for servers leveraging ThreadingTCPServer. """
 
-    poll_sleep_ms = 100
+    poll_sleep_ms = 0.05
 
     @staticmethod
     def log_client_action(service_name, client, action):
@@ -88,7 +98,8 @@ class TcpTelemetryService(TelemetryService):
 
         sleep(TcpTelemetryService.poll_sleep_ms)
 
-    def __init__(self, port, service_name, service_handler):
+    def __init__(self, port, service_name, service_handler, stream,
+                 input_stream):
         """ Initialize the tcp telemetry-service daemon. """
 
         self.address = ("", port)
@@ -96,4 +107,6 @@ class TcpTelemetryService(TelemetryService):
         self.server = ThreadingTCPServer(self.address, TcpTelemetryHandler)
         self.server.service_handler = service_handler
         self.server.service_name = service_name
+        self.server.stream = stream
+        self.server.input_stream = input_stream
         super().__init__(service_name, self.server, str(port))
