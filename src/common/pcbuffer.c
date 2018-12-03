@@ -41,9 +41,9 @@ bool pc_buffer_getMessage(PC_Buffer *buffer, char *message, int maxLength) {
 
 	char curr = '\0', prev = '\0';
 	int index = 0;
-	
+
 	if (!buffer->message_available) return false;
-	
+
 	while (index < maxLength && !pc_buffer_empty(buffer)) {
 		prev = curr;
 		pc_buffer_remove(buffer, &curr);

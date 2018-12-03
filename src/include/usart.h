@@ -7,9 +7,10 @@
 #include "pcbuffer.h"
 
 #define USART_BUF		128
+#define LIDAR_BUF	    9	
 #define USART_INT_PRIO	4
 
-#define USB_UART	USART2
+#define USB_UART	USART3
 
 typedef enum {
 	APBX =		0,
@@ -28,6 +29,6 @@ int _putc(USART_TypeDef* usart, bool block, char data);
 PC_Buffer *get_tx(USART_TypeDef* usart);
 PC_Buffer *get_rx(USART_TypeDef* usart);
 
-extern PC_Buffer *tx_buf[2], *rx_buf[2];
+extern PC_Buffer *tx_buf[3], *rx_buf[3];
 
 #endif

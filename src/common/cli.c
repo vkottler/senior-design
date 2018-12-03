@@ -30,6 +30,26 @@ void process_input(char *buffer) {
         esc_set_pulse(ESC_TABLE[2], pulse);
         esc_set_pulse(ESC_TABLE[3], pulse);
     }
+    else if(strcmp(buffer, "throughput") == 0)
+    {
+        uint32_t prev_ticks = ticks;
+        uint32_t cnt = 0;
+
+        while(prev_ticks + 5000 < ticks)
+        {
+            printf("%lx", cnt);
+            cnt ++;
+        }
+    }
+    else if(strcmp(buffer, "packetloss") == 0)
+    {
+        uint32_t cnt = 0;
+
+        for(cnt = 0; cnt < 1000; cnt ++)
+        {
+            printf("%lx", cnt);
+        }
+    }
 }
 
 inline void printPrompt(void) {
@@ -38,8 +58,8 @@ inline void printPrompt(void) {
 }
 
 void check_input(void) {
-    if (pc_buffer_messageAvailable(rx_buf[1])) {
-        pc_buffer_getMessage(rx_buf[1], buffer, 128);
+    if (pc_buffer_messageAvailable(rx_buf[2])) {
+        pc_buffer_getMessage(rx_buf[2], buffer, 128);
         if (buffer[0] != '\0') {
             process_input(buffer);
         }

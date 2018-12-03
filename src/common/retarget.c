@@ -13,7 +13,7 @@
 
 USART_TypeDef *fd_to_usart(int fd)
 {
-    return USB_UART;
+    return USART1;
 }
 
 int _write(int fd, const void *buf, size_t count) {

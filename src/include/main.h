@@ -8,6 +8,5 @@
 #include <pcbuffer.h>
 #include <cli.h>
 
-extern PC_Buffer *tx_buf[2], *rx_buf[2];
 
 #endif /* MAIN_H */

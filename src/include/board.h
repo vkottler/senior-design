@@ -2,9 +2,8 @@
 #define _BOARD__H__
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <handlers.h>
-
-#define USB_UART USART2
 
 #define RADIO_FD 55
 

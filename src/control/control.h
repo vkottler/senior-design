@@ -101,4 +101,6 @@ bool control_init(uint8_t gyro_range_idx, uint8_t imu_range_idx,
                   motion_configuration_t *config,
                   float imu_rate, float gyro_rate);
 
+bool control_loop( int32_t input_roll, int32_t input_pitch,
+                   int32_t input_yaw, int16_t input_thrst );
 /*******************************************************************/

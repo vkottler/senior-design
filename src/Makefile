@@ -11,6 +11,7 @@ include app/conf.mk
 include lib/conf.mk
 include driver/conf.mk
 include common/conf.mk
+include control/conf.mk
 
 OBJECTS = $(SRCS:.c=.o)
 

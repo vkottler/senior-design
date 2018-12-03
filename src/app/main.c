@@ -1,6 +1,7 @@
 #include "main.h"
 #include <stdio.h>
 #include "usart.h"
+#include "../control/control.h"
 
 int main(void)
 {
@@ -11,7 +12,7 @@ int main(void)
     {
         blink_handler(500);
         telem_handler(1000);
-        check_input();
+/*        check_input();*/
     }
 
     return 0;

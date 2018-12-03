@@ -143,6 +143,9 @@
 #define EXTCTRLEN_21002          0x04 // INT2 is input
 #define FS_DOUBLE_21002          0x01
 
+void setOffset();
+void getGyroXYZ();
+void gyro_read_xyz();
 int16_t gyro_read_x();
 int16_t gyro_read_y();
 int16_t gyro_read_z();
