@@ -6,15 +6,15 @@ Fault-Tolerant Quadcopter - raw command handling
 # internal
 from .TcpTelemetryService import TcpTelemetryService
 
-def TcpCommandHandler(data, wfile):
+def TcpCommandHandler(data, wfile, stream):
     """ Handle incoming commands. """
 
-    print("command: " + str(data)) 
+    stream.write(data)
 
 class TcpCommandService(TcpTelemetryService):
     """ Command service wrapper. """
 
-    def __init__(self, port):
+    def __init__(self, port, stream=None):
         """ Initialize this tcp service. """
 
-        super().__init__(port, "command", TcpCommandHandler)
+        super().__init__(port, "command", TcpCommandHandler, stream)

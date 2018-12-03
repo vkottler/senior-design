@@ -14,6 +14,12 @@ class TelemetryService(Daemon):
 
     log = logging.getLogger(__name__)
 
+    @staticmethod
+    def client_address_str(client):
+        """ Convert an address tuple into a String. """
+
+        return "{0}:{1}".format(client[0], client[1])
+
     def start_generator(self, server, message="null"):
         """
         Generate a 'start' function for a Daemon with serversocket semantics.
