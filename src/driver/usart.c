@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "usart.h"
 #include "pcbuffer.h"
+#include "lidar.h"
 
 PC_Buffer *tx_buf[3], *rx_buf[3];
 
@@ -313,13 +314,31 @@ void USART1_Handler(void) {
 }
 
 void USART2_Handler(void) {
+	char c;
+	/* character received */
+	if (USART2->ISR & USART_ISR_RXNE) {
+		c = USART2->RDR;
+        lidar1_callback(c);
+    }
+    else
+    {
 	static char prev1 = '\0', prev2 = '\0';
 	USART_Handler(USART2, tx_buf[1], rx_buf[1], &prev1, &prev2);
+    }
 }
 
 void USART3_Handler(void) {
+	char c;
+	/* character received */
+	if (USART3->ISR & USART_ISR_RXNE) {
+		c= USART3->RDR;
+        lidar2_callback(c);
+    }
+    else
+    {
 	static char prev1 = '\0', prev2 = '\0';
 	USART_Handler(USART3, tx_buf[2], rx_buf[2], &prev1, &prev2);
+    }
 }
 
 /*void UART4_Handler(void) {*/

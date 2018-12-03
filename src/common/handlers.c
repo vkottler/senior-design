@@ -54,7 +54,6 @@ void telem_handler(unsigned int interval) {
         batt_getBattery();
         lidar_readDist(1);
         lidar_readDist(2);
-
     }
 }
 
