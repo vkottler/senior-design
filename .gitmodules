@@ -1,0 +1,3 @@
+[submodule "src/lib/telemetry"]
+	path = src/lib/telemetry
+	url = git@github.com:vkottler/telemetry

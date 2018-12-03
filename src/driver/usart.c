@@ -3,6 +3,8 @@
 #include "pcbuffer.h"
 #include "lidar.h"
 
+#define RADIO_USART_BUFF 1
+
 PC_Buffer *tx_buf[3], *rx_buf[3];
 
 inline PC_Buffer *get_tx(USART_TypeDef* usart) {
