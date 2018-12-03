@@ -22,7 +22,7 @@ int radio_set_param()
   buff[0] = 0xC0;
   buff[1] = 0x00;
   buff[2] = 0x00;
-  buff[3] = 0x3a; // 115200
+  buff[3] = 0x3f; // 115200
   buff[4] = 0x17;
   buff[5] = 0x44;
 //c0 0 0 1a 6 44
