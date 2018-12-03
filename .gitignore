@@ -25,5 +25,6 @@ Project\ Outputs*
 **/.vscode/**
 **/node_modules/**
 desktop.ini
+package-lock.json
 
 Status\ Report*
