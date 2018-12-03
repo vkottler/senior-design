@@ -1,0 +1,57 @@
+.dot_server {
+    height: 25px;
+    width: 25px;
+    background-color:red;
+    border-radius: 50%;
+    display: inline-block;
+} 
+
+.dot_data {
+    height: 25px;
+    width: 25px;
+    background-color:red;
+    border-radius: 50%;
+    display: inline-block;
+}       
+
+.tab {
+    overflow: hidden;
+    border: 2px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.tab button {
+    background-color: inherit;
+    float: center;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tabcontent {
+    display: none;
+    padding-top: 30px;
+    padding-bottom: 40px;
+    border: 2px solid #ccc;
+    border-top: none;
+}
+
+h2 {
+    font-size: 20px;
+    color: red; 
+}
+
+td h {
+    font-size: 18px;          
+}
