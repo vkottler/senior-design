@@ -2,6 +2,7 @@
 #define _BOARD__H__
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <handlers.h>
 
 #define RADIO_FD 55

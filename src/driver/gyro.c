@@ -7,10 +7,53 @@
 
 uint8_t buff[WATERMARK_SIZE];
 
+#define CALIBRATE_NUM 100
+
 PC_Buffer *gyro_tx_buf[1], *gyro_rx_buf[1];
+static int16_t gyro_data[3] = {0, 0, 0};
+static int16_t gyro_offset[3] = {0, 0, 0};
+bool calibrate = true;
 extern void (*fun_ptr)();
 void  gyro_xyz_Callback(void);
 void  SPI1_Rx_Callback(void);
+
+void setOffset()
+{
+    uint8_t data[2];
+    static uint8_t cnt = 0;
+    cnt ++;
+    for(int i = 0; i < 3; i++)
+    {
+        while (pc_buffer_empty(gyro_rx_buf[0])){}
+        pc_buffer_remove(gyro_rx_buf[0], (char*) &data[0]);
+        while (pc_buffer_empty(gyro_rx_buf[0])){}
+        pc_buffer_remove(gyro_rx_buf[0], (char*) &data[1]);
+        gyro_offset[i] += (data[0] << 8 | data[1]);
+    }
+    if(cnt == CALIBRATE_NUM) {
+        calibrate = false;
+        gyro_offset[0] = gyro_offset[0] / CALIBRATE_NUM;
+        gyro_offset[1] = gyro_offset[1] / CALIBRATE_NUM;
+        gyro_offset[2] = gyro_offset[2] / CALIBRATE_NUM;
+    }
+}
+
+void getGyroXYZ()
+{
+    uint8_t data[2];
+    for(int i = 0; i < 3; i++)
+    {
+        while (pc_buffer_empty(gyro_rx_buf[0])){}
+        pc_buffer_remove(gyro_rx_buf[0], (char*) &data[0]);
+        while (pc_buffer_empty(gyro_rx_buf[0])){}
+        pc_buffer_remove(gyro_rx_buf[0], (char*) &data[1]);
+        gyro_data[i] += (data[0] << 8 | data[1]) - gyro_offset[i];
+    }
+/*    printf("\r\n X: %d\r\n", gyro_data[0]);*/
+/*    printf("Y: %d\r\n", gyro_data[1]);*/
+/*    printf("Z: %d\r\n", gyro_data[2]);*/
+
+}
 
 void gyro_write(uint8_t reg, uint8_t data)
 {
@@ -143,9 +186,14 @@ uint16_t gyro_config()
         return -1;
 
     gyro_write(CTRL_REG1_21002, MODE_ACTIVE_21002);
-    uint8_t data[1];
-    gyro_read(WHO_AM_I_21002, data);
-    gyro_read_xyz();
+        gyro_read_xyz();
+
+    for(uint32_t i = 0; i < CALIBRATE_NUM; i ++)
+    {
+        gyro_read_xyz();
+        setOffset();
+    }
+
     return 0;
 }
 

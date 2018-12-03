@@ -11,7 +11,7 @@ int main(void)
     while (1)
     {
         blink_handler(500);
-        telem_handler(100);
+        telem_handler(1000);
 /*        check_input();*/
     }
 
