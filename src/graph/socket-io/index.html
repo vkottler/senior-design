@@ -72,21 +72,21 @@
           <span id = "data_sign" float = "right" class="dot_data"></span>
         </div>
         <div class="tab">
-          <button class="tablinks" onclick="openTab(event, 'Accel_Gyro_Graphs')">Accel/Gyro Graphs</button>
+          <button class="tablinks" onclick="openTab(event, 'Lidar_Gyro_Graphs')">Lidar/Gyro Graphs</button>
           <button class="tablinks" onclick="openTab(event, 'PID_Graphs')">PID Graphs</button>
           <button class="tablinks" onclick="openTab(event, 'ESC_Graphs')">ESC Graphs</button>
           <button class="tablinks" onclick="openTab(event, 'Raw Data')">All Raw Telem</button>
           <button class="tablinks" onclick="openTab(event, 'Manifest')">Channel Manifest</button>
 
         </div>
-        <!-- Accel/Gyro Graph Tab -->
-        <div id="Accel_Gyro_Graphs" class="tabcontent">
+        <!-- Lidar/Gyro Graph Tab -->
+        <div id="Lidar_Gyro_Graphs" class="tabcontent">
           <table cellspacing="0" style="width:100%" >
               <col width="50%">
               <tr>
                 <td> 
-                    <div id="accelX_chartContainer" style="height: 250px; width: 100%;"></div>
-                    <h>Acceleration (X): <span name = "accel_x"></span></h>
+                    <div id="lidar_d1_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Lidar (D1): <span name = "lidar_d1"></span></h>
                 </td>
                 <td>
                     <div id="gyroX_chartContainer" style="height: 250px; width: 100%;"></div>
@@ -95,8 +95,8 @@
               </tr>
               <tr>
                 <td>
-                    <div id="accelY_chartContainer" style="height: 250px; width: 100%;"></div>
-                    <h>Acceleration (Y): <span name="accel_y"></span></h>
+                    <div id="lidar_d2_chartContainer" style="height: 250px; width: 100%;"></div>
+                    <h>Lidar (D2): <span name="lidar_d2"></span></h>
                 </td>
                 <td>
                     <div id="gyroY_chartContainer" style="height: 250px; width: 100%;"></div>
@@ -105,8 +105,6 @@
               </tr>
               <tr>
                 <td>
-                    <div id="accelZ_chartContainer" style="height: 250px; width: 100%;"></div>
-                    <h>Acceleration (Z): <span name="accel_z"></span></h>
                 </td>
                 <td>
                     <div id="gyroZ_chartContainer" style="height: 250px; width: 100%;"></div>
@@ -161,7 +159,7 @@
               <col width="33%">
               <tr>
                   <td> 
-                      <h2> Acceleration (m/s^2)</h2>
+                      <h2> Lidar (m)</h2>
                   </td>
                   <td>
                       <h2> Gyro (deg/sec)</h2>
@@ -172,7 +170,7 @@
                 </tr>
               <tr>
                 <td> 
-                    <h>Acceleration (X): <span name = "accel_x"></span></h>
+                    <h>Lidar (D1): <span name = "lidar_d1"></span></h>
                 </td>
                 <td>
                     <h>Gyro (X): <span name="gyro_x"></span></h>
@@ -183,7 +181,7 @@
               </tr>
               <tr>
                 <td>
-                   <h>Acceleration (Y): <span name="accel_y"></span></h>
+                   <h>Lidar (D2): <span name="lidar_d2"></span></h>
                </td>
                <td>
                    <h>Gyro (Y): <span name="gyro_y"></span></h>
@@ -194,7 +192,6 @@
               </tr>
               <tr>
                 <td>
-                  <h>Acceleration (Z): <span name="accel_z"></span></h>
                 </td>
                 <td>
                   <h>Gyro (Z): <span name="gyro_z"></span></h>
@@ -255,9 +252,6 @@
                       </td>
                   </tr>
           </table>
-
-
-
         </div>
 
         <!-- Channel Manifest Tab -->
@@ -284,11 +278,9 @@
         </div>
         <!-- JS FOR DATA -->
         <script>
-
           //DATA ARRAYS FOR GRAPH 
-          var data_accel_x = [];
-          var data_accel_y = []; 
-          var data_accel_z = [];
+          var data_lidar_d1 = [];
+          var data_lidar_d2 = []; 
           
           var data_gyro_x = [];
           var data_gyro_y = []; 
@@ -304,13 +296,13 @@
           var data_esc_backright = [];
 
           //THE GRAPH OBJECTS 
-          var accel_chart_x = new CanvasJS.Chart("accelX_chartContainer", {
+          var lidar_chart_d1 = new CanvasJS.Chart("lidar_d1_chartContainer", {
             zoomEnabled: true,
             title :{
-              text: "Accelerometer (X) v. Time"
+              text: "Lidar (D1) v. Time"
             },
             axisY: {	
-              title: "Accel (X) (m/s^2)",
+              title: "Distance (m)",
               includeZero: true
             },
             axisX: {
@@ -318,24 +310,24 @@
               includeZero: false
             },         
             data: [
-              //accel x 
+              //lidar d1 
             {	
               type: "line",
-              dataPoints: data_accel_x,
+              dataPoints: data_lidar_d1,
               showInLegend: true,
-              legendText: "Accel X", 
+              legendText: "Lidar D1", 
               color: "blue"
             }
             ]
           });
         
-          var accel_chart_y = new CanvasJS.Chart("accelY_chartContainer", {
+          var lidar_chart_d2 = new CanvasJS.Chart("lidar_d2_chartContainer", {
             zoomEnabled: true,
             title :{
-              text: "Accelerometer (Y) v. Time"
+              text: "Lidar (D2) v. Time"
             },
             axisY: {	
-              title: "Accel (Y) (m/s^2)",
+              title: "Distance (m)",
               includeZero: true
             },
             axisX: {
@@ -343,38 +335,13 @@
               includeZero: false
             },         
             data: [
-              //accel y 
+              //lidar d2 
             {	
               type: "line",
-              dataPoints: data_accel_y,
+              dataPoints: data_lidar_d2,
               showInLegend: true,
-              legendText: "Accel Y", 
+              legendText: "Lidar D2", 
               color: "red"
-            }
-            ]
-          });
-          
-          var accel_chart_z = new CanvasJS.Chart("accelZ_chartContainer", {
-            zoomEnabled: true,
-            title :{
-              text: "Accelerometer (Z) v. Time"
-            },
-            axisY: {	
-              title: "Accel (Z) (m/s^2)",
-              includeZero: true
-            },
-            axisX: {
-              title:"Time (s)",
-              includeZero: false
-            },         
-            data: [
-              //accel z 
-            {	
-              type: "line",
-              dataPoints: data_accel_z,
-              showInLegend: true,
-              legendText: "Accel Z", 
-              color: "green"
             }
             ]
           });
@@ -621,128 +588,101 @@
             }
             ]
           });
+              
+          const lidard1_dataline = "lidar_d1"
+          const lidard2_dataline = "lidar_d1"
+          const gyrox_dataline = "gyro_x"
+          const gyroy_dataline = "gyro_y"
+          const gyroz_dataline = "gyro_z"
+          const battc1_dataline= "batt_v_cell1"
+          const battc2_dataline = "batt_v_cell2"
+          const battc3_dataline = "batt_v_cell3"
+          const batt_total_dataline = "batt_v_total"
+          const battcurr_dataline = "batt_current"
 
-          //Real DATALINE Implementation (WILL REMOVE) 
-          $(function () {
-              var socket = io();
-              socket.on('dataLine', (data_set) =>
-              {
-                var incoming_x = data_set[0].x
-                var incoming_y = data_set[0].y
-                var incoming_z = data_set[0].z
-                
-                document.getElementById("accel_x").innerHTML = incoming_x;
-                document.getElementById("accel_y").innerHTML = incoming_y;
-                document.getElementById("accel_z").innerHTML = incoming_z;
-
-
-                console.log("incoming data set -- ")
-                console.log("incoming telem x: ",incoming_x);
-                console.log("incoming telem y: ",incoming_y);
-                console.log("incoming telem z: ",incoming_z);
-                console.log("-------------------- ")
-
-                  //PUSH ACCEL VALUES TO RESPECTIVE GRAPH DATA SETS
-                  data_accel_x.push({
-                    y: incoming_x 
-                  });
-                  data_accel_y.push({
-                    y: incoming_y
-                  });
-                  data_accel_z.push({
-                    y: incoming_z
-                  });
-
-                  //TODO: PUSH GYRO VALUES TO RESPECTIVE GRAPH DATA SETS 
-                  //data_gyro_x
-                  //data_gyro_y
-                  //data_gyro_z
-
-                  accel_chart_x.render();
-                  accel_chart_y.render();
-                  accel_chart_z.render();
-                  
-                  gyro_chart_x.render();
-                  gyro_chart_y.render();
-                  gyro_chart_z.render();
-              });
-            });        
-          
-          const accel_data_line = "accel_line"
-          const gyro_data_line = "gyro_line"
-          const pid_data_line = "pid_line"
-          const esc_data_line = "esc_line"
-          const batt_data_line = "batt_line"
-          
-          //Accel Dataline Implementation 
+          //Lidar D1 Dataline Implementation 
           $(function () {
             var socket = io();
-            socket.on(accel_data_line, (data_set) =>
+            socket.on(lidard1_dataline, (data_set) =>
             {
-              var incoming_accel_x = data_set[0].x
-              var incoming_accel_y = data_set[0].y
-              var incoming_accel_z = data_set[0].z
+              var incoming_lidar_d1 = data_set              
               
-              console.log("--incoming accel data set -- ")
-              console.log("incoming accel x: ",incoming_accel_x);
-              console.log("incoming accel y: ",incoming_accel_y);
-              console.log("incoming accel z: ",incoming_accel_z);
-              console.log("-------------------- ")
-              
-              //Method to find all instances of accel vals and sets it accordinly in html
-              displayVals("accel_x",incoming_accel_x);
-              displayVals("accel_y",incoming_accel_y);
-              displayVals("accel_z",incoming_accel_z);
+              //Method to find all instances of lidar vals and sets it accordinly in html
+              displayVals("lidar_d1",incoming_lidar_d1);
 
-                //PUSH ACCEL VALUES TO RESPECTIVE GRAPH DATA SETS
-                data_accel_x.push({
-                  y: incoming_accel_x 
+                //PUSH lidar VALUES TO RESPECTIVE GRAPH DATA SETS
+                data_lidar_d1.push({
+                  y: incoming_lidar_d1 
                 });
-                data_accel_y.push({
-                  y: incoming_accel_y
-                });
-                data_accel_z.push({
-                  y: incoming_accel_z
-                });
-                
-                accel_chart_x.render();
-                accel_chart_y.render();
-                accel_chart_z.render();
+                lidar_chart_d1.render();
               });
-            });   
-
-          //Gyro Dataline Implementation 
+          });   
+                      
+          //Lidar D2 Dataline Implementation 
           $(function () {
             var socket = io();
-            socket.on(gyro_data_line, (data_set) =>
+            socket.on(lidard2_dataline, (data_set) =>
             {
-              var incoming_gyro_x = data_set[0].x
-              var incoming_gyro_y = data_set[0].y
-              var incoming_gyro_z = data_set[0].z
-              
+              var incoming_lidar_d2 = data_set
+              displayVals("lidar_d2",incoming_lidar_d2);
+              data_lidar_d2.push({
+                y: incoming_lidar_d2
+              });
+
+              lidar_chart_d2.render();
+              });
+          }); 
+
+          //Gyro X Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(gyrox_dataline, (data_set) =>
+            {
+              var incoming_gyro_x = data_set
               //Method to find all instances of gyro vals and sets it accordinly in html
               displayVals("gyro_x",incoming_gyro_x);
-              displayVals("gyro_y",incoming_gyro_y);
-              displayVals("gyro_z",incoming_gyro_z);
-
               //PUSH GYRO VALS TO ARRAY 
               data_gyro_x.push({
                 y: incoming_gyro_x 
-              });
-              data_gyro_y.push({
-                y: incoming_gyro_y
-              });
-              data_gyro_z.push({
-                y: incoming_gyro_z
-              });
-                
+              }); 
               gyro_chart_x.render();
-              gyro_chart_y.render();
-              gyro_chart_z.render();
             });
-          });   
-            
-          //PID Dataline Implementation 
+          });
+
+          //Gyro Y Dataline Implementation 
+          $(function () {
+          var socket = io();
+          socket.on(gyroy_dataline, (data_set) =>
+          {
+            var incoming_gyro_y = data_set
+            //Method to find all instances of gyro vals and sets it accordinly in html
+            displayVals("gyro_y",incoming_gyro_y);
+            //PUSH GYRO VALS TO ARRAY 
+            data_gyro_y.push({
+              y: incoming_gyro_y
+            });     
+            gyro_chart_y.render();
+          });
+        }); 
+
+          //Gyro Dataline Implementation 
+          $(function () {
+          var socket = io();
+          socket.on(gyroz_dataline, (data_set) =>
+          {
+            var incoming_gyro_z = data_set
+            //Method to find all instances of gyro vals and sets it accordinly in html
+            displayVals("gyro_z",incoming_gyro_z);
+            //PUSH GYRO VALS TO ARRAY 
+            data_gyro_z.push({
+              y: incoming_gyro_z
+            });
+            gyro_chart_z.render();
+          });
+        });    
+        
+          //PID Dataline Implementation
+          /*
            $(function () {
             var socket = io();
             socket.on(pid_data_line, (data_set) =>
@@ -809,24 +749,60 @@
               esc_back_right_chart.render();
             });
           });
-          
-          //Batt Dataline Implementation 
+          */
+
+          //Batt Cell 1 Dataline Implementation 
           $(function () {
             var socket = io();
-            socket.on(esc_data_line, (data_set) =>
+            socket.on(battc1_dataline, (data_set) =>
             {
-              var batt_total = data_set[0].batt_total
-              var batt_cell1 = data_set[0].batt_cell1
-              var batt_cell2 = data_set[0].batt_cell2
-              var batt_cell3 = data_set[0].batt_cell3
-              var batt_current = data_set[0].batt_current
-
+              var batt_cell1 = data_set
               //Method to find all instances of batt vals and sets it accordinly in html
               displayVals("batt_cell1",batt_cell1);
+            });
+          });
+
+          //Batt Cell 2 Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(battc2_dataline, (data_set) =>
+            {
+              var batt_cell2 = data_set
+              //Method to find all instances of batt vals and sets it accordinly in html
               displayVals("batt_cell2",batt_cell2);
+            });
+          });
+
+          //Batt Cell 3 Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(battc3_dataline, (data_set) =>
+            {
+              var batt_cell3 = data_set
+              //Method to find all instances of batt vals and sets it accordinly in html
               displayVals("batt_cell3",batt_cell3);
-              displayVals("batt_total",batt_total);
-              displayVals("batt_current",batt_current);
+            });
+          });
+
+          //Batt Total Voltage Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(batt_total_dataline, (data_set) =>
+            {
+              var batt_total_voltage = data_set
+              //Method to find all instances of batt vals and sets it accordinly in html
+              displayVals("batt_total",batt_total_voltage);
+            });
+          });
+
+          //Batt Current Dataline Implementation 
+          $(function () {
+            var socket = io();
+            socket.on(battcurr_dataline, (data_set) =>
+            {
+              var batt_curr = data_set
+              //Method to find all instances of batt vals and sets it accordinly in html
+              displayVals("batt_current",batt_curr);
             });
           });
 
@@ -838,112 +814,6 @@
               document.getElementsByName(elm_name)[i].innerHTML = value;
             } 
           }
-          
-          //Testing DATALINE Implementation 
-          $(function () {
-            var socket = io();
-            socket.on('testdataLine', (data_set) =>
-            {
-              var incoming_test_val = data_set[0].y
-              
-              var acceldata = incoming_test_val+1;
-              var gyrodata = incoming_test_val+2;
-              var piddata = incoming_test_val+3;
-              var escdata = incoming_test_val+4;
-              var battdata = incoming_test_val+5;
-
-              //Setting the UI values 
-              displayVals("accel_x",acceldata);
-              displayVals("accel_y",acceldata);
-              displayVals("accel_z",acceldata);
-              
-              displayVals("gyro_x",gyrodata);
-              displayVals("gyro_y",gyrodata);
-              displayVals("gyro_z",gyrodata);
-              
-              displayVals("pid_pitch",piddata);
-              displayVals("pid_roll",piddata);
-              displayVals("pid_yaw",piddata);
-              
-              displayVals("esc_front_left",escdata);
-              displayVals("esc_front_right",escdata);
-              displayVals("esc_back_left",escdata);
-              displayVals("esc_back_right",escdata);
-              
-              displayVals("batt_cell1",battdata);
-              displayVals("batt_cell2",battdata);
-              displayVals("batt_cell3",battdata);
-              displayVals("batt_total",battdata);
-              displayVals("batt_current",battdata);
-
-                //PUSH ACCEL VALUES TO ARRAY
-                data_accel_x.push({
-                  y: acceldata 
-                });
-                data_accel_y.push({
-                  y: acceldata
-                });
-                data_accel_z.push({
-                  y: acceldata
-                });
-
-                //PUSH GYRO VALS TO ARRAY 
-                data_gyro_x.push({
-                  y: gyrodata 
-                });
-                data_gyro_y.push({
-                  y: gyrodata
-                });
-                data_gyro_z.push({
-                  y: gyrodata
-                });
-                
-                //PUSH PID VALS TO ARRAY 
-                data_pitch.push({
-                  y: piddata 
-                });
-                data_roll.push({
-                  y: piddata
-                });
-                data_yaw.push({
-                  y: piddata
-                });
-                
-                //PUSH ESC VALS TO ARRAY 
-                data_esc_frontleft.push({
-                  y: escdata 
-                });
-                data_esc_frontright.push({
-                  y: escdata
-                });
-                data_esc_backleft.push({
-                  y: escdata
-                });
-                data_esc_backright.push({
-                  y: escdata
-                });
-
-                //RENDER ALL CHARTS
-                accel_chart_x.render();
-                accel_chart_y.render();
-                accel_chart_z.render();
-                
-                gyro_chart_x.render();
-                gyro_chart_y.render();
-                gyro_chart_z.render();
-
-                pid_pitch_chart.render();
-                pid_roll_chart.render();
-                pid_yaw_chart.render();
-
-                esc_front_left_chart.render();
-                esc_front_right_chart.render();
-                esc_back_left_chart.render();
-                esc_back_right_chart.render();
-
-
-            });
-          });
           
           //MANIFEST DATALINE
           $(function () {
@@ -993,8 +863,8 @@
             });
           });
 
-           //Server Connection Status 
-           $(function () {
+          //Server Connection Status 
+          $(function () {
             var socket = io();
             socket.on('server_status', (incoming_status) =>
             {
@@ -1009,8 +879,8 @@
             });
           });
 
-            //Data Connection Status 
-            $(function () {
+          //Data Connection Status 
+          $(function () {
             var socket = io();
             socket.on('data_status', (incoming_status) =>
             {
@@ -1024,7 +894,6 @@
               }
             });
           });
-
 
         </script>
 
