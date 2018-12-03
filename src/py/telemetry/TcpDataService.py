@@ -16,7 +16,7 @@ def TcpDataHandler(data, wfile, stream):
 class TcpDataService(TcpTelemetryService):
     """ Data service wrapper. """
 
-    def __init__(self, port, stream=None):
+    def __init__(self, port, stream, input_stream=None):
         """ Initialize this tcp service. """
 
-        super().__init__(port, "data", TcpDataHandler, stream)
+        super().__init__(port, "data", TcpDataHandler, stream, input_stream)

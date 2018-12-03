@@ -76,7 +76,8 @@ class WebsocketService(Daemon):
 
             # set this client up as a telemetry subscriber
             def websocket_writer(message):
-                asyncio.run_coroutine_threadsafe(websocket.send(message),
+                string_msg = message.decode("utf-8")
+                asyncio.run_coroutine_threadsafe(websocket.send(string_msg),
                                                  loop=loop)
             client_str = TelemetryService.client_address_str(websocket.remote_address)
             telemetry_stream.add_output(client_str, WebsocketWriter(websocket_writer))
@@ -91,7 +92,7 @@ class WebsocketService(Daemon):
                     telemetry_stream.remove_output(client_str)
                     return
 
-                command_stream.write(message)
+                command_stream.write(message.encode("utf-8"))
 
         return handler
 
