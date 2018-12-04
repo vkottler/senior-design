@@ -38,10 +38,10 @@ def main(argv):
 
     # add services
     manager = ServiceManager()
-    manager.add_service(HttpService(args.http_port))
+    #manager.add_service(HttpService(args.http_port))
     manager.add_service(TcpDataService(args.tcp_data_port, telemetry_stream,
                                        command_stream))
-    manager.add_service(TcpCommandService(args.tcp_cmd_port, command_stream))
+    #manager.add_service(TcpCommandService(args.tcp_cmd_port, command_stream))
     manager.add_service(WebsocketService(args.ws_port, telemetry_stream,
                                          command_stream))
 
