@@ -25,6 +25,7 @@
             <button class="tablinks" onclick="openTab(event, 'ESC_Graphs')">ESC Graphs</button>
             <button class="tablinks" onclick="openTab(event, 'Raw Data')">All Raw Telem</button>
             <button class="tablinks" onclick="openTab(event, 'Manifest')">Channel Manifest</button>
+            <button class="tablinks" onclick="openTab(event, 'Commanding')">Commanding</button>
         </div>
 
         <!-- Lidar/Gyro Graph Tab -->
@@ -167,6 +168,11 @@
                     <td><h2> Channel Units</h2></td>
                 </tr>
             </table>
+        </div>
+
+        <!-- Commanding Tab -->
+        <div id="Commanding" class="tabcontent">
+            <iframe src="commanding/websocket_client.html"></iframe>
         </div>
 
         <script src="plotting.js"></script>
