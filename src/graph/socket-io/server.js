@@ -52,7 +52,7 @@ var HOST = '';
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000; 
 
-var ind_buff_size = 256; 
+var ind_buff_size = 128;
  
 //MANNIFEST TCP CONNECTION SETUP
 var manifest_server = net.createServer();
@@ -92,7 +92,9 @@ function handle_manifest_data(data)
             "size"      :  channel_size,
             "name"      :  channel_name,
             "units"     :  channel_units
-          }
+        }
+        console.log("got channel for manifest:");
+        console.log(channel_object);
         manifest_arr.push(channel_object)
     }
     print_array(manifest_arr);
