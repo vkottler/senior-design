@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include "board.h"
 #include "board_config.h"
 #include "battery.h"
 #include "adc.h"
@@ -44,6 +45,7 @@ void batt_startConver()
 void batt_getBattery()
 { 
     uint16_t battery_val_index;
+    uint16_t *channel_data;
     ADC_TypeDef * adc;
     current_conversion_t next_conv;
 
@@ -79,8 +81,11 @@ void batt_getBattery()
     if (LL_ADC_IsActiveFlag_EOC(adc))
     {
         LL_ADC_ClearFlag_EOC(adc);
-        battery_val[battery_val_index] = 
-            LL_ADC_REG_ReadConversionData12(adc);
+        battery_val[battery_val_index] = LL_ADC_REG_ReadConversionData12(adc);
+
+        channel_data = (uint16_t *) manifest.channels[9 + battery_val_index].data;
+        *channel_data = battery_val[battery_val_index];
+
         curr_conv = next_conv;
         start_adc = true;
 /*    printf("ADC 1s: %.3f V ", (battery_val[0] * ANALOG_CONVER));*/

@@ -10,7 +10,6 @@ uint8_t buff[WATERMARK_SIZE];
 #define CALIBRATE_NUM 100
 
 PC_Buffer *gyro_tx_buf[1], *gyro_rx_buf[1];
-static int16_t gyro_data[3] = {0, 0, 0};
 static int16_t gyro_offset[3] = {0, 0, 0};
 bool calibrate = true;
 extern void (*fun_ptr)();
@@ -47,12 +46,8 @@ void getGyroXYZ()
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[0]);
         while (pc_buffer_empty(gyro_rx_buf[0])){}
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[1]);
-        gyro_data[i] += (data[0] << 8 | data[1]) - gyro_offset[i];
+        *((int16_t *) manifest.channels[i].data) += (data[0] << 8 | data[1]) - gyro_offset[i];
     }
-/*    printf("\r\n X: %d\r\n", gyro_data[0]);*/
-/*    printf("Y: %d\r\n", gyro_data[1]);*/
-/*    printf("Z: %d\r\n", gyro_data[2]);*/
-
 }
 
 void gyro_write(uint8_t reg, uint8_t data)

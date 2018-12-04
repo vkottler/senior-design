@@ -42,6 +42,15 @@ void blink_handler(unsigned int blink_int) {
     }
     prev = curr;
 }
+
+void send_telemetry(void)
+{
+    write_frame(TELEM_FRAME_DATA, (const char *) packets[0], telemetry_packet_size(packets[0]));
+    write_frame(TELEM_FRAME_DATA, (const char *) packets[1], telemetry_packet_size(packets[1]));
+    write_frame(TELEM_FRAME_DATA, (const char *) packets[2], telemetry_packet_size(packets[2]));
+    write_frame(TELEM_FRAME_DATA, (const char *) packets[3], telemetry_packet_size(packets[3]));
+}
+
 void telem_handler(unsigned int interval) {
     static uint32_t last_tick = 0;
 
@@ -54,6 +63,7 @@ void telem_handler(unsigned int interval) {
         batt_getBattery();
         lidar_readDist(1);
         lidar_readDist(2);
+        send_telemetry();
     }
 }
 
