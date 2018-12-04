@@ -11,7 +11,7 @@ const batt_data_line = "batt_line"
 const buffer_offset = 4;
 
 //MANIFEST TABLE
-var manifest_arr = [];
+var manifest = [];
 
 /* initialize express */
 var app = express();
@@ -38,10 +38,10 @@ socket_io.on('connection', (socket) => {
     });
 
     /* send this client the current manifest */
-    if (manifest_arr.length > 1)
+    if (manifest.length > 1)
     {
         console.log(`sent ${socket.id} the existing channel manifest`);
-        socket.emit('manifestLine', manifest_arr);
+        socket.emit('manifestLine', manifest);
     }
 });
 
@@ -74,18 +74,18 @@ function handle_manifest_data(data)
 {
     manifest_lines = data.toString("utf-8").replace("\r\n", "").split(",");
     var channel_object = {
-        "index"     :  manifest_lines[0],
+        "index"     :  Number(manifest_lines[0]),
         "name"      :  manifest_lines[1],
         "units"     :  manifest_lines[2],
         "data_type" :  manifest_lines[3],
-        "size"      :  manifest_lines[4]
+        "size"      :  Number(manifest_lines[4])
     };
 
     /* check if we already have this channel to support re-transmission */
     let channel_present = false;
-    for (let i in manifest_arr)
+    for (let i in manifest)
     {
-        if (manifest_arr[i]["name"] == channel_object["name"])
+        if (manifest[i]["name"] == channel_object["name"])
         {
             channel_present = true;
             break;
@@ -95,7 +95,7 @@ function handle_manifest_data(data)
     {
         console.log("new channel:");
         console.log(channel_object);
-        manifest_arr.push(channel_object)
+        manifest[channel_object["index"]] = channel_object;
         socket_io.emit('manifestLine', [channel_object]);
     }
     else console.log(`got duplicate channel '${channel_object["name"]}'`);
@@ -111,50 +111,77 @@ manifest_server.on('connection', function(sock)
     });
 });
 
-function increment_byte_index(curr_byte,max_byte)
-{
-    //get next chunk of data (32 bits, 4 bytes)
-    if (curr_byte < max_byte)
-        curr_byte += 4;
-    return curr_byte;
-}
-
 function handle_telemetry(data)
 {
-    console.log("Size of the incoming buffer: " + data.length)
-    var byte_index = 0;
-    var max_byte = data.length;
-    var channel_count = data.readUInt32LE(byte_index);
-    byte_index = increment_byte_index(byte_index,max_byte);
-    var total_datasize_bytes = data.readUInt32LE(byte_index);
-    byte_index = increment_byte_index(byte_index,max_byte);
-    var checksum = data.readUInt32LE(byte_index);
-    byte_index = increment_byte_index(byte_index,max_byte);
-    var channel_index_arr = []
-    var data_arr = []
+    let index = 0;
 
-    //LOOP ONE TO CREATE CHANNEL INDEX ARRAY
-    for(i = 0; i<channel_count; i++) {
-        var index = data.readUInt32LE(byte_index);
-        channel_index_arr.push(index)
-        byte_index = increment_byte_index(byte_index,max_byte);
+    let channel_count = data.readUInt32LE(index);
+    index += 4;
+
+    let data_size = data.readUInt32LE(index);
+    index += 4;
+
+    let checksum = data.readUInt32LE(index);
+    index += 4;
+
+    /* get channels by index */
+    let channels = [];
+    for (let i = 0; i < channel_count; i++)
+    {
+        let channel_index = data.readUInt32LE(index);
+        if (channel_index >= manifest.length)
+        {
+            let msg = `packet index ${channel_index} larger than manifest size ${manifest.length}`;
+            console.log(msg);
+            return;
+        }
+        index += 4;
+        channels.push(manifest[channel_index]);
     }
-    //LOOP TWO TO EXTRACT ALL OF THE DATA
-    for(i = 0; i < channel_count; i++) {
-        var curr_data = data.readUInt32LE(byte_index);
-        data_arr.push(curr_data)
-        byte_index = increment_byte_index(byte_index,max_byte);
+
+    /* read data according to channel size */
+    for (let i = 0; i < channel_count; i++)
+    {
+        let current_channel_name = channels[i]["name"];
+        let current_channel_size = channels[i]["size"];
+        let current_channel_type = channels[i]["data_type"];
+        let channel_data;
+        switch (current_channel_type)
+        {
+            case "INT8":
+                channel_data = data.readInt8(index);
+                break;
+            case "UINT8":
+                channel_data = data.readUInt8(index);
+                break;
+            case "INT16":
+                channel_data = data.readInt16LE(index);
+                break;
+            case "UINT16":
+                channel_data = data.readUInt16LE(index);
+                break;
+            case "INT32":
+                channel_data = data.readInt32LE(index);
+                break;
+            case "UINT32":
+                channel_data = data.readUInt32LE(index);
+                break;
+            case "FLOAT":
+                channel_data = data.readFloatLE(index);
+                break;
+            case "STRING":
+                channel_data = data.toString("utf-8", index, index + current_channel_size);
+                break;
+            default:
+                channel_data = "error";
+        }
+        index += current_channel_size;
+        console.log(`${current_channel_name}: ${channel_data}`);
+        socket_io.emit(current_channel_name, channel_data);
     }
-    for(i = 0; i<channel_count; i++) {
-        var channel_index = channel_index_arr[i]
-        var emit_line = manifest_arr[channel_index].name.toString()
-        console.log(emit_line.length)
-        var data_to_emit = data_arr[i]
-        console.log(data_to_emit)
-        socket_io.emit(emit_line,data_to_emit)
-    }
-    //Updates Green light
-    var data_status = 1
+
+    // Updates Green light
+    var data_status = 1;
     socket_io.emit("data_status", data_status);
 }
 
