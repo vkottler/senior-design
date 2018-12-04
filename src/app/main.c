@@ -12,8 +12,8 @@ int main(void)
     while (1)
     {
         blink_handler(75);
-        service_sensors(50);
-        send_high_rate_telemetry(150);
+        service_sensors(25);
+        send_high_rate_telemetry(250);
         send_low_rate_telemetry(1333);
         check_input();
     }
