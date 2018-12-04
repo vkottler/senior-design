@@ -1,8 +1,6 @@
 var express = require('express')
 var process = require('process');
 var util = require('util');
-var app = express();
-var http = require('http').Server(app);
 
 const lidar_data_line = "lidar_line"
 const gyro_data_line = "gyro_line"
@@ -12,31 +10,39 @@ const batt_data_line = "batt_line"
 
 const buffer_offset = 4;
 
-//TESTING UI LOOK, REMOVE
-function getRandomIntInclusive(min, max)
-{
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    // The maximum is inclusive and the minimum is inclusive
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+//MANIFEST TABLE
+var manifest_arr = [];
 
-//port to receive data
-var io_3000 = require('socket.io')(http);
+/* initialize express */
+var app = express();
+var http = require('http').Server(app);
 app.use(express.static("./"));
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-io_3000.on('connection', (socket) => {
-    console.log('A user is connected to receive data -- id = ' + socket.id);
+//port to receive data
+var socket_io = require('socket.io')(http);
+
+socket_io.on('connection', (socket) => {
+
+    console.log(`client ${socket.id} connected`);
     var server_status = 1;
-    io_3000.emit("server_status", server_status);
+    socket_io.emit("server_status", server_status);
+
+    /* handle this client disconnecting */
     socket.on('disconnect', function() {
         server_status = 0;
-        console.log('A user is disconnected to receive data -- id = ' + socket.id);
-        io_3000.emit("server_status", server_status);
+        console.log(`client ${socket.id} disconnected`);
+        socket_io.emit("server_status", server_status);
     });
+
+    /* send this client the current manifest */
+    if (manifest_arr.length > 1)
+    {
+        console.log(`sent ${socket.id} the existing channel manifest`);
+        socket.emit('manifestLine', manifest_arr);
+    }
 });
 
 http.listen(3000, function(){
@@ -52,8 +58,6 @@ var HOST = '';
 var MANIFEST_PORT = 5000;
 var DATA_PORT = 6000;
 
-var ind_buff_size = 128;
-
 //MANNIFEST TCP CONNECTION SETUP
 var manifest_server = net.createServer();
 manifest_server.listen(MANIFEST_PORT, HOST);
@@ -66,9 +70,6 @@ var data_server = net.createServer();
 data_server.listen(DATA_PORT, HOST);
 console.log('listening on Data port: '+ DATA_PORT)
 
-//MANIFEST TABLE
-var manifest_arr = [];
-
 function handle_manifest_data(data)
 {
     manifest_lines = data.toString("utf-8").replace("\r\n", "").split(",");
@@ -79,9 +80,25 @@ function handle_manifest_data(data)
         "data_type" :  manifest_lines[3],
         "size"      :  manifest_lines[4]
     };
-    console.log(channel_object);
-    manifest_arr.push(channel_object)
-    io_3000.emit('manifestLine', manifest_arr);
+
+    /* check if we already have this channel to support re-transmission */
+    let channel_present = false;
+    for (let i in manifest_arr)
+    {
+        if (manifest_arr[i]["name"] == channel_object["name"])
+        {
+            channel_present = true;
+            break;
+        }
+    }
+    if (!channel_present)
+    {
+        console.log("new channel:");
+        console.log(channel_object);
+        manifest_arr.push(channel_object)
+        socket_io.emit('manifestLine', [channel_object]);
+    }
+    else console.log(`got duplicate channel '${channel_object["name"]}'`);
 }
 
 //GET INCOMING MANIFESET DATA
@@ -97,9 +114,9 @@ manifest_server.on('connection', function(sock)
 function increment_byte_index(curr_byte,max_byte)
 {
     //get next chunk of data (32 bits, 4 bytes)
-	  if (curr_byte < max_byte)
-		    curr_byte += 4;
-	  return curr_byte;
+    if (curr_byte < max_byte)
+        curr_byte += 4;
+    return curr_byte;
 }
 
 function handle_telemetry(data)
@@ -134,24 +151,24 @@ function handle_telemetry(data)
         console.log(emit_line.length)
         var data_to_emit = data_arr[i]
         console.log(data_to_emit)
-        io_3000.emit(emit_line,data_to_emit)
+        socket_io.emit(emit_line,data_to_emit)
     }
     //Updates Green light
     var data_status = 1
-    io_3000.emit("data_status", data_status);
+    socket_io.emit("data_status", data_status);
 }
 
 function handle_connection_close(data)
 {
     data_status = 0;
-    io_3000.emit("data_status", data_status);
+    socket_io.emit("data_status", data_status);
     console.log('TCP connection closed with Manifest Server');
 }
 
 data_server.on('connection', function(sock) {
     console.log('CONNECTED to TCP via port 6000');
     sock.on('data', handle_telemetry);
-	  sock.on('close', handle_connection_close);
+    sock.on('close', handle_connection_close);
 });
 
 function print_array(arr)
@@ -164,5 +181,5 @@ function print_array(arr)
         console.log("Channel Size: " + arr[i].size);
         console.log("Channel Name: " + arr[i].name);
         console.log("Channel Units: " + arr[i].units);
-	  }
+    }
 }
