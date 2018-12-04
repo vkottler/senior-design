@@ -23,4 +23,6 @@ extern channel_manifest_t manifest;
 extern channel_t channels[MAX_CHANNEL_COUNT];
 extern telemetry_packet_t *packets[MAX_PACKET_COUNT];
 
+int write_frame(frame_type_t frame_type, const char *buf, size_t count);
+
 #endif

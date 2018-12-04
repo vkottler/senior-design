@@ -70,6 +70,11 @@ channel_manifest_t manifest;
 channel_t channels[MAX_CHANNEL_COUNT];
 telemetry_packet_t *packets[MAX_PACKET_COUNT];
 
+void manifest_sender(char *buffer, uint32_t len)
+{
+    write_frame(TELEM_FRAME_MANIFEST, buffer, len);
+}
+
 void manifest_init(void)
 {
     manifest.channels = channels;
@@ -94,15 +99,18 @@ void manifest_init(void)
     channel_add(&manifest, "batt_v_cell3", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "batt_current", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
 
-    channel_manifest_print(stdout, &manifest);
-
     packets[0] = telemetry_packet_create(&manifest.channels[0], 3);
     packets[1] = telemetry_packet_create(&manifest.channels[3], 2);
     packets[2] = telemetry_packet_create(&manifest.channels[5], 4);
     packets[3] = telemetry_packet_create(&manifest.channels[9], 5);
 
+    /*
+    channel_manifest_print(stdout, &manifest);
     telemetry_packet_print(stdout, packets[0]);
     telemetry_packet_print(stdout, packets[1]);
     telemetry_packet_print(stdout, packets[2]);
     telemetry_packet_print(stdout, packets[3]);
+    */
+
+    channel_manifest_send(&manifest, manifest_sender);
 }
