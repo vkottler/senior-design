@@ -7,6 +7,7 @@ int main(void)
 {
     io_init();
     periph_init();
+    manifest_init();
 
     while (1)
     {
