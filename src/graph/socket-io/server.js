@@ -115,27 +115,24 @@ function handle_telemetry(data)
 {
     let index = 0;
 
-    let channel_count = data.readUInt32LE(index);
-    index += 4;
+    let channel_count = data.readUInt8(index);
+    index += 1;
 
-    let data_size = data.readUInt32LE(index);
-    index += 4;
-
-    let checksum = data.readUInt32LE(index);
-    index += 4;
+    let data_size = data.readUInt8(index);
+    index += 1;
 
     /* get channels by index */
     let channels = [];
     for (let i = 0; i < channel_count; i++)
     {
-        let channel_index = data.readUInt32LE(index);
+        let channel_index = data.readUInt8(index);
         if (channel_index >= manifest.length)
         {
             let msg = `packet index ${channel_index} larger than manifest size ${manifest.length}`;
             console.log(msg);
             return;
         }
-        index += 4;
+        index += 1;
         channels.push(manifest[channel_index]);
     }
 
