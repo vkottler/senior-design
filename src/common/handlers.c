@@ -61,8 +61,8 @@ void telem_handler(unsigned int interval) {
         gyro_read_xyz();
         batt_startConver();
         batt_getBattery();
-        lidar_readDist(1);
-        lidar_readDist(2);
+        *((uint16_t *) manifest.channels[3].data) = lidar_readDist(1);
+        *((uint16_t *) manifest.channels[4].data) = lidar_readDist(2);
         send_telemetry();
     }
 }

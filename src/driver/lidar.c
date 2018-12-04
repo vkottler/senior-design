@@ -5,13 +5,13 @@
 static lidar_t lidar1 = { .state = frame_header1, .checksum = 0, .dist = 0, .valid_dist = 0 };
 static lidar_t lidar2 = { .state = frame_header1, .checksum = 0, .dist = 0, .valid_dist = 0 };
 
-void lidar_readDist(int lidar_num)
+uint16_t lidar_readDist(int lidar_num)
 {   
     lidar_t * lidar;
-    if(lidar_num == 1) lidar = &lidar1;
-    else if(lidar_num == 2) lidar = &lidar2;
-    else return;
-    lidar->valid_dist;
+    if (lidar_num == 1) lidar = &lidar1;
+    else if (lidar_num == 2) lidar = &lidar2;
+    else return 0xffff;
+    return lidar->valid_dist;
 /*    printf("Lidar%d: %d \r\n", lidar_num, lidar->valid_dist);*/
 }
 

@@ -58,8 +58,8 @@ inline void printPrompt(void) {
 }
 
 void check_input(void) {
-    if (pc_buffer_messageAvailable(rx_buf[2])) {
-        pc_buffer_getMessage(rx_buf[2], buffer, 128);
+    if (pc_buffer_messageAvailable(rx_buf[0])) {
+        pc_buffer_getMessage(rx_buf[0], buffer, 128);
         if (buffer[0] != '\0') {
             process_input(buffer);
         }

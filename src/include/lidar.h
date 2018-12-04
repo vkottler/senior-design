@@ -25,7 +25,7 @@ typedef struct {
     volatile uint16_t valid_dist;
 } lidar_t;
 
-void lidar_readDist(int lidar);
+uint16_t lidar_readDist(int lidar);
 void lidar1_callback(char c);
 void lidar2_callback(char c);
 
