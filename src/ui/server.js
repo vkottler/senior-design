@@ -70,15 +70,14 @@ var data_server = net.createServer();
 data_server.listen(DATA_PORT, HOST);
 console.log('listening on Data port: '+ DATA_PORT)
 
-function handle_manifest_data(data)
+function handle_manifest_line(split_line)
 {
-    manifest_lines = data.toString("utf-8").replace("\r\n", "").split(",");
     var channel_object = {
-        "index"     :  Number(manifest_lines[0]),
-        "name"      :  manifest_lines[1],
-        "units"     :  manifest_lines[2],
-        "data_type" :  manifest_lines[3],
-        "size"      :  Number(manifest_lines[4])
+        "index"     :  Number(split_line[0]),
+        "name"      :  split_line[1],
+        "units"     :  split_line[2],
+        "data_type" :  split_line[3],
+        "size"      :  Number(split_line[4])
     };
 
     /* check if we already have this channel to support re-transmission */
@@ -99,6 +98,17 @@ function handle_manifest_data(data)
         socket_io.emit('manifestLine', [channel_object]);
     }
     else console.log(`got duplicate channel '${channel_object["name"]}'`);
+}
+
+function handle_manifest_data(data)
+{
+    let lines = data.toString("utf-8").split("\r\n");
+    for (let i in lines)
+    {
+        lines[i] = lines[i].replace("\r\n", "");
+        if (lines[i] !== "")
+            handle_manifest_line(lines[i].split(","));
+    }
 }
 
 //GET INCOMING MANIFESET DATA
@@ -186,7 +196,7 @@ function handle_connection_close(data)
 {
     data_status = 0;
     socket_io.emit("data_status", data_status);
-    console.log('TCP connection closed with Manifest Server');
+    console.log('TCP connection closed with Data Server');
 }
 
 data_server.on('connection', function(sock) {
