@@ -110,7 +110,14 @@ class LogElement
 
     log(message)
     {
-        this.current_text += message + "<br>";
+        let lines = message.split("\n");
+        for (let i in lines)
+        {
+            let stripped_line = lines[i].replace("\r", "");
+            stripped_line = lines[i].replace("\n", "");
+            if (stripped_line !== "")
+                this.current_text += stripped_line + "<br>";
+        }
         this.update();
     }
 
@@ -138,3 +145,7 @@ function start_client()
 }
 connect_button = document.getElementById("connect-button");
 connect_button.onclick = start_client;
+document.getElementById("host").value = window.location.hostname;
+
+/* automatically attempt to connect */
+start_client();

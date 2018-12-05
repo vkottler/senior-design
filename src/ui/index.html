@@ -3,24 +3,34 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>Socket IO Telemetry</title>
+
+        <!-- scripts -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
         <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+        <!-- fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Mono|Roboto+Slab" rel="stylesheet">
+
+        <!-- styles -->
         <link rel="stylesheet" href="main.css">
     </head>
     <body>
 
-        <div>
-            <h1 align="center">Quadcopter Telemetry</h1>
-            <h>Server Status</h>
-            <span id = "server_sign" float = "right" class="dot_server"></span>
-            <br></br>
-            <h>Data Status</h>
-            <span id = "data_sign" float = "right" class="dot_data"></span>
+        <h1 align="center">Quadcopter Telemetry</h1>
+        <div id="status-container">
+            <div class="status-item">
+                <h3>Server Status</h3>
+                <div id="server_sign" class="dot"></div>
+            </div>
+            <div class="status-item">
+                <h3>Data Status</h3>
+                <div id="data_sign" class="dot"></div>
+            </div>
         </div>
 
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Lidar_Gyro_Graphs')">Lidar/Gyro Graphs</button>
+            <button id="start-tab" class="tablinks" onclick="openTab(event, 'Lidar_Gyro_Graphs')">Lidar/Gyro Graphs</button>
             <button class="tablinks" onclick="openTab(event, 'PID_Graphs')">PID Graphs</button>
             <button class="tablinks" onclick="openTab(event, 'ESC_Graphs')">ESC Graphs</button>
             <button class="tablinks" onclick="openTab(event, 'Raw Data')">All Raw Telem</button>
@@ -175,6 +185,7 @@
             <iframe src="commanding/websocket_client.html"></iframe>
         </div>
 
+        <script src="ui.js"></script>
         <script src="plotting.js"></script>
         <script src="main.js"></script>
     </body>
