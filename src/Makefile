@@ -36,7 +36,7 @@ sim: venv
 
 #@$(DEV_BIN)/$(PYTHON_BIN) sim.py --server
 serve: venv
-	@$(DEV_BIN)/$(PYTHON_BIN) telemetry.py
+	@$(DEV_BIN)/$(PYTHON_BIN) telemetry.py -s
 
 serve-web:
 	@$(PYTHON_BIN) -m http.server

@@ -1,0 +1,17 @@
+#dynamic-plot-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.plot-col {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.plot-container {
+    display: block;
+    height: 500px;
+}

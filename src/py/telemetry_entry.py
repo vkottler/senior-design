@@ -29,12 +29,13 @@ def main(argv):
     parser.add_argument("--tcp-data-port", type=int, default=9020, help="")
     parser.add_argument("--tcp-cmd-port", type=int, default=9091, help="")
     parser.add_argument("--http-port", type=int, default=8080, help="")
+    parser.add_argument("-s", "--silent", action="store_true", help="")
 
     # parse arguments
     args = parser.parse_args(argv[1:])
 
-    telemetry_stream = StreamManager("telemetry")
-    command_stream = StreamManager("command")
+    telemetry_stream = StreamManager("telemetry", not args.silent)
+    command_stream = StreamManager("command", not args.silent)
 
     # add services
     manager = ServiceManager()

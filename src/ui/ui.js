@@ -21,6 +21,6 @@ function openTab(evt, tabName) {
 }
 
 /* open the first tab by default */
-let start_tab = "Lidar_Gyro_Graphs";
+let start_tab = "plot-tab";
 let mock_evt = {currentTarget: document.getElementById("start-tab")};
 openTab(mock_evt, start_tab);

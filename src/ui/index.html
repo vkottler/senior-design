@@ -13,7 +13,8 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Mono|Roboto+Slab" rel="stylesheet">
 
         <!-- styles -->
-        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/plots.css">
     </head>
     <body>
 
@@ -23,148 +24,29 @@
                 <h3>Server Status</h3>
                 <div id="server_sign" class="dot"></div>
             </div>
+            <h3 id="time">0.00s</h3>
             <div class="status-item">
                 <h3>Data Status</h3>
                 <div id="data_sign" class="dot"></div>
             </div>
         </div>
 
+
         <div class="tab">
-            <button id="start-tab" class="tablinks" onclick="openTab(event, 'Lidar_Gyro_Graphs')">Lidar/Gyro Graphs</button>
-            <button class="tablinks" onclick="openTab(event, 'PID_Graphs')">PID Graphs</button>
-            <button class="tablinks" onclick="openTab(event, 'ESC_Graphs')">ESC Graphs</button>
-            <button class="tablinks" onclick="openTab(event, 'Raw Data')">All Raw Telem</button>
-            <button class="tablinks" onclick="openTab(event, 'Manifest')">Channel Manifest</button>
-            <button class="tablinks" onclick="openTab(event, 'Commanding')">Commanding</button>
+            <button id="start-tab" class="tablinks"
+                    onclick="openTab(event, 'plot-tab')">Plots</button>
+            <button class="tablinks"
+                    onclick="openTab(event, 'Manifest')">Channel Manifest</button>
+            <button class="tablinks"
+                    onclick="openTab(event, 'Commanding')">Commanding</button>
         </div>
 
-        <!-- Lidar/Gyro Graph Tab -->
-        <div id="Lidar_Gyro_Graphs" class="tabcontent">
-            <table cellspacing="0" style="width:100%" >
-                <col width="50%">
-                <tr>
-                    <td> 
-                        <div id="lidar_d1_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>Lidar (D1): <span name = "lidar_d1"></span></h>
-                    </td>
-                    <td>
-                        <div id="gyroX_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>Gyro (X): <span name="gyro_x"></span></h>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div id="lidar_d2_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>Lidar (D2): <span name="lidar_d2"></span></h>
-                    </td>
-                    <td>
-                        <div id="gyroY_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>Gyro (Y): <span name="gyro_y"></span></h>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <div id="gyroZ_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>Gyro (Z): <span name="gyro_z"></span></h>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- PID Graph Tab -->
-        <div id="PID_Graphs" class="tabcontent">
-            <div id="pidpitch_chartContainer" style="height: 250px; width: 100%;"></div>
-            <h>PID Pitch: <span name = "pid_pitch"></span></h>
-            <div id="pidyaw_chartContainer" style="height: 250px; width: 100%;"></div>
-            <h>PID Yaw: <span name="pid_roll"></span></h>
-            <div id="pidroll_chartContainer" style="height: 250px; width: 100%;"></div>
-            <h>PID Roll: <span name="pid_yaw"></span></h>
-        </div>
-        
-        <!-- ESC Graph Tab -->
-        <div id="ESC_Graphs" class="tabcontent">
-            <table cellspacing="0" style="width:100%" >
-                <col width="50%">
-                <tr>
-                    <td> 
-                        <div id="esc_front_left_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>ESC Front Left: <span name = "esc_front_left"></span></h>
-                    </td>
-                    <td>
-                        <div id="esc_back_left_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>ESC Back Left: <span name="esc_back_left"></span></h>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div id="esc_front_right_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>ESC Front Right: <span name="esc_front_right"></span></h>
-                    </td>
-                    <td>
-                        <div id="esc_back_right_chartContainer" style="height: 250px; width: 100%;"></div>
-                        <h>ESC Back Right: <span name="esc_back_right"></span></h>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- All Telem Tab -->
-        <div id="Raw Data" class="tabcontent">
-
-            <table cellspacing="0" style="width:100%" >
-                <col width="33%">
-                <tr>
-                    <td><h2> Lidar (m)</h2></td>
-                    <td><h2> Gyro (deg/sec)</h2></td>
-                    <td><h2> PID (deg/sec)</h2></td>
-                </tr>
-                <tr>
-                  <td><h>Lidar (D1): <span name = "lidar_d1"></span></h></td>
-                  <td><h>Gyro (X): <span name="gyro_x"></span></h></td>
-                  <td><h>PID Pitch: <span name="pid_pitch"></span></h></td>
-                </tr>
-                <tr>
-                    <td><h>Lidar (D2): <span name="lidar_d2"></span></h></td>
-                    <td><h>Gyro (Y): <span name="gyro_y"></span></h></td>
-                    <td><h>PID Roll: <span name="pid_roll"></span></h></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><h>Gyro (Z): <span name="gyro_z"></span></h></td>
-                    <td><h>PID Yaw: <span name="pid_yaw"></span></h></td>
-                </tr>
-            </table>
-
-            <br></br>
-            <br></br>
-
-            <table cellspacing="0" style="width:100%">
-                <col width="33%">
-                <tr>
-                    <td><h2>ESC Values (percent)</h2></td>
-                    <td><h2>Battery Voltage (Volts)</h2></td>
-                    <td><h2>Battery Current (Amps)</h2></td>
-                </tr>
-                <tr>
-                    <td><h>ESC Front Left: <span name="esc_front_left"></span></h></td>
-                    <td><h>Battery Voltage Cell 1: <span name="batt_cell1"></span></h></td>
-                    <td><h>Battery Current (AMPS): <span name="batt_current"></span></h></td>
-                </tr>
-                <tr>
-                     <td><h>ESC Front Right: <span name="esc_front_right"></span></h></td>
-                     <td><h>Battery Voltage Cell 2: <span name="batt_cell2"></span></h></td>
-                </tr>
-                <tr>
-                    <td><h>ESC Back Left: <span name="esc_back_left"></span></h></td>
-                    <td><h>Battery Voltage Cell 3: <span name="batt_cell3"></span></h></td>
-                </tr>
-                <tr>
-                    <td><h>ESC Back Right: <span name="esc_back_right"></span></h></td>
-                    <td><h>Battery Voltage Total: <span name="batt_total"></span></h></td>
-                </tr>
-            </table>
-
+        <!-- Plots Tab -->
+        <div id="plot-tab" class="tabcontent">
+            <div id="dynamic-plot-container">
+                <div id="left-plot-col" class="plot-col"></div>
+                <div id="right-plot-col" class="plot-col"></div>
+            </div>
         </div>
 
         <!-- Channel Manifest Tab -->
@@ -186,7 +68,7 @@
         </div>
 
         <script src="ui.js"></script>
-        <script src="plotting.js"></script>
+        <script src="manifest.js"></script>
         <script src="main.js"></script>
     </body>
 </html>
