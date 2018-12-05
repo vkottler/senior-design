@@ -20,17 +20,6 @@ int write_frame(frame_type_t frame_type, const char *buf, size_t count)
 {
     size_t curr;
 
-    /* check the transmit state of the radio before doing anything */
-    if (!radio_transmit_state)
-    {
-        if (ticks > radio_resume)
-        {
-            radio_transmit_state = true;
-            USART1->CR1 |= USART_CR1_TXEIE;
-        }
-        else return -1;
-    }
-
     if (count > 255)
         return -1;
 

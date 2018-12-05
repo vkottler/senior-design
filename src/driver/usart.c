@@ -276,11 +276,13 @@ static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
 		curr = usart->RDR;
 
         /* check for a signal to temporarily halt outgoing transmissions */
-        if (usart == USART1 && curr == RADIO_SILENCE_BYTE && radio_transmit_state)
+        if (usart == USART1 && curr == RADIO_SILENCE_BYTE)
         {
-            radio_transmit_state = false;
-            radio_resume = ticks + RADIO_SILENCE_TICKS;
-            USART1->CR1 &= ~USART_CR1_TXEIE;
+            if (radio_transmit_state)
+            {
+                radio_transmit_state = false;
+                radio_resume = ticks + RADIO_SILENCE_TICKS;
+            }
             return;
         }
 

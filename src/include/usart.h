@@ -6,12 +6,12 @@
 #include "stm32f303xe.h"
 #include "pcbuffer.h"
 
-#define USART_BUF		128
+#define USART_BUF		2048
 #define LIDAR_BUF	    9	
 #define USART_INT_PRIO	4
 
 #define RADIO_SILENCE_BYTE  0xAA
-#define RADIO_SILENCE_TICKS 25
+#define RADIO_SILENCE_TICKS 2000
 
 #define USB_UART	USART3
 
