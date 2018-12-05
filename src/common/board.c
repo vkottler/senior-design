@@ -93,11 +93,11 @@ void manifest_init(void)
     channel_add(&manifest, "esc_back_left_val", "percent", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "esc_back_right_val", "percent", TELEM_UINT16, sizeof(uint16_t));
 
-    channel_add(&manifest, "batt_v_cell1", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "batt_v_cell2", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "batt_v_cell3", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "batt_current", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "batt_v_total", "ADC counts", TELEM_UINT16, sizeof(uint16_t));
+    channel_add(&manifest, "batt_v_cell1", "ADC counts", TELEM_FLOAT , sizeof(float));
+    channel_add(&manifest, "batt_v_cell2", "ADC counts", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "batt_v_cell3", "ADC counts", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "batt_current", "ADC counts", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "batt_v_total", "ADC counts", TELEM_FLOAT, sizeof(float));
 
     packets[0] = telemetry_packet_create(&manifest.channels[0], 3);
     packets[1] = telemetry_packet_create(&manifest.channels[3], 2);

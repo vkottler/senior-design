@@ -13,7 +13,7 @@
 
 #define vbatt_3s_ch  LL_ADC_CHANNEL_4
 #define vbatt_3s_adc  ADC4
-#define vbatt_3s_seq  LL_ADC_REG_RANK_2
+#define vbatt_3s_seq  LL_ADC_REG_RANK_1
 
 #define curr_meas_ch  LL_ADC_CHANNEL_5
 #define curr_meas_adc ADC4
