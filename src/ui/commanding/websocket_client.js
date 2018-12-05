@@ -29,6 +29,13 @@ class TelemetryClient
 
         this.state = "INITED";
         this.closed = false;
+
+        /* initialize silence byte array */
+        let silence_byte = parseInt("0xAA", 16);
+        let num_silence_bytes = 32;
+        this.silence_byte_array = new Uint8Array(num_silence_bytes);
+        for (let i = 0; i < num_silence_bytes; i++)
+            this.silence_byte_array[i] = silence_byte;
     }
 
     set state(state_str)
@@ -59,6 +66,7 @@ class TelemetryClient
     send()
     {
         let to_send = this.input_element.value;
+        this.socket.send(this.silence_byte_array);
         this.socket.send(to_send + '\n');
         this.log_activity(`sent: ${to_send}`);
     }

@@ -92,7 +92,10 @@ class WebsocketService(Daemon):
                     telemetry_stream.remove_output(client_str)
                     return
 
-                command_stream.write(message.encode("utf-8"))
+                if (message[0] == 0xAA):
+                    command_stream.write(message)
+                else:
+                    command_stream.write(message.encode("utf-8"))
 
         return handler
 
