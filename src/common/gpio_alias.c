@@ -118,3 +118,11 @@ int getGpioAlias(GPIO_TypeDef ** port, uint8_t * pin, GPIO * alias) {
 	return 0;
 }
 
+int getGpioAliasIndex(const char *str) {
+	unsigned int i;
+	for (i = 0; i < NUM_GROUPS; i++) {
+		if (!strcmp(str, GROUP_NAMES[i]))
+			return i;
+	}
+	return -1;
+}

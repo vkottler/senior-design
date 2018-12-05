@@ -6,6 +6,11 @@
 
 #define ESC_PERIOD 4000
 
+#define X_POS_INDEX  0
+#define X_NEG_INDEX  1
+#define Y_POS_INDEX  2
+#define Y_NEG_INDEX  4
+
 #define ESC_1_TIM TIM3
 #define ESC_2_TIM TIM3
 #define ESC_3_TIM TIM3
