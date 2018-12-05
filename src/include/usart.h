@@ -10,6 +10,9 @@
 #define LIDAR_BUF	    9	
 #define USART_INT_PRIO	4
 
+#define RADIO_SILENCE_BYTE  0xAA
+#define RADIO_SILENCE_TICKS 25
+
 #define USB_UART	USART3
 
 typedef enum {
@@ -30,5 +33,7 @@ PC_Buffer *get_tx(USART_TypeDef* usart);
 PC_Buffer *get_rx(USART_TypeDef* usart);
 
 extern PC_Buffer *tx_buf[3], *rx_buf[3];
+extern volatile uint32_t radio_resume;
+volatile bool radio_transmit_state;
 
 #endif

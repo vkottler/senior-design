@@ -4,9 +4,10 @@
 #include "lidar.h"
 #include "gpio.h"
 
-#define RADIO_USART_BUFF 1
-
 PC_Buffer *tx_buf[3], *rx_buf[3];
+
+volatile uint32_t radio_resume = 0;
+volatile bool radio_transmit_state = true;
 
 inline PC_Buffer *get_tx(USART_TypeDef* usart) {
 	switch ((uint32_t) usart) {
@@ -265,16 +266,23 @@ int usart_config(
 	return 0;
 }
 
-static inline void USART_Handler(
-	USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
-	char *prev, char *prev2
-) {
-
+static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
+                          char *prev, char *prev2, bool echo)
+{
 	char curr;
 
 	/* character received */
 	if (usart->ISR & USART_ISR_RXNE) {
 		curr = usart->RDR;
+
+        /* check for a signal to temporarily halt outgoing transmissions */
+        if (usart == USART1 && curr == RADIO_SILENCE_BYTE && radio_transmit_state)
+        {
+            radio_transmit_state = false;
+            radio_resume = ticks + RADIO_SILENCE_TICKS;
+            USART1->CR1 &= ~USART_CR1_TXEIE;
+            return;
+        }
 
 		/* backspace */
 		if (curr == 0x08 || curr == 0x7F) {
@@ -282,10 +290,13 @@ static inline void USART_Handler(
 				rx->produce_count--;
 
 				/* delete the character in console */
-				if (!pc_buffer_full(tx)) pc_buffer_add(tx, 0x08);
-				if (!pc_buffer_full(tx)) pc_buffer_add(tx, ' ');
-				if (!pc_buffer_full(tx)) pc_buffer_add(tx, 0x08);
-				usart->CR1 |= USART_CR1_TXEIE;
+                if (echo)
+                {
+                    if (!pc_buffer_full(tx)) pc_buffer_add(tx, 0x08);
+                    if (!pc_buffer_full(tx)) pc_buffer_add(tx, ' ');
+                    if (!pc_buffer_full(tx)) pc_buffer_add(tx, 0x08);
+                    usart->CR1 |= USART_CR1_TXEIE;
+                }
 			}
 		}
 
@@ -293,16 +304,11 @@ static inline void USART_Handler(
         else if ((*prev != 0x5B && *prev2 != 0x1B) && curr != 0x1B && curr != 0x5B) {
             if (NEWLINE_GUARD(curr, *prev)) rx->message_available++;
             if (!pc_buffer_full(rx)) pc_buffer_add(rx, curr);
-
-#ifndef RADIO_USART_BUFF
-            // don't forward with RADIO USART
-            // telem is forwarding
-			if (!pc_buffer_full(tx)) {
+			if (echo && !pc_buffer_full(tx)) {
 				pc_buffer_add(tx, curr);
 				if (curr == '\r') pc_buffer_add(tx, '\n');
 				usart->CR1 |= USART_CR1_TXEIE;
 			}
-#endif /*RADIO_USART_BUFF*/
         }
 
 		*prev2 = *prev;
@@ -317,40 +323,34 @@ static inline void USART_Handler(
 	}
 }
 
-void USART1_Handler(void) {
+void USART1_Handler(void)
+{
 	static char prev1 = '\0', prev2 = '\0';
-	USART_Handler(USART1, tx_buf[0], rx_buf[0], &prev1, &prev2);
+    USART_Handler(USART1, tx_buf[0], rx_buf[0], &prev1, &prev2, false);
 }
 
-void USART2_Handler(void) {
+void USART2_Handler(void)
+{
+	static char prev1 = '\0', prev2 = '\0';
 	char c;
+
 	/* character received */
 	if (USART2->ISR & USART_ISR_RXNE) {
 		c = USART2->RDR;
         lidar1_callback(c);
     }
-    else
-    {
-	static char prev1 = '\0', prev2 = '\0';
-	USART_Handler(USART2, tx_buf[1], rx_buf[1], &prev1, &prev2);
-    }
+    else USART_Handler(USART2, tx_buf[1], rx_buf[1], &prev1, &prev2, false);
 }
 
-void USART3_Handler(void) {
+void USART3_Handler(void)
+{
+	static char prev1 = '\0', prev2 = '\0';
 	char c;
+
 	/* character received */
 	if (USART3->ISR & USART_ISR_RXNE) {
 		c= USART3->RDR;
         lidar2_callback(c);
     }
-    else
-    {
-	static char prev1 = '\0', prev2 = '\0';
-	USART_Handler(USART3, tx_buf[2], rx_buf[2], &prev1, &prev2);
-    }
+    else USART_Handler(USART3, tx_buf[2], rx_buf[2], &prev1, &prev2, false);
 }
-
-/*void UART4_Handler(void) {*/
-/*	static char prev1 = '\0', prev2 = '\0';*/
-/*	USART_Handler(UART4, tx_buf[2], rx_buf[2], &prev1, &prev2);*/
-/*}*/
