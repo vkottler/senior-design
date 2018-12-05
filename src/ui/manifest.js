@@ -1,4 +1,4 @@
-let start_time = 0;
+let start_time = new Date().getTime() / 1000.0;
 let window_size = 100;
 let num_plots = 0;
 let plots = {};
@@ -24,7 +24,7 @@ function add_manifest_table_entry(manifest_entry)
     table.append(tr);
 }
 
-function get_time() { return new Date().getTime() / 1000.0; }
+function get_time() { return (new Date().getTime() / 1000.0) - start_time; }
 
 function manifest_handle(data_set, socket)
 {
@@ -79,7 +79,7 @@ function manifest_handle(data_set, socket)
                 default:
                     content = String(data);
             }
-            plot_data.push({x: get_time() - start_time, y: data});
+            plot_data.push({x: get_time(), y: data});
             if (plot_data.length > window_size)
                 plot_data.shift();
             plots[manifest_entry.name].to_render = true;
@@ -87,15 +87,15 @@ function manifest_handle(data_set, socket)
     }
 }
 
-start_time = get_time();
 setInterval(function() {
     for (plot_name in plots)
     {
         let plot = plots[plot_name];
         if (plot.to_render)
         {
-            plot.plot.render();
             plot.to_render = false;
+            plot.plot.render();
         }
     }
+    document.getElementById("time").innerHTML = get_time().toFixed(2) + "s";
 }, 50);
