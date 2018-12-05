@@ -3,6 +3,7 @@
  */
 
 #include <stdint.h>
+#include "handlers.h"
 
 extern uint32_t __etext;
 extern uint32_t __data_start__, __data_end__;
@@ -29,7 +30,7 @@ typedef void(*f_ptr)(void);
 
 void Default_Handler(void)
 {
-    while(1) {;}
+    fault_handler(100);
 }
 
 volatile uint32_t ticks = 0;

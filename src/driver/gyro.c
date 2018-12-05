@@ -7,11 +7,12 @@
 
 uint8_t buff[WATERMARK_SIZE];
 
-#define CALIBRATE_NUM 100
+#define CALIBRATE_NUM 10000.0f
+#define SENSITIVITY   (7.8125f / 1000.0f)
 
 PC_Buffer *gyro_tx_buf[1], *gyro_rx_buf[1];
-static int16_t gyro_offset[3] = {0, 0, 0};
-bool calibrate = true;
+int32_t gyro_accum_offset[3] = {0, 0, 0};
+float gyro_offset[3] = {0, 0, 0};
 extern void (*fun_ptr)();
 void  gyro_xyz_Callback(void);
 void  SPI1_Rx_Callback(void);
@@ -19,7 +20,7 @@ void  SPI1_Rx_Callback(void);
 void setOffset()
 {
     uint8_t data[2];
-    static uint8_t cnt = 0;
+    static uint16_t cnt = 0;
     cnt ++;
     for(int i = 0; i < 3; i++)
     {
@@ -27,26 +28,38 @@ void setOffset()
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[0]);
         while (pc_buffer_empty(gyro_rx_buf[0])){}
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[1]);
-        gyro_offset[i] += (data[0] << 8 | data[1]);
+        gyro_accum_offset[i] += (int16_t)(data[0] << 8 | data[1]);
+/*        printf("offset x: %ld, y: %ld, x: %ld\r\n", gyro_offset[0],gyro_offset[1],gyro_offset[2]);*/
     }
     if(cnt == CALIBRATE_NUM) {
-        calibrate = false;
-        gyro_offset[0] = gyro_offset[0] / CALIBRATE_NUM;
-        gyro_offset[1] = gyro_offset[1] / CALIBRATE_NUM;
-        gyro_offset[2] = gyro_offset[2] / CALIBRATE_NUM;
+        gyro_offset[0] = gyro_accum_offset[0] / CALIBRATE_NUM;
+        gyro_offset[1] = gyro_accum_offset[1] / CALIBRATE_NUM;
+        gyro_offset[2] = gyro_accum_offset[2] / CALIBRATE_NUM;
+
+        gyro_offset[0] = gyro_offset[0] * SENSITIVITY;
+        gyro_offset[1] = gyro_offset[1] * SENSITIVITY;
+        gyro_offset[2] = gyro_offset[2] * SENSITIVITY;
     }
 }
 
 void getGyroXYZ()
 {
     uint8_t data[2];
+    float   gyro_raw;
+    float   gyro_deg;
+
     for(int i = 0; i < 3; i++)
     {
         while (pc_buffer_empty(gyro_rx_buf[0])){}
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[0]);
         while (pc_buffer_empty(gyro_rx_buf[0])){}
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[1]);
-        *((int16_t *) manifest.channels[i].data) += (data[0] << 8 | data[1]) - gyro_offset[i];
+        gyro_raw = (float)((int16_t)(data[0] << 8 | data[1]));
+
+        memcpy(&gyro_deg, manifest.channels[i].data, sizeof(float));
+        gyro_deg += (gyro_raw * SENSITIVITY - gyro_offset[i]) * 0.025f;
+
+        memcpy(manifest.channels[i].data, &gyro_deg, sizeof(float));
     }
 }
 
@@ -148,29 +161,12 @@ void gyro_read_fifo()
 
 uint16_t gyro_config()
 {
-  /*  uint8_t CTRL0, CTRL1, CTRL2, F_SETUP;
+    uint8_t CTRL0, CTRL1;
 
-    CTRL1 = SOFT_RESET_21002 | MODE_STANDBY_21002;
-    gyro_write(CTRL_REG1_21002, CTRL1);
-    delay(10);
 
-    F_SETUP = F_MODE_CIRCULAR_21002 | WATERMARK_SIZE;
-    CTRL0 = FS_250_DPS_21002;
-    CTRL1 = ODR_800_HZ_21002;
-    CTRL2 = INT1_CFG_FIFO_21002 | INT_EN_FIFO_21002 |
-            IPOL_ACTIVE_HIGH_21002;
 
-    gyro_write(F_SETUP_21002, F_SETUP);
-    gyro_write(CTRL_REG0_21002, CTRL0);
-    gyro_write(CTRL_REG1_21002, CTRL1);
-    gyro_write(CTRL_REG2_21002, CTRL2);
-
-    CTRL1 = MODE_ACTIVE_21002;
-    gyro_write(CTRL_REG1_21002, CTRL1);
-*/
-
-   fun_ptr = &SPI1_Rx_Callback;
-	gyro_tx_buf[0] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
+    fun_ptr = &SPI1_Rx_Callback;
+    gyro_tx_buf[0] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
     gyro_rx_buf[0] = (PC_Buffer *) malloc(sizeof(PC_Buffer));
 
     if (!gyro_tx_buf[0] || !gyro_rx_buf[0]) 
@@ -180,10 +176,22 @@ uint16_t gyro_config()
     if (!pc_buffer_init(gyro_rx_buf[0], 255))	
         return -1;
 
-    gyro_write(CTRL_REG1_21002, MODE_ACTIVE_21002);
-        gyro_read_xyz();
+    CTRL1 = SOFT_RESET_21002 | MODE_STANDBY_21002;
+    gyro_write(CTRL_REG1_21002, CTRL1);
+    delay(10);
 
-    for(uint32_t i = 0; i < CALIBRATE_NUM; i ++)
+    CTRL0 = FS_250_DPS_21002;
+    CTRL1 = ODR_800_HZ_21002;
+
+    gyro_write(CTRL_REG0_21002, CTRL0);
+    gyro_write(CTRL_REG1_21002, CTRL1);
+
+    CTRL1 = MODE_ACTIVE_21002;
+    gyro_write(CTRL_REG1_21002, CTRL1);
+
+    gyro_read_xyz();
+
+    for(uint32_t i = 0; i <= CALIBRATE_NUM; i ++)
     {
         gyro_read_xyz();
         setOffset();

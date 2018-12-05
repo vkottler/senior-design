@@ -43,7 +43,7 @@ int write_frame(frame_type_t frame_type, const char *buf, size_t count)
 
     /* write EOF */
     if (_putc(USART1, BLOCK, TELEM_EOF))
-        return -1;
+    { return -1; }
 
 	return count;
 }

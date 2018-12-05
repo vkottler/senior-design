@@ -81,9 +81,9 @@ void manifest_init(void)
     manifest.count = 0;
     manifest.capacity = MAX_CHANNEL_COUNT;
 
-    channel_add(&manifest, "gyro_x", "deg/s", TELEM_INT16, sizeof(int16_t));
-    channel_add(&manifest, "gyro_y", "deg/s", TELEM_INT16, sizeof(int16_t));
-    channel_add(&manifest, "gyro_z", "deg/s", TELEM_INT16, sizeof(int16_t));
+    channel_add(&manifest, "gyro_x", "deg/s", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "gyro_y", "deg/s", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "gyro_z", "deg/s", TELEM_FLOAT, sizeof(float));
 
     channel_add(&manifest, "lidar_d1", "mm", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "lidar_d2", "mm", TELEM_UINT16, sizeof(uint16_t));
