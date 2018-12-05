@@ -183,7 +183,7 @@ function handle_telemetry(data)
                 channel_data = "error";
         }
         index += current_channel_size;
-        console.log(`${current_channel_name}: ${channel_data}`);
+        //console.log(`${current_channel_name}: ${channel_data}`);
         socket_io.emit(current_channel_name, channel_data);
     }
 
