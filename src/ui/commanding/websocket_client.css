@@ -1,5 +1,10 @@
+html {
+    width: 100%;
+}
+
 body {
     margin: 0;
+    width: 100%;
 }
 
 .pad {
@@ -21,14 +26,31 @@ h1 {
     flex-direction: column;
 }
 
+.fgrow {
+    flex-grow: 1;
+}
+
+.fsa {
+    justify-content: space-around;
+}
+
+.fcenter {
+    justify-content: center;
+}
+
 .center {
     text-align: center;
 }
 
 .log {
-    width: 20em;
-    height: 10em;
-    max-height: 10em;
+    margin: 0 1em;
+    height: 10.5em;
+    max-height: 10.5em;
     overflow-y: scroll;
     border: 1px solid;
+}
+
+#data-log.log {
+    height: 20em;
+    max-height: 20em;
 }

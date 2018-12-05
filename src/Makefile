@@ -42,7 +42,7 @@ serve-web:
 	@$(PYTHON_BIN) -m http.server
 
 view-web:
-	@$(BROWSER) http://localhost:8000/graph/socket-io/commanding/websocket_client.html &
+	@$(BROWSER) http://localhost:8000/ui/commanding/websocket_client.html &
 
 venv:
 	@virtualenv --python=$(PYTHON_BIN) venv

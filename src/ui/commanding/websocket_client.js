@@ -138,3 +138,7 @@ function start_client()
 }
 connect_button = document.getElementById("connect-button");
 connect_button.onclick = start_client;
+document.getElementById("host").value = window.location.hostname;
+
+/* automatically attempt to connect */
+start_client();
