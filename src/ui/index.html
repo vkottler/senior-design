@@ -15,16 +15,21 @@
         <!-- styles -->
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/plots.css">
+        <link rel="stylesheet" href="commanding/websocket_client.css">
     </head>
     <body>
 
         <h1 align="center">Quadcopter Telemetry</h1>
+        <h3 align="center" id="time">0.00s</h3>
         <div id="status-container">
             <div class="status-item">
                 <h3>Server Status</h3>
                 <div id="server_sign" class="dot"></div>
             </div>
-            <h3 id="time">0.00s</h3>
+            <div class="status-item">
+                <h3>Command Server:&nbsp;</h3>
+                <h3 id="state">N/A</h3>
+            </div>
             <div class="status-item">
                 <h3>Data Status</h3>
                 <div id="data_sign" class="dot"></div>
@@ -64,11 +69,12 @@
 
         <!-- Commanding Tab -->
         <div id="Commanding" class="tabcontent">
-            <iframe src="commanding/websocket_client.html"></iframe>
+            <div id="commanding-content"></div>
         </div>
 
         <script src="ui.js"></script>
         <script src="manifest.js"></script>
+        <script src="commanding/websocket_client.js"></script>
         <script src="main.js"></script>
     </body>
 </html>

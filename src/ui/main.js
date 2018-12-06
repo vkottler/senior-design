@@ -1,3 +1,8 @@
+/* globals */
+let activity_log;
+let data_log;
+let client;
+
 $(function () {
     var socket = io();
 
@@ -22,5 +27,31 @@ $(function () {
     // MANIFEST DATALINE
     socket.on('manifestLine', (data_set) => {
         manifest_handle(data_set, socket)
+    });
+});
+
+/* add behavior for connecting */
+function start_client()
+{
+    if (client) client.close();
+    let host = document.getElementById("host").value;
+    let port = document.getElementById("port").value;
+    client = new TelemetryClient(host, port, "state",
+                                 "disconnect-button", "to-send", "send-button",
+                                 data_log, activity_log);
+}
+
+/* load the commanding application */
+$(function() {
+    $("#commanding-content").load("commanding/commanding.html", function () {
+        activity_log = new LogElement("activity-log");
+        data_log = new LogElement("data-log");
+
+        connect_button = document.getElementById("connect-button");
+        connect_button.onclick = start_client;
+        document.getElementById("host").value = window.location.hostname;
+
+        /* automatically attempt to connect */
+        start_client();
     });
 });
