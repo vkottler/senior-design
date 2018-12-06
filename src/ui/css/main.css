@@ -37,6 +37,16 @@ body {
     font-size: 17px;
 }
 
+.stopbutton{
+    background-color: red;
+    height: 40px;
+    width: 120px;
+    float: center;
+    text-align: center; 
+    cursor: pointer;
+    border-radius: 12px;   
+}
+
 .tab button:hover {
     background-color: #ddd;
 }
@@ -77,6 +87,18 @@ td {
     align-items: center;
 }
 
+#title
+{
+    padding-left: 30%;
+}
+
+#name-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
 .status-item {
     display: flex;
     flex-direction: row;
@@ -87,4 +109,33 @@ iframe {
     width: 100%;
     height: 100%;
     border-width: 0;
+}
+
+#storlekslider
+{
+    background-color: red;
+}
+
+.all_gain_sliders, .all_gyro_sliders, .all_thrust_sliders
+{
+    width: 550px;
+    margin:20px;
+}
+.all_gain_sliders h1, .all_gyro_sliders h1, .all_thrust_sliders h1
+{
+    font-size: 18px;
+}
+.gain_slider, .gyro_slider, .thrust_slider{
+    margin: 5px;
+    cursor: pointer;
+
+}
+.gain_slider_data,.gyro_slider_data, .thrust_slider_data{
+    margin: 5px;
+    cursor: text;
+
+}
+.sendbutton{
+    text-align: center; 
+    cursor: pointer;
 }

@@ -7,20 +7,24 @@
         <!-- scripts -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>       
         <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
         <!-- fonts -->
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Mono|Roboto+Slab" rel="stylesheet">
 
         <!-- styles -->
+        <link rel='stylesheet' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' type='text/css'>
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/plots.css">
         <link rel="stylesheet" href="commanding/websocket_client.css">
     </head>
     <body>
-
-        <h1 align="center">Quadcopter Telemetry</h1>
-        <h3 align="center" id="time">0.00s</h3>
+        <div align="center" id = "name-container">
+            <h1 id= "title">Quadcopter Telemetry & Control</h1>
+            <h3 align="center" id="time">0.00s</h3>
+            <button id="stop_button" class="stopbutton" onclick="send_stop()">STOP</button>
+        </div>
         <div id="status-container">
             <div class="status-item">
                 <h3>Server Status</h3>
@@ -36,7 +40,6 @@
             </div>
         </div>
 
-
         <div class="tab">
             <button id="start-tab" class="tablinks"
                     onclick="openTab(event, 'plot-tab')">Plots</button>
@@ -44,6 +47,8 @@
                     onclick="openTab(event, 'Manifest')">Channel Manifest</button>
             <button class="tablinks"
                     onclick="openTab(event, 'Commanding')">Commanding</button>
+            <button class="tablinks"
+                    onclick="openTab(event, 'Command')">Input</button>
         </div>
 
         <!-- Plots Tab -->
@@ -70,6 +75,57 @@
         <!-- Commanding Tab -->
         <div id="Commanding" class="tabcontent">
             <div id="commanding-content"></div>
+        </div>
+
+        <!-- Command Tab -->
+        <div id="Command" class="tabcontent"> 
+            <table>
+                <td>
+                <div class = "all_gain_sliders">
+                    <h1>Proportional Gain</h1>
+                    <div id="prop_gain_slider" class = "gain_slider"></div>
+                    <input id="prop_gain_slider_val" class="gain_slider_data" type="text">
+                    <button id = "send_prop_gain" class = "sendbutton" onclick = "send_stop()"">Send</button>
+
+                    
+                    <h1>Interval Gain</h1>
+                    <div id="int_gain_slider" class = "gain_slider"> </div>
+                    <input id="int_gain_slider_val" class="gain_slider_data" type="text">
+                    <button id = "send_int_gain" class = "sendbutton" onclick = "send_stop()"">Send</button>
+
+
+                    <h1>Derivative Gain</h1>
+                    <div id="der_gain_slider" class = "gain_slider"> </div>
+                    <input id="der_gain_slider_val" class = "gain_slider_data"  type="text" />
+                    <button id = "send_der_gain" class = "sendbutton" onclick = "send_stop()"">Send</button>
+
+                </div>
+                </td>
+                <td>
+                <div class = "all_gyro_sliders">
+                    <h1>Desired X Gain</h1>
+                    <div id="gyro_x_gain_slider" class = "gyro_slider"></div>
+                    <input id="gyro_x_gain_slider_val" class = "gyro_slider_data" type="text"  />
+                    <button id = "send_gyrox_gain" class = "sendbutton" onclick = "send_stop()"">Send</button>
+                    
+                    <h1>Desired Y Gain</h1>
+                    <div id="gyro_y_gain_slider" class = "gyro_slider"> </div>
+                    <input id="gyro_y_gain_slider_val" class = "gyro_slider_data" type="text" />
+                    <button id = "send_gyroy_gain" class = "sendbutton" onclick = "send_stop()"">Send</button>
+
+                    <h1>Desired Z Gain</h1>
+                    <div id="gyro_z_gain_slider" class = "gyro_slider"> </div>  
+                    <input id="gyro_z_gain_slider_val" class = "gyro_slider_data" type="text"/>
+                    <button id = "send_gyroz_gain" class = "sendbutton" onclick = "send_stop()"">Send</button>
+                </div>
+                </td>
+            </table> 
+            <div class = "all_thrust_sliders">
+                <h1>Thrust</h1>
+                <div id="thrust_slider" class = "thrust_slider"> </div>  
+                <input id="thrust_slider_val" class = "thrust_slider_data" type="text"/>
+                <button id = "send_thrust" class = "sendbutton" onclick = "send_stop()"">Send</button>
+            </div>
         </div>
 
         <script src="ui.js"></script>
