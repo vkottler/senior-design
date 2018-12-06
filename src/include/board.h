@@ -12,7 +12,7 @@
 #define MAX_CHANNEL_COUNT   64
 #define MAX_PACKET_COUNT     4
 
-int io_init(void);
+void io_init(void);
 int periph_init(void);
 void manifest_init(void);
 void delay(uint32_t ms);

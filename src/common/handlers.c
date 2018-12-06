@@ -235,7 +235,10 @@ void SPI1_TransferError_Callback(void)
 {
   LL_SPI_DisableIT_RXNE(SPI1);
   LL_SPI_DisableIT_TXE(SPI1);
-  blink_handler(50);
+  while (1)
+  {
+      blink_handler(250);
+  }
 }
 
 void SPI1_Handler(void)

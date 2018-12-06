@@ -2,7 +2,7 @@
 #include "stm32f303xe.h"
 #include "board_config.h"
 #include "board.h"
-#include "spi.h"
+#include "stateful_spi.h"
 #include "adc.h"
 #include "i2c.h"
 
@@ -118,7 +118,6 @@ void i2c_config()
             clk_high_period,
             clk_low_period);
 
-
     LL_I2C_Disable(I2C1);
     LL_I2C_InitTypeDef handle;
     handle.AnalogFilter = LL_I2C_ANALOGFILTER_ENABLE;
@@ -141,13 +140,14 @@ void i2c_config()
 
 void spi_config()
 {
-    NVIC_SetPriority(SPI1_IRQn, 0);
-    NVIC_EnableIRQ(SPI1_IRQn);
-
     LL_SPI_InitTypeDef SPI_InitStruct;
 
     RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 
+    NVIC_SetPriority(SPI1_IRQn, 3);
+    NVIC_EnableIRQ(SPI1_IRQn);
+
+    LL_SPI_StructInit(&SPI_InitStruct);
     SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
     SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
     SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
@@ -155,13 +155,13 @@ void spi_config()
     SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
     SPI_InitStruct.NSS = LL_SPI_NSS_HARD_OUTPUT;
     SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV8;
+    //SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV16;
     SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
     SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
     SPI_InitStruct.CRCPoly = 7;
+
     LL_SPI_Init(SPI1, &SPI_InitStruct);
-    LL_SPI_EnableIT_RXNE(SPI1);
-    LL_SPI_EnableIT_TXE(SPI1);
-    LL_SPI_EnableIT_ERR(SPI1);
+    LL_SPI_SetRxFIFOThreshold(SPI1, LL_SPI_RX_FIFO_TH_QUARTER);
+
+    spi_init_state(&spi1_state, SPI1);
 }
-
-

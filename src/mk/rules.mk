@@ -26,16 +26,20 @@ $(OBJ_DIR)/%.elf: app/%.o $(OBJECTS)
 %-dump: $(OBJ_DIR)/%.dump
 	vim $<
 
-%-debug: $(OBJ_DIR)/%.bin
-
 JLINK_FILE = ./temp.jlink
-JLINK_ARGS = -device STM32F303RE -if SWD -speed 4000 -autoconnect 1 -CommanderScript $(JLINK_FILE)
+JLINK_ARGS = -device STM32F303RE -if SWD -speed 4000 -autoconnect 1
 %-flash: $(OBJ_DIR)/%.bin
 	@echo "loadbin $<, 0x08000000" > $(JLINK_FILE)
 	@echo "r"                     >> $(JLINK_FILE)
 	@echo "exit"                  >> $(JLINK_FILE)
-	JLinkExe $(JLINK_ARGS)
+	JLinkExe $(JLINK_ARGS) -CommanderScript $(JLINK_FILE)
 	@rm $(JLINK_FILE)
+
+%-debug: $(OBJ_DIR)/%.bin
+	JLinkGDBServer $(JLINK_ARGS)
+
+%-gdb: $(OBJ_DIR)/%.elf
+	$(TOOLCHAIN)gdb $<
 
 nucleo-flash: $(OBJ_DIR)/nucleo.bin
 	cp $< /media/$(USER)/NODE_F303RE/

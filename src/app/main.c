@@ -1,12 +1,13 @@
 #include "main.h"
-#include <stdio.h>
-#include "usart.h"
+#include "post.h"
 
 int main(void)
 {
     io_init();
     periph_init();
     manifest_init();
+    post();
+    printPrompt();
 
     while (1)
     {
@@ -19,7 +20,6 @@ int main(void)
         }
         else if (ticks > radio_resume)
             radio_transmit_state = true;
-
         check_input();
     }
 

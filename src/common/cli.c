@@ -48,6 +48,10 @@ void process_input(char *buf)
 {
 	int num_tokens;
 
+    /* echo the command back at this step so we can see what's actually
+     * executing */
+    printf("%s\r\n", buf);
+
 	/* tokenize the input (i.e. 'argv' style array) */
 	num_tokens = tokenize(tokens, MAX_TOKENS, buf, USART_BUF);
 	if (!num_tokens) return;
