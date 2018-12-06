@@ -25,6 +25,7 @@ function send_stop()
     console.log('STOP')
 }
 
+
 var slider_types = ["gain_slider","gyro_slider", "thrust_slider"];
 
 $(function() {
@@ -44,7 +45,7 @@ $(function() {
                 break;
             case 2:
                  min = 0.000;
-                 max = 100.000;
+                 max = 500.000;
                 break;
         }
         var occurences = currentSliderArray.length;
@@ -62,10 +63,6 @@ $(function() {
             }
             });
             $("#"+currentSliderId+"_val").on( "keyup", function() {
-                console.log('min: '+min)
-                console.log('max: '+max)
-                console.log('value: '+this.value)
-
                 if((this.value < min) || (this.value > max)) this.value = max;
                 $("#"+currentSliderId).slider( "value", this.value );
             });
