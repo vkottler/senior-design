@@ -37,8 +37,8 @@ JLINK_ARGS = -device STM32F303RE -if SWD -speed 4000 -autoconnect 1 -CommanderSc
 	JLinkExe $(JLINK_ARGS)
 	@rm $(JLINK_FILE)
 
-nucleo-flash:
-	cp $(OBJ_DIR)/main.bin /media/$(USER)/NODE_F303RE/
+nucleo-flash: $(OBJ_DIR)/nucleo.bin
+	cp $< /media/$(USER)/NODE_F303RE/
 
 # phony targets
 

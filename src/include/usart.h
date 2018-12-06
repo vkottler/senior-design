@@ -6,6 +6,8 @@
 #include "stm32f303xe.h"
 #include "pcbuffer.h"
 
+#define NUM_UARTS       3
+
 #define USART_BUF		2048
 #define LIDAR_BUF	    9	
 #define USART_INT_PRIO	4
@@ -18,8 +20,8 @@
 typedef enum {
 	APBX =		0,
 	SYSCLK =	1,
-	HSI_SRC =	2,
-	LSE_SRC =	3
+	LSE_SRC =	2,
+	HSI_SRC =	3
 } usart_clk_src_t;
 
 int usart_config(
@@ -32,7 +34,7 @@ int _putc(USART_TypeDef* usart, bool block, char data);
 PC_Buffer *get_tx(USART_TypeDef* usart);
 PC_Buffer *get_rx(USART_TypeDef* usart);
 
-extern PC_Buffer *tx_buf[3], *rx_buf[3];
+extern PC_Buffer *tx_buf[NUM_UARTS], *rx_buf[NUM_UARTS];
 extern volatile uint32_t radio_resume;
 volatile bool radio_transmit_state;
 

@@ -9,3 +9,4 @@ SRCS += driver/esc.c
 SRCS += driver/timer.c
 SRCS += driver/adc.c
 SRCS += driver/spi.c
+SRCS += driver/rcc.c

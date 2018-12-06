@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#define HSE_VALUE ((uint32_t) 8000000)
+#define HSI_VALUE ((uint32_t) 8000000)
+#define LSE_VALUE ((uint32_t) 32768)
+
 /* This variable is updated in three ways:
  * 1) by calling CMSIS function SystemCoreClockUpdate()
  * 2) by calling HAL API function HAL_RCC_GetSysClockFreq()

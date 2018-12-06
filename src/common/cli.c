@@ -11,14 +11,12 @@
 #include "usart.h"
 #include "command.h"
 
-#define RADIO_RX_BUF rx_buf[0]
-
 char buffer[BUFSIZ];
 /* how to print a backspace to the console */
 char backspace[3] = {0x08, ' ', 0x08};
 
-int tokenize(char **tok, int max_tokens, char *buf, int buflen) {
-
+int tokenize(char **tok, int max_tokens, char *buf, int buflen)
+{
 	int curr_token = 0, curr_char = 0;
 	bool whitespace_flag = true;
 
@@ -46,8 +44,8 @@ int tokenize(char **tok, int max_tokens, char *buf, int buflen) {
 }
 
 char *tokens[MAX_TOKENS];
-void process_input(char *buf) {
-
+void process_input(char *buf)
+{
 	int num_tokens;
 
 	/* tokenize the input (i.e. 'argv' style array) */
@@ -57,18 +55,19 @@ void process_input(char *buf) {
 	exec_command(num_tokens, tokens);
 }
 
-inline void printPrompt(void) {
+void printPrompt(void)
+{
     printf("=> ");
     fflush(stdout);
 }
 
-void check_input(void) {
-    if (pc_buffer_messageAvailable(RADIO_RX_BUF)) {
-        pc_buffer_getMessage(RADIO_RX_BUF, buffer, 128);
-        if (buffer[0] != '\0') {
+void check_input(void)
+{
+    if (pc_buffer_messageAvailable(CLI_INPUT_BUF))
+    {
+        pc_buffer_getMessage(CLI_INPUT_BUF, buffer, BUFSIZ);
+        if (buffer[0] != '\0')
             process_input(buffer);
-        }
         printPrompt();
     }
 }
-

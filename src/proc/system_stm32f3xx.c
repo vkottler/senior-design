@@ -1,13 +1,5 @@
 #include "stm32f303xe.h"
 
-#if !defined  (HSE_VALUE) 
-  #define HSE_VALUE    ((uint32_t)8000000) /*!< Default value of the External oscillator in Hz. */
-#endif /* HSE_VALUE */
-
-#if !defined  (HSI_VALUE)
-  #define HSI_VALUE    ((uint32_t)8000000) /*!< Default value of the Internal oscillator in Hz. */
-#endif /* HSI_VALUE */
-
 /*!< Uncomment the following line if you need to relocate your vector Table in
      Internal SRAM. */
 /* #define VECT_TAB_SRAM */
@@ -117,20 +109,19 @@ void SystemCoreClockUpdate (void)
 
   switch (tmp)
   {
-    case RCC_CFGR_SWS_HSI:  /* HSI used as system clock */
-      SystemCoreClock = HSI_VALUE;
-      break;
-    case RCC_CFGR_SWS_HSE:  /* HSE used as system clock */
-      SystemCoreClock = HSE_VALUE;
-      break;
-    case RCC_CFGR_SWS_PLL:  /* PLL used as system clock */
+    case RCC_CFGR_SWS_HSI: SystemCoreClock = HSI_VALUE; break;
+    case RCC_CFGR_SWS_HSE: SystemCoreClock = HSE_VALUE; break;
+
+    /* PLL used as system clock */
+    case RCC_CFGR_SWS_PLL:
+
       /* Get PLL clock source and multiplication factor ----------------------*/
       pllmull = RCC->CFGR & RCC_CFGR_PLLMUL;
       pllsource = RCC->CFGR & RCC_CFGR_PLLSRC;
       pllmull = ( pllmull >> 18) + 2;
 
 #if defined (STM32F302xE) || defined (STM32F303xE) || defined (STM32F398xx)
-        predivfactor = (RCC->CFGR2 & RCC_CFGR2_PREDIV) + 1;
+      predivfactor = (RCC->CFGR2 & RCC_CFGR2_PREDIV) + 1;
       if (pllsource == RCC_CFGR_PLLSRC_HSE_PREDIV)
       {
         /* HSE oscillator clock selected as PREDIV1 clock entry */
@@ -161,9 +152,9 @@ void SystemCoreClockUpdate (void)
   }
   /* Compute HCLK clock frequency ----------------*/
   /* Get HCLK prescaler */
-  tmp = AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> 4)];
+  //tmp = AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> 4)];
   /* HCLK clock frequency */
-  SystemCoreClock >>= tmp;
+  //SystemCoreClock >>= tmp;
   SysTick_Config(SystemCoreClock / 1000);
 }
 
