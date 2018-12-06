@@ -60,6 +60,9 @@ int periph_init(void) {
     esc_config();
     printf("esc INIT\r\n");
 
+    control_config();
+    printf("control INIT\r\n");
+
     printf("System Core Clock: %ld\r\n", SystemCoreClock);
     printPrompt();
 
@@ -88,10 +91,10 @@ void manifest_init(void)
     channel_add(&manifest, "lidar_d1", "mm", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "lidar_d2", "mm", TELEM_UINT16, sizeof(uint16_t));
 
-    channel_add(&manifest, "esc_front_left_val", "percent", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "esc_front_right_val", "percent", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "esc_back_left_val", "percent", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "esc_back_right_val", "percent", TELEM_UINT16, sizeof(uint16_t));
+    channel_add(&manifest, "esc_pos_x_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
+    channel_add(&manifest, "esc_neg_x_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
+    channel_add(&manifest, "esc_pos_y_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
+    channel_add(&manifest, "esc_neg_y_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
 
     channel_add(&manifest, "batt_v_cell1", "ADC counts", TELEM_FLOAT , sizeof(float));
     channel_add(&manifest, "batt_v_cell2", "ADC counts", TELEM_FLOAT, sizeof(float));

@@ -40,7 +40,7 @@ const GPIO GPIO_TABLE[] = {
 	/* TIM 2 Ch 2 */
 	FILL_AFIO("NEGX PWM",		GPIOB,  0, ALT, 2, LOW_SPEED, NONE, true, MOTOR)
 	/* TIM 2 Ch 3*/
-	FILL_AFIO("NEGY PWM",		GPIOC,  1, ALT, 2, LOW_SPEED, NONE, true, MOTOR)
+	FILL_AFIO("NEGY PWM",		GPIOB,  1, ALT, 2, LOW_SPEED, NONE, true, MOTOR)
 
 	/* Application I2C */
 	FILL_AFIO("SCL",		GPIOA, 9, ALT, 4, LOW_SPEED, PULL_UP, true, I2C)

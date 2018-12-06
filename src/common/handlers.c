@@ -14,55 +14,63 @@
 #include "usart.h"
 #include "pcbuffer.h"
 #include <unistd.h>
+#include <string.h>
 
 PC_Buffer *gyro_tx_buf[1], *gyro_rx_buf[1];
 void (*fun_ptr)();
 
 control_t control;
+#define MAX_THROTTLE 500
 
 void control_config()
 {
 	control.pid_output_x = 0;
 	control.pid_output_y = 0;
 	control.pid_output_z = 0;
-	
+
+    //input
+	control.desired_x = 0;
+    control.desired_y = 0;
+    control.desired_z = 0;
+	control.throttle = 0;
+
 	// Difference
 	control.curr_dif_x = 0;
 	control.curr_dif_y = 0;
 	control.curr_dif_z = 0;
 
 	// Proportional
-	control.p_gain = 1;
+	control.p_gain = 0.1;
 
 	// Integral
-	control.i_gain = 1;
+	control.i_gain = 0;
 	control.i_output_x = 0;
 	control.i_output_y = 0;
 	control.i_output_z = 0;
 
 	// Derivative
-	control.d_gain = 1;
+	control.d_gain = 0.25;
 	control.prev_dif_x = 0;
 	control.prev_dif_y = 0;
 	control.prev_dif_z = 0;
 }
 
 void calc_pid()
-{	
+{
 	float p_x, i_x, d_x;
 	float p_y, i_y, d_y;
 	float p_z, i_z, d_z;
-	
+
     p_x = (control.curr_dif_x) * control.p_gain;
     i_x = control.i_output_x + ((control.curr_dif_x) * control.i_gain);
 	control.i_output_x = i_x;
 	d_x = (control.curr_dif_x - control.prev_dif_x) * control.d_gain;
-	
+
     p_y = (control.curr_dif_y) * control.p_gain;
     i_y = control.i_output_y + ((control.curr_dif_y) * control.i_gain);
 	control.i_output_y = i_y;
 	d_y = (control.curr_dif_y - control.prev_dif_y) * control.d_gain;
-	
+
     p_z = (control.curr_dif_z) * control.p_gain;
     i_z = control.i_output_z + ((control.curr_dif_z) * control.i_gain);
 	control.i_output_z = i_z;
@@ -77,51 +85,70 @@ void calc_pid()
 /*         		Y + (CCW)                                                     */
 /*         		|                                                            */
 /*         		|                                                            */
-/*  (CW) -X ____|____ +x (CW)         |Y+                                    */
+/*  (CW) -X ____|____ +x (CW)         |Y                                     */
 /*         		|                     |                               		 */
-/*         		|                  Z+ o___X+                                 */
+/*         		|                   Z o___X                                  */
 /*         		|                                                            */
 /*         		-Y (CCW)                                                      */
 /*****************************************************************************/
 
 void control_loop
 (
-	float raw_input_x, float raw_input_y, float raw_input_z, 
-	float desired_x, float desired_y, float desired_z,
-	float throttle
-) 
+	float raw_input_x, float raw_input_y, float raw_input_z)
 {
-	float esc_pos_x_val;
-	float esc_neg_x_val;
-	float esc_pos_y_val;
-	float esc_neg_y_val;
+	int16_t esc_pos_x_val;
+	int16_t esc_neg_x_val;
+	int16_t esc_pos_y_val;
+	int16_t esc_neg_y_val;
+    float pos_x_val;
+    float neg_x_val;
+    float pos_y_val;
+    float neg_y_val;
 
 	// Calculate difference Roll, Pitch and Yaw
-	control.curr_dif_x = raw_input_x - desired_x;
-	control.curr_dif_y = raw_input_y - desired_y;
-	control.curr_dif_z = raw_input_z - desired_z;
+	control.curr_dif_x = raw_input_x - control.desired_x;
+	control.curr_dif_y = raw_input_y - control.desired_y;
+	control.curr_dif_z = raw_input_z - control.desired_z;
 
 	// PID tunning
 	calc_pid();
 
-	// Calculate pulse
-	esc_pos_x_val = throttle + control.pid_output_x 
-					       	 - control.pid_output_z;
+    // Calculate pulse
+	pos_x_val = (int16_t)(control.throttle + control.pid_output_y
+					       	 + control.pid_output_z);
+	neg_x_val = (int16_t)(control.throttle - control.pid_output_y
+					       	 + control.pid_output_z);
+	pos_y_val = (int16_t)(control.throttle - control.pid_output_x
+					       	 - control.pid_output_z);
+	neg_y_val = (int16_t)(control.throttle + control.pid_output_x
+					       	 - control.pid_output_z);
+    // Saturate
+    if (pos_x_val < 0) pos_x_val = 0;
+    if (neg_x_val < 0) neg_x_val = 0;
+    if (pos_y_val < 0) pos_y_val = 0;
+    if (neg_y_val < 0) neg_y_val = 0;
 
-	esc_neg_x_val = throttle - control.pid_output_x 
-					       	 - control.pid_output_z;
+	// Cast
+	esc_pos_x_val = (int16_t)pos_x_val;
+	esc_neg_x_val = (int16_t)neg_x_val;
+	esc_pos_y_val = (int16_t)pos_y_val;
+	esc_neg_y_val = (int16_t)neg_y_val;
 
-	esc_pos_y_val = throttle + control.pid_output_y
-					       	 + control.pid_output_z;
+    // Saturate
+    if (esc_pos_x_val > MAX_THROTTLE) esc_pos_x_val = MAX_THROTTLE;
+    if (esc_neg_x_val > MAX_THROTTLE) esc_neg_x_val = MAX_THROTTLE;
+    if (esc_pos_y_val > MAX_THROTTLE) esc_pos_y_val = MAX_THROTTLE;
+    if (esc_neg_y_val > MAX_THROTTLE) esc_neg_y_val = MAX_THROTTLE;
 
-	esc_neg_y_val = throttle - control.pid_output_y
-					       	 + control.pid_output_z;
-
+    *((uint16_t *) manifest.channels[5].data) = esc_pos_x_val;
+    *((uint16_t *) manifest.channels[6].data) = esc_neg_x_val;
+    *((uint16_t *) manifest.channels[7].data) = esc_pos_y_val;
+    *((uint16_t *) manifest.channels[8].data) = esc_neg_y_val;
 	// Write Motors
-	esc_set_pulse(ESC_TABLE[0], esc_pos_x_val);
-	esc_set_pulse(ESC_TABLE[1], esc_neg_x_val);
-	esc_set_pulse(ESC_TABLE[2], esc_pos_y_val);
-	esc_set_pulse(ESC_TABLE[3], esc_neg_y_val);
+/*	esc_set_pulse(ESC_TABLE[X_POS_INDEX], esc_pos_x_val);*/
+/*	esc_set_pulse(ESC_TABLE[X_NEG_INDEX], esc_neg_x_val);*/
+/*	esc_set_pulse(ESC_TABLE[Y_POS_INDEX], esc_pos_y_val);*/
+/*	esc_set_pulse(ESC_TABLE[Y_NEG_INDEX], esc_neg_y_val);*/
 
 }
 
@@ -185,6 +212,14 @@ void service_sensors(unsigned int interval) {
         batt_getBattery();
         *((uint16_t *) manifest.channels[3].data) = lidar_readDist(1);
         *((uint16_t *) manifest.channels[4].data) = lidar_readDist(2);
+
+        float raw_input_x, raw_input_y, raw_input_z;
+
+        memcpy(&raw_input_x, manifest.channels[0].data, sizeof(float));
+        memcpy(&raw_input_y, manifest.channels[1].data, sizeof(float));
+        memcpy(&raw_input_z, manifest.channels[2].data, sizeof(float));
+
+        control_loop(raw_input_x, raw_input_y, raw_input_z);
     }
 }
 

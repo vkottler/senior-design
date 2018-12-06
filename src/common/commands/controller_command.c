@@ -6,7 +6,7 @@
 
 extern control_t control;
 
-command_status do_pid(int argc, char *argv[]) {
+command_status do_control(int argc, char *argv[]) {
 
     if (argc < 2)
         return USAGE;
@@ -20,22 +20,25 @@ command_status do_pid(int argc, char *argv[]) {
         }
     }
 
-
-    float gain = atof(argv[2]);
-    if (!strcmp("p_gain", argv[1])) {
-        control.p_gain = gain;
+    float val = atof(argv[2]);
+    if (!strcmp("x", argv[1])) {
+        control.desired_x = val;
         return CMD_SUCCESS;
     }
-    else if (!strcmp("i_gain", argv[1])) {
-        control.i_gain = gain;
+    else if (!strcmp("y", argv[1])) {
+        control.desired_y = val;
         return CMD_SUCCESS;
     }
-    else if (!strcmp("d_gain", argv[1])) {
-        control.d_gain = gain;
+    else if (!strcmp("z", argv[1])) {
+        control.desired_z = val;
+        return CMD_SUCCESS;
+    }
+    else if (!strcmp("up", argv[1])) {
+        control.throttle = val;
         return CMD_SUCCESS;
     }
 
     return USAGE;
 }
 
-COMMAND_ENTRY("pid", "pid { p_gain | i_gain | d_gain } [val]", "Set gain values for PID loop", do_pid)
+COMMAND_ENTRY("control", "{ x | y | z | up } [val]", "Set desired values", do_control)

@@ -23,7 +23,7 @@ command_status do_esc(int argc, char *argv[]) {
         return CMD_SUCCESS;
     }
     else if (!strcmp("y_neg", argv[1])) {
-	    esc_set_pulse(ESC_TABLE[Y_POS_INDEX], val);
+	    esc_set_pulse(ESC_TABLE[Y_NEG_INDEX], val);
         return CMD_SUCCESS;
     }
 

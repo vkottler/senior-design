@@ -29,7 +29,6 @@ void setOffset()
         while (pc_buffer_empty(gyro_rx_buf[0])){}
         pc_buffer_remove(gyro_rx_buf[0], (char*) &data[1]);
         gyro_accum_offset[i] += (int16_t)(data[0] << 8 | data[1]);
-/*        printf("offset x: %ld, y: %ld, x: %ld\r\n", gyro_offset[0],gyro_offset[1],gyro_offset[2]);*/
     }
     if(cnt == CALIBRATE_NUM) {
         gyro_offset[0] = gyro_accum_offset[0] / CALIBRATE_NUM;

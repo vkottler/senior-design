@@ -1,7 +1,6 @@
 #include "main.h"
 #include <stdio.h>
 #include "usart.h"
-#include "../control/control.h"
 
 int main(void)
 {
@@ -20,6 +19,7 @@ int main(void)
         }
         else if (ticks > radio_resume)
             radio_transmit_state = true;
+
         check_input();
     }
 
