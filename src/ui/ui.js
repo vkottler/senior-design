@@ -22,18 +22,47 @@ function openTab(evt, tabName) {
 
 function send_stop()
 {
-    this.socket.send('stop')
+    client.send('stop')
 }
 
 function sendGain()
 {
-    let currentSliderArray = document.getElementsByClassName("gain_slider")
+    var data = []
+    var currentSliderArray = document.getElementsByClassName("gain_slider")
+    var occurences = currentSliderArray.length;
+    for(j = 0; j < occurences;j++){
+        let currentSliderId = currentSliderArray[j].id
+        console.log('slider id: ' + currentSliderId)
+        var value = document.getElementById(currentSliderId+'_val').value
+        data.push(value)
+    }
+    console.log(data)
 
-
+    //not sure how to do, but basic layout 
+    //send('pid p_gain '+ data[0])
+    //send('pid i_gain '+ data[1])
+    //send('pid d_gain '+ data[2])
 }
+
 function sendDesiredVals()
 {
-
+    var throttle_value = document.getElementById("thrust_slider_val").value 
+    var data = []
+    var currentSliderArray = document.getElementsByClassName("gyro_slider")
+    var occurences = currentSliderArray.length;
+    for(j = 0; j < occurences;j++){
+        let currentSliderId = currentSliderArray[j].id
+        console.log('slider id: ' + currentSliderId)
+        var value = document.getElementById(currentSliderId+'_val').value
+        data.push(value)
+    }
+    console.log(throttle_value)
+    console.log(data)
+    //todo
+    //send(throttle_value)
+    //send('pid p_gain '+ data[0])
+    //send('pid i_gain '+ data[1])
+    //send('pid d_gain '+ data[2])
 }
 
 
@@ -62,7 +91,6 @@ $(function() {
         var occurences = currentSliderArray.length;
         for(j = 0; j < occurences;j++){
             let currentSliderId = currentSliderArray[j].id
-            console.log(currentSliderId)
             $("#"+currentSliderId).slider({
             min: min,
             max: max,
@@ -77,7 +105,6 @@ $(function() {
                 if((this.value < min) || (this.value > max)) this.value = max;
                 $("#"+currentSliderId).slider( "value", this.value );
             });
-            console.log("#"+currentSliderId.value)
         }
     }
 });
