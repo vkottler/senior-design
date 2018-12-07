@@ -37,14 +37,15 @@ body {
     font-size: 17px;
 }
 
-.stopbutton{
+#stop_button{
     background-color: red;
-    height: 40px;
-    width: 120px;
-    float: center;
+    padding: 0.25em 0.5em;
+    margin: 0.5em;
     text-align: center; 
     cursor: pointer;
     border-radius: 12px;   
+    font-size: 2em;
+    color: white;
 }
 
 .tab button:hover {
@@ -81,18 +82,6 @@ td {
 }
 
 #status-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-}
-
-#title
-{
-    padding-left: 30%;
-}
-
-#name-container {
     display: flex;
     flex-direction: row;
     justify-content: space-around;

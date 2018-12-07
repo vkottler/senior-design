@@ -20,10 +20,7 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
-function send_stop()
-{
-    client.send('stop')
-}
+function send_stop() { client.send_message('stop'); }
 
 function sendGain()
 {
@@ -32,16 +29,12 @@ function sendGain()
     var occurences = currentSliderArray.length;
     for(j = 0; j < occurences;j++){
         let currentSliderId = currentSliderArray[j].id
-        console.log('slider id: ' + currentSliderId)
         var value = document.getElementById(currentSliderId+'_val').value
         data.push(value)
     }
-    console.log(data)
-
-    //not sure how to do, but basic layout 
-    //send('pid p_gain '+ data[0])
-    //send('pid i_gain '+ data[1])
-    //send('pid d_gain '+ data[2])
+    client.send_message(`set p_gain ${data[0]}`);
+    client.send_message(`set i_gain ${data[1]}`);
+    client.send_message(`set d_gain ${data[2]}`);
 }
 
 function sendDesiredVals()
@@ -52,17 +45,13 @@ function sendDesiredVals()
     var occurences = currentSliderArray.length;
     for(j = 0; j < occurences;j++){
         let currentSliderId = currentSliderArray[j].id
-        console.log('slider id: ' + currentSliderId)
         var value = document.getElementById(currentSliderId+'_val').value
         data.push(value)
     }
-    console.log(throttle_value)
-    console.log(data)
-    //todo
-    //send(throttle_value)
-    //send('pid p_gain '+ data[0])
-    //send('pid i_gain '+ data[1])
-    //send('pid d_gain '+ data[2])
+    client.send_message(`set throttle ${throttle_value}`);
+    client.send_message(`set req_x ${data[0]}`);
+    client.send_message(`set req_y ${data[1]}`);
+    client.send_message(`set req_z ${data[2]}`);
 }
 
 

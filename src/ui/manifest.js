@@ -87,15 +87,80 @@ function manifest_handle(data_set, socket)
     }
 }
 
+/* update the global timer */
 setInterval(function() {
+    document.getElementById("time").innerHTML = get_time().toFixed(2) + "s";
+}, 50);
+
+let odd_interval;
+let odd_running = false;
+let even_interval;
+let even_running = false;
+
+function get_plot_interval()
+{
+    return document.getElementById("update-rate").value;
+}
+
+function update_odd()
+{
     for (plot_name in plots)
     {
         let plot = plots[plot_name];
-        if (plot.to_render)
+        if (i % 2 === 0 && plot.to_render)
         {
             plot.to_render = false;
             plot.plot.render();
         }
     }
-    document.getElementById("time").innerHTML = get_time().toFixed(2) + "s";
-}, 50);
+}
+
+function update_even()
+{
+    for (plot_name in plots)
+    {
+        let plot = plots[plot_name];
+        if (i % 2 === 1 && plot.to_render)
+        {
+            plot.to_render = false;
+            plot.plot.render();
+        }
+    }
+}
+
+function stop_plots()
+{
+    if (odd_running)
+    {
+        clearInterval(odd_interval);
+        odd_running = false;
+    }
+    if (even_running)
+    {
+        clearInterval(even_interval);
+        even_running = false;
+    }
+}
+
+/* start both loops, offset by half the amount of the interval */
+function start_plots()
+{
+    /* if intervals are already started, make sure this call is idempotent */
+    if (odd_running === true || even_running === true)
+        return;
+
+    let interval = get_plot_interval();
+    odd_interval = setInterval(update_odd, interval);
+    odd_running = true;
+    setTimeout(function () {
+        even_interval = setInterval(update_even, interval);
+        even_running = true;
+    }, interval / 2);
+}
+
+/* start the plots with the default value when the page loads */
+$(function() {
+    document.getElementById("stop-plots").onclick = stop_plots;
+    document.getElementById("start-plots").onclick = start_plots;
+    start_plots();
+});
