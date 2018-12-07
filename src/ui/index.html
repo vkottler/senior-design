@@ -7,20 +7,20 @@
         <!-- scripts -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>       
         <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
         <!-- fonts -->
         <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Mono|Roboto+Slab" rel="stylesheet">
 
         <!-- styles -->
+        <link rel='stylesheet' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' type='text/css'>
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/plots.css">
         <link rel="stylesheet" href="commanding/websocket_client.css">
     </head>
     <body>
-
-        <h1 align="center">Quadcopter Telemetry</h1>
-        <h3 align="center" id="time">0.00s</h3>
+        <h1 align="center">Quadcopter Telemetry & Control</h1>
         <div id="status-container">
             <div class="status-item">
                 <h3>Server Status</h3>
@@ -31,11 +31,16 @@
                 <h3 id="state">N/A</h3>
             </div>
             <div class="status-item">
+                <h3 align="center">+<span id="time">0.00s</span></h3>
+            </div>
+            <div class="status-item">
+                <button id="stop_button" onclick="send_stop()">ABORT</button>
+            </div>
+            <div class="status-item">
                 <h3>Data Status</h3>
                 <div id="data_sign" class="dot"></div>
             </div>
         </div>
-
 
         <div class="tab">
             <button id="start-tab" class="tablinks"
@@ -44,10 +49,26 @@
                     onclick="openTab(event, 'Manifest')">Channel Manifest</button>
             <button class="tablinks"
                     onclick="openTab(event, 'Commanding')">Commanding</button>
+            <button class="tablinks"
+                    onclick="openTab(event, 'Command')">Input</button>
         </div>
 
         <!-- Plots Tab -->
-        <div id="plot-tab" class="tabcontent">
+        <div id="plot-tab" class="center tabcontent">
+            <div class="fcol">
+                <h3>Plot Controls</h3>
+                <div class="frow fcenter">
+                    <div class="pad">
+                        Update Rate (ms): <input id="update-rate" type="number" value="250">
+                    </div>
+                    <div class="pad">
+                        <button id="stop-plots">Stop Plots</button>
+                    </div>
+                    <div class="pad">
+                        <button id="start-plots">Start Plots</button>
+                    </div>
+                </div>
+            </div>
             <div id="dynamic-plot-container">
                 <div id="left-plot-col" class="plot-col"></div>
                 <div id="right-plot-col" class="plot-col"></div>
@@ -70,6 +91,51 @@
         <!-- Commanding Tab -->
         <div id="Commanding" class="tabcontent">
             <div id="commanding-content"></div>
+        </div>
+
+        <!-- Command Tab -->
+        <div id="Command" class="tabcontent"> 
+            <table>
+                <td>
+                <div class = "all_gain_sliders">
+                    <h1>Proportional Gain</h1>
+                    <div id="prop_gain_slider" class = "gain_slider"></div>
+                    <input id="prop_gain_slider_val" class="gain_slider_data" type="text">
+
+                    <h1>Interval Gain</h1>
+                    <div id="int_gain_slider" class = "gain_slider"> </div>
+                    <input id="int_gain_slider_val" class="gain_slider_data" type="text">
+
+                    <h1>Derivative Gain</h1>
+                    <div id="der_gain_slider" class="gain_slider"> </div>
+                    <input id="der_gain_slider_val" class="gain_slider_data"  type="text" />
+                    <br></br>
+                    <button id="send_gain" class="sendbutton" onclick="sendGain()">Send</button>
+                </div>
+                </td>
+                <td>
+                <div class = "all_gyro_sliders">
+                    <h1>Desired X</h1>
+                    <div id="gyro_x_slider" class="gyro_slider"></div>
+                    <input id="gyro_x_slider_val" class="gyro_slider_data" type="text"  />
+                  
+                    <h1>Desired Y</h1>
+                    <div id="gyro_y_slider" class = "gyro_slider"> </div>
+                    <input id="gyro_y_slider_val" class="gyro_slider_data" type="text" />
+
+                    <h1>Desired Z</h1>
+                    <div id="gyro_z_slider" class = "gyro_slider"> </div>  
+                    <input id="gyro_z_slider_val" class="gyro_slider_data" type="text"/>
+                    
+                    <h1>Thrust</h1>
+                    <div id="thrust_slider" class="thrust_slider"> </div>  
+                    <input id="thrust_slider_val" class="thrust_slider_data" type="text"/>
+                    <br></br>
+                    <button id="send_desired_button" class="sendbutton"
+                            onclick = "sendDesiredVals()">Send</button>
+                </div>
+                </td>
+            </table> 
         </div>
 
         <script src="ui.js"></script>
