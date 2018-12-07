@@ -104,7 +104,7 @@ void control_loop
     float neg_x_val;
     float pos_y_val;
     float neg_y_val;
-
+	
 	// Calculate difference Roll, Pitch and Yaw
 	control.curr_dif_x = raw_input_x - control.desired_x;
 	control.curr_dif_y = raw_input_y - control.desired_y;
@@ -118,15 +118,15 @@ void control_loop
 					       	 + control.pid_output_z);
 	neg_x_val = (int16_t)(control.throttle - control.pid_output_y
 					       	 + control.pid_output_z);
-	pos_y_val = (int16_t)(control.throttle - control.pid_output_x
+	pos_y_val = (int16_t)(control.throttle + control.pid_output_x
 					       	 - control.pid_output_z);
-	neg_y_val = (int16_t)(control.throttle + control.pid_output_x
+	neg_y_val = (int16_t)(control.throttle - control.pid_output_x
 					       	 - control.pid_output_z);
     // Saturate
-    if (pos_x_val < 0) pos_x_val = 0;
-    if (neg_x_val < 0) neg_x_val = 0;
-    if (pos_y_val < 0) pos_y_val = 0;
-    if (neg_y_val < 0) neg_y_val = 0;
+    if (pos_x_val < 0 || control.throttle == 0) pos_x_val = 0;
+    if (neg_x_val < 0 || control.throttle == 0) neg_x_val = 0;
+    if (pos_y_val < 0 || control.throttle == 0) pos_y_val = 0;
+    if (neg_y_val < 0 || control.throttle == 0) neg_y_val = 0;
 
 	// Cast
 	esc_pos_x_val = (int16_t)pos_x_val;
