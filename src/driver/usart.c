@@ -260,6 +260,10 @@ static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
 {
     char curr;
 
+    /* clear error flags if present */
+    if (usart->ISR & USART_ISR_ORE)
+        usart->ICR |= USART_ICR_ORECF;
+
     /* character received */
     if (usart->ISR & USART_ISR_RXNE) {
         curr = usart->RDR;

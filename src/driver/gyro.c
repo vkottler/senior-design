@@ -1,228 +1,316 @@
 #include "gyro.h"
-#include "stateful_spi.h"
 #include "board.h"
 #include "pcbuffer.h"
+#include "gpio.h"
 #include <string.h>
 #include <stdlib.h>
 
-uint8_t buff[WATERMARK_SIZE];
+gyro_t gyro;
 
-#define CALIBRATE_NUM 1000.0f
-#define SENSITIVITY   (7.8125f / 1000.0f)
+spi_transaction_t write_transaction;
+uint8_t write_tx_buf[2], write_rx_buf[2];
 
-PC_Buffer *gyro_tx_buf, *gyro_rx_buf;
-int32_t gyro_accum_offset[3] = {0, 0, 0};
-float gyro_offset[3] = {0.0f, 0.0f, 0.0f};
-extern void (*fun_ptr)();
-void  gyro_xyz_Callback(void);
-void  SPI1_Rx_Callback(void);
+void write_done_discard(const uint8_t *buffer, size_t len)
+{ (void) buffer; (void) len; }
 
-void setOffset()
+/*
+ * Perform a blocking register write.
+ */
+void gyro_write_block(uint8_t reg, uint8_t data)
 {
-    uint8_t data[2];
-    for(int i = 0; i < 3; i++)
+    write_tx_buf[0] = reg; write_tx_buf[1] = data;
+    spi_start_transaction(&spi1_state, &write_transaction);
+    spi_wait_on_transaction(&write_transaction);
+}
+
+/*
+ * Perform a blocking register read.
+ */
+uint8_t gyro_read_block(uint8_t reg)
+{
+    write_tx_buf[0] = 0x80 | reg; write_tx_buf[1] = 0x00;
+    spi_start_transaction(&spi1_state, &write_transaction);
+    spi_wait_on_transaction(&write_transaction);
+    return write_rx_buf[1];
+}
+
+/*
+ * Verify that an internal register is at a specific value.
+ */
+int gyro_validate_register(uint8_t address, uint8_t expected)
+{
+    uint8_t result = gyro_read_block(address);
+    if (result != expected)
     {
-        while (pc_buffer_empty(gyro_rx_buf)){}
-        pc_buffer_remove(gyro_rx_buf, (char*) &data[0]);
-        while (pc_buffer_empty(gyro_rx_buf)){}
-        pc_buffer_remove(gyro_rx_buf, (char*) &data[1]);
-        gyro_accum_offset[i] += (int16_t)(data[0] << 8 | data[1]);
+        printf("gyro 0x%x: 0x%x != 0x%x", address, result, expected);
+        return -1;
+    }
+    return 0;
+}
+
+void calibration_round_done(const uint8_t *buffer, size_t len)
+{
+    float temp1, temp2;
+
+    __disable_irq();
+
+    gyro.status = buffer[1];
+    for (size_t i = 2; i < len; i += GYRO_SAMPLE_SIZE)
+    {
+        /* msb comes first per 16-bit value */
+        gyro.calib_accum[0] += buffer[i]     << 8 | buffer[i + 1];
+        gyro.calib_accum[1] += buffer[i + 2] << 8 | buffer[i + 3];
+        gyro.calib_accum[2] += buffer[i + 4] << 8 | buffer[i + 5];
+        gyro.calib_samples++;
+    }
+
+    /* advance to normal sampling if calibration is complete, otherwise
+     * continue with calibration */
+    gyro.state = GYRO_NOT_CALIB;
+    if (gyro.calib_samples >= GYRO_CALIB_SAMPLES)
+    {
+        temp1 = (float) gyro.calib_samples;
+
+        /* store the average bias, per sample */
+        temp2 = (float) gyro.calib_accum[0];
+        gyro.calib_offset[0] = temp2 / temp1;
+        temp2 = (float) gyro.calib_accum[1];
+        gyro.calib_offset[1] = temp2 / temp1;
+        temp2 = (float) gyro.calib_accum[2];
+        gyro.calib_offset[2] = temp2 / temp1;
+        gyro.calib_offset[0] *= GYRO_SENSITIVITY;
+        gyro.calib_offset[1] *= GYRO_SENSITIVITY;
+        gyro.calib_offset[2] *= GYRO_SENSITIVITY;
+        gyro.state = GYRO_BUFFERING;
+    }
+
+    __enable_irq();
+}
+
+void sample_round_done(const uint8_t *buffer, size_t len)
+{
+    int16_t raw[3];
+    float temp[3];
+
+    __disable_irq();
+
+    gyro.status = buffer[1];
+    for (size_t i = 2; i < len; i += GYRO_SAMPLE_SIZE)
+    {
+        /* apply the offset to correct for drift */
+        if (gyro.samples % GYRO_CALIB_SAMPLES)
+        {
+            temp[0] -= gyro.calib_offset[0];
+            temp[1] -= gyro.calib_offset[1];
+            temp[2] -= gyro.calib_offset[2];
+        }
+
+        raw[0] = buffer[i]     << 8 | buffer[i + 1];
+        raw[1] = buffer[i + 2] << 8 | buffer[i + 3];
+        raw[2] = buffer[i + 4] << 8 | buffer[i + 5];
+        temp[0] = (float) raw[0];
+        temp[1] = (float) raw[1];
+        temp[2] = (float) raw[2];
+        temp[0] *= GYRO_SENSITIVITY;
+        temp[1] *= GYRO_SENSITIVITY;
+        temp[2] *= GYRO_SENSITIVITY;
+        gyro.accum[0] += temp[0] / GYRO_DATA_RATE;
+        gyro.accum[1] += temp[1] / GYRO_DATA_RATE;
+        gyro.accum[2] += temp[2] / GYRO_DATA_RATE;
+        gyro.samples++;
+    }
+    memcpy(manifest.channels[0].data, &gyro.accum[0], sizeof(float));
+    memcpy(manifest.channels[1].data, &gyro.accum[1], sizeof(float));
+    memcpy(manifest.channels[2].data, &gyro.accum[2], sizeof(float));
+    gyro.state = GYRO_BUFFERING;
+
+    __enable_irq();
+}
+
+void service_gyro(gyro_t *gyro)
+{
+    size_t new_write, new_read;
+    if (gpio_readPin(GPIOC, 0))
+    {
+        /* if we detected an overflow, clear the buffer */
+        if (gyro->status & 0x80)
+        {
+            new_write = GYRO_BUFFER_SIZE;
+            new_read = GYRO_BUFFER_SIZE;
+        }
+        /* read the normal watermark amount */
+        else
+        {
+            new_write = 2 + (GYRO_SAMPLE_SIZE * GYRO_FIFO_WATERMARK);
+            new_read = 2 + (GYRO_SAMPLE_SIZE * GYRO_FIFO_WATERMARK);
+        }
+        switch (gyro->state)
+        {
+            /* samples are ready and we're still calibrating an offset */
+            case GYRO_NOT_CALIB:
+                gyro->sample.to_write = new_write;
+                gyro->sample.to_read = new_read;
+                gyro->sample.callback = calibration_round_done;
+                spi_start_transaction(gyro->spi, &gyro->sample);
+                break;
+
+            /* samples are ready and we're taking samples normally */
+            case GYRO_BUFFERING:
+                gyro->sample.to_write = new_write;
+                gyro->sample.to_read = new_read;
+                gyro->sample.callback = sample_round_done;
+                spi_start_transaction(gyro->spi, &gyro->sample);
+                break;
+            default: return;
+        }
     }
 }
 
-void getGyroXYZ()
+void gyro_init(gyro_t *gyro)
 {
-    uint8_t data[2];
-    float   gyro_raw;
-    float   gyro_deg;
-
-    for(int i = 0; i < 3; i++)
+    gyro->state = GYRO_NOT_INITED;
+    gyro->spi = &spi1_state;
+    gyro->calib_samples = 0;
+    for (int i = 0; i < 3; i++)
     {
-        while (pc_buffer_empty(gyro_rx_buf)){}
-        pc_buffer_remove(gyro_rx_buf, (char*) &data[0]);
-        while (pc_buffer_empty(gyro_rx_buf)){}
-        pc_buffer_remove(gyro_rx_buf, (char*) &data[1]);
-        gyro_raw = (float)((int16_t)(data[0] << 8 | data[1]));
-
-        memcpy(&gyro_deg, manifest.channels[i].data, sizeof(float));
-        gyro_deg += (gyro_raw * SENSITIVITY - gyro_offset[i]) * 0.025f;
-
-        memcpy(manifest.channels[i].data, &gyro_deg, sizeof(float));
+        gyro->calib_accum[i]  = 0;
+        gyro->calib_offset[i] = 0.0f;
+        gyro->accum[i]        = 0.0f;
     }
+    memset(gyro->write_buffer, 0, GYRO_BUFFER_SIZE);
+    memset(gyro->read_buffer,  0, GYRO_BUFFER_SIZE);
+    spi_init_transaction(&gyro->sample, gyro->write_buffer, gyro->read_buffer,
+                         0, 0, command_set_spi1_cs, command_reset_spi1_cs,
+                         write_done_discard);
+
+    /* set the read bit for the first byte shifted out, keep the address at
+     * zero so we always read the status register first */
+    gyro->write_buffer[0] = 0x80;
 }
 
-void gyro_write(uint8_t reg, uint8_t data)
+/*
+ * Perform initializations for the sensor.
+ */
+int gyro_config(void)
 {
-    uint8_t tx_buff[2];
-    tx_buff[0] = reg;
-    tx_buff[1] = data;
+    uint8_t control;
 
-    SET_BIT(SPI1->CR1, SPI_CR1_SPE);                     // SPI On
+    /* initialize the gyro struct */
+    gyro_init(&gyro);
 
-    while (pc_buffer_full(gyro_tx_buf)) {;}
+    /* initialize the global writing transaction */
+    spi_init_transaction(&write_transaction, write_tx_buf, 
+                         write_rx_buf, 2, 2,
+                         command_set_spi1_cs, command_reset_spi1_cs, 
+                         write_done_discard);
 
-	/* safely add the desired character */
-	__disable_irq();
-	pc_buffer_add(gyro_tx_buf, tx_buff[0]);
-	__enable_irq();
+    /* bring sensor out of a hardware reset state */
+    gpio_setPin(GPIOC, 2); delay(10);
 
-    while (pc_buffer_full(gyro_tx_buf)) {;}
-
-	/* safely add the desired character */
-	__disable_irq();
-	pc_buffer_add(gyro_tx_buf, tx_buff[1]);
-	__enable_irq();
-
-    LL_SPI_EnableIT_TXE(SPI1);
-
-    CLEAR_BIT(SPI1->CR1, SPI_CR1_SPE);                   // SPI Off
-}
-
-void gyro_read(uint8_t reg, uint8_t *data)
-{
-    gyro_write((reg | 0x80), 0x00);
-    *data = 0xff;
-}
-
-void gyro_read_multiple(uint8_t reg, uint8_t *data, uint16_t size)
-{
-    gyro_write((reg | 0x80), 0x00);
-    *data = 0xff;
-}
-
-uint8_t gyro_who_am_i()
-{
-    uint8_t data[1];
-    gyro_read(WHO_AM_I_21002, data);
-    return data[0];
-}
-
-void gyro_read_xyz()
-{
-   fun_ptr =  &gyro_xyz_Callback;
-
-    gyro_read_x();
-    gyro_read_y();
-    gyro_read_z();
-
-}
-
-int16_t gyro_read_x()
-{
-    uint8_t data_msb[1];
-    gyro_read(OUT_X_MSB_21002, data_msb);
-
-    uint8_t data_lsb[1];
-    gyro_read(OUT_X_LSB_21002, data_lsb);
-
-    return (int16_t) (data_msb[0] << 8 | data_lsb[0]);
-}
-
-int16_t gyro_read_y()
-{
-    uint8_t data_msb[1];
-    gyro_read(OUT_Y_MSB_21002, data_msb);
-
-    uint8_t data_lsb[1];
-    gyro_read(OUT_Y_LSB_21002, data_lsb);
-
-    return (int16_t)(data_msb[0] << 8 | data_lsb[0] );
-}
-
-int16_t gyro_read_z()
-{
-    uint8_t data_msb[1];
-    gyro_read(OUT_Z_MSB_21002, data_msb);
-
-    uint8_t data_lsb[1];
-    gyro_read(OUT_Z_LSB_21002, data_lsb);
-
-    return (int16_t)(data_msb[0] << 8 | data_lsb[0]);
-}
-
-void gyro_read_fifo()
-{
-    int i;
-    for (i = 0; i < WATERMARK_SIZE; i ++);
-    gyro_read_multiple(OUT_X_MSB_21002, buff, 6);
-}
-
-uint16_t gyro_config()
-{
-    uint8_t CTRL1, CTRL0;
-
-    fun_ptr = &SPI1_Rx_Callback;
-    gyro_tx_buf = (PC_Buffer *) malloc(sizeof(PC_Buffer));
-    gyro_rx_buf = (PC_Buffer *) malloc(sizeof(PC_Buffer));
-
-    if (!gyro_tx_buf || !gyro_rx_buf) 
-        return -1;
-    if (!pc_buffer_init(gyro_tx_buf, 255))
-        return -1;
-    if (!pc_buffer_init(gyro_rx_buf, 255))	
+    /* verify connectivity by reading the 'who_am_i' register */
+    if (gyro_validate_register(WHO_AM_I_21002, GYRO_WHOAMI_VAL))
         return -1;
 
-    CTRL1 = SOFT_RESET_21002 | MODE_STANDBY_21002;
-    gyro_write(CTRL_REG1_21002, CTRL1);
-    delay(50);
+    /* Reset the device and put it in standby mode. */
+    control = SOFT_RESET_21002 | MODE_STANDBY_21002;
+    gyro_write_block(CTRL_REG1_21002, control);
+    delay(10);
 
-    CTRL0 = FS_250_DPS_21002;
-    CTRL1 = ODR_800_HZ_21002;
+    /*
+     * Control Register 0:
+     *
+     * Set the acquisition sensitivity fot the sensor, plus low-pass and
+     * high-pass filter parameters.
+     *
+     * These configurations should be experimented with.
+     */
+    control = FS_250_DPS_21002 | LPF_BW_HIGH_21002 |
+              HPF_BW_ODR_DIV400 | HPF_EN_21002;
+    gyro_write_block(CTRL_REG0_21002, control);
+    if (gyro_validate_register(CTRL_REG0_21002, control))
+        return -1;
 
-    gyro_write(CTRL_REG0_21002, CTRL0);
-    gyro_write(CTRL_REG1_21002, CTRL1);
-    delay(50);
+    /*
+     * Control Register 1:
+     *
+     * Set the sample rate for the sensor (800 Hz, maximum) and put
+     * the device into 'ready' mode.
+     */
+    control = ODR_800_HZ_21002;
+    gyro_write_block(CTRL_REG1_21002, control);
+    if (gyro_validate_register(CTRL_REG1_21002, control))
+        return -1;
 
-    CTRL1 = MODE_ACTIVE_21002;
-    gyro_write(CTRL_REG1_21002, CTRL1);
+    /*
+     * Control Register 2:
+     *
+     * Route the FIFO interrupt to INT1 and enable it as active-high,
+     * push-pull.
+     */
+    control = INT1_CFG_FIFO_21002 | INT_EN_FIFO_21002 |
+              IPOL_ACTIVE_HIGH_21002 | PP_OD_PUSH_PULL_21002;
+    gyro_write_block(CTRL_REG2_21002, control);
+    if (gyro_validate_register(CTRL_REG2_21002, control))
+        return -1;
 
-    gyro_read_xyz();
+    /*
+     * Control Register 3:
+     *
+     * Set WRAPTOONE to allow a continuous read of multiple samples,
+     * optionally set FS_DOUBLE to experiment with double-sensitivity
+     * readings.
+     */
+    control  = WRAPTOONE_21002;
+#ifdef GYRO_DOUBLE_RATE
+    control |= FS_DOUBLE_21002;
+#endif
+    gyro_write_block(CTRL_REG3_21002, control);
+    if (gyro_validate_register(CTRL_REG3_21002, control))
+        return -1;
 
-    for(uint32_t i = 0; i < (uint32_t) CALIBRATE_NUM; i++)
-    {
-        gyro_read_xyz();
-        setOffset();
-    }
+    /*
+     * FIFO Settings:
+     *
+     * Put the FIFO into circular buffer mode and set the watermark that will
+     * trigger an interrupt.
+     */
+    // clear
+    control = F_MODE_DISABLED_21002;
+    gyro_write_block(F_SETUP_21002, control);
+    if (gyro_validate_register(F_SETUP_21002, control))
+        return -1;
+    // set
+    control = F_MODE_CIRCULAR_21002 | GYRO_FIFO_WATERMARK;
+    gyro_write_block(F_SETUP_21002, control);
+    if (gyro_validate_register(F_SETUP_21002, control))
+        return -1;
 
-    gyro_offset[0] = gyro_accum_offset[0] / CALIBRATE_NUM;
-    gyro_offset[1] = gyro_accum_offset[1] / CALIBRATE_NUM;
-    gyro_offset[2] = gyro_accum_offset[2] / CALIBRATE_NUM;
-    gyro_offset[0] = gyro_offset[0] * SENSITIVITY;
-    gyro_offset[1] = gyro_offset[1] * SENSITIVITY;
-    gyro_offset[2] = gyro_offset[2] * SENSITIVITY;
-
-    printf("x offset: %0.2f\r\ny offset: %0.2f\r\nz offset: %0.2f\r\n",
-           gyro_offset[0], gyro_offset[1], gyro_offset[2]);
+    /* set active to start sampling */
+    gyro_write_block(CTRL_REG1_21002, ODR_800_HZ_21002 | MODE_ACTIVE_21002);
+    gyro.state = GYRO_NOT_CALIB;
 
     return 0;
 }
 
-// FIFO
-void  gyro_xyz_Callback(void)
+void dump_gyro(gyro_t *gyro)
 {
-  uint16_t data = (SPI1->DR);
-  if (!pc_buffer_full(gyro_rx_buf))
-      pc_buffer_add(gyro_rx_buf, (char) (data >> 8));
+    printf("watermark: %d, calib_samples: %d\r\n", GYRO_FIFO_WATERMARK,
+           GYRO_CALIB_SAMPLES);
+    printf("calib_accum:\r\nx: %d, y: %d, z: %d\r\n",
+           gyro->calib_accum[0],
+           gyro->calib_accum[1],
+           gyro->calib_accum[2]);
+    printf("calib_offset:\r\nx: %0.2f, y: %0.2f, z: %0.2f\r\n",
+           gyro->calib_offset[0],
+           gyro->calib_offset[1],
+           gyro->calib_offset[2]);
+    printf("latest status register: 0x%x\r\n", gyro->status);
+    printf("samples: %u (%lu Hz), calib_samples: %u\r\n",
+           gyro->samples,
+           gyro->samples / (ticks / 1000),
+           gyro->calib_samples);
+    printf("latest values:\r\nx: %0.2f, y: %0.2f, z: %0.2f\r\n",
+           gyro->accum[0],
+           gyro->accum[1],
+           gyro->accum[2]);
 }
-
-void  SPI1_Rx_Callback(void)
-{ (SPI1->DR); }
-
-/*
-void write_done_discard(const uint8_t *buffer, size_t len)
-{
-    (void) buffer;
-    (void) len;
-}
-
-void gyro_write(uint8_t reg, uint8_t data)
-{
-    uint8_t tx_buf[2], rx_buf[2];
-    tx_buf[0] = reg;
-    tx_buf[1] = data;
-    spi_transaction_t tran;
-    spi_init_transaction(&tran, tx_buf, rx_buf, 2, 2, write_done_discard);
-    spi_start_transaction(&spi1_state, &tran);
-    spi_wait_on_transaction(&tran);
-}
-*/

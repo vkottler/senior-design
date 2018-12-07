@@ -1,7 +1,6 @@
 #include "handlers.h"
 #include "gpio.h"
 #include "accel.h"
-#include "gyro.h"
 #include "battery.h"
 #include "lidar.h"
 #include "esc.h"
@@ -185,7 +184,7 @@ void send_high_rate_telemetry(unsigned int interval)
     {
         last_tick = ticks;
         write_frame(TELEM_FRAME_DATA, (const char *) packets[0], telemetry_packet_size(packets[0]));
-        write_frame(TELEM_FRAME_DATA, (const char *) packets[1], telemetry_packet_size(packets[1]));
+        //write_frame(TELEM_FRAME_DATA, (const char *) packets[1], telemetry_packet_size(packets[1]));
     }
 }
 
@@ -206,8 +205,6 @@ void service_sensors(unsigned int interval) {
     if (!(ticks % interval) && ticks != last_tick)
     {
         last_tick = ticks;
-        getGyroXYZ();
-        gyro_read_xyz();
         batt_startConver();
         batt_getBattery();
         *((uint16_t *) manifest.channels[3].data) = lidar_readDist(1);
@@ -222,39 +219,3 @@ void service_sensors(unsigned int interval) {
         control_loop(raw_input_x, raw_input_y, raw_input_z);
     }
 }
-
-void  SPI1_Tx_Callback(void)
-{
-    if (!pc_buffer_empty(gyro_tx_buf[0]))
-        pc_buffer_remove(gyro_tx_buf[0], (char *) &SPI1->DR);
-    else
-        LL_SPI_DisableIT_TXE(SPI1);
-}
-
-void SPI1_TransferError_Callback(void)
-{
-  LL_SPI_DisableIT_RXNE(SPI1);
-  LL_SPI_DisableIT_TXE(SPI1);
-  while (1)
-  {
-      blink_handler(250);
-  }
-}
-
-/*
-void SPI1_Handler(void)
-{
-    if(LL_SPI_IsActiveFlag_RXNE(SPI1))
-    {
-        (*fun_ptr)();
-    }
-    else if(LL_SPI_IsActiveFlag_TXE(SPI1))
-    {
-        SPI1_Tx_Callback();
-    }
-    else if(LL_SPI_IsActiveFlag_OVR(SPI1))
-    {
-        SPI1_TransferError_Callback();
-    }
-}
-*/

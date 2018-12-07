@@ -1,4 +1,5 @@
 #include "stm32f303xe.h"
+#include "post.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -50,18 +51,11 @@ void io_init(void)
 {
     gpioAliasInit();
 
-    //set_clks();
+    set_clks();
 
     // RADIO clear mode pins normal mode
     gpio_resetPin(GPIOB, 10);
     gpio_resetPin(GPIOB, 11);
-
-    // set gyro reset pin high
-    gpio_setPin(GPIOC, 2);
-    delay(100);
-    gpio_resetPin(GPIOC, 2);
-    delay(100);
-    gpio_setPin(GPIOC, 2);
 }
 
 int periph_init(void) {
@@ -76,12 +70,16 @@ int periph_init(void) {
     /* lidar usart */
     ret += usart_config(USART3, APBX, init_regs, 115200, true);
 
-    spi_config();
-    gyro_config();
+    post();
+    printPrompt();
+
+    /*
     adc_config();
     adc_activate();
     esc_config();
     control_config();
+    */
+    spi_config();
 
     return ret;
 }
@@ -134,3 +132,7 @@ void manifest_init(void)
 
     channel_manifest_send(&manifest, manifest_sender);
 }
+
+/* spi chip-select managers */
+void command_reset_spi1_cs(void) { gpio_resetPin(GPIOA, 4); }
+void command_set_spi1_cs(void) { gpio_setPin(GPIOA, 4); }

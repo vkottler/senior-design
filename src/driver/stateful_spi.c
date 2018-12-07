@@ -19,7 +19,7 @@ static void spi_handle_write(SPI_TypeDef *interface,
     /* write byte(s) */
     if (remaining == 1)
         *((uint8_t *) &interface->DR) = transaction->write_buffer[transaction->written++];
-    else
+    else if (remaining > 0)
     {
         interface->DR = ((const uint16_t *) transaction->write_buffer)[transaction->written / 2];
         transaction->written += 2;
@@ -59,7 +59,13 @@ static void spi_handle_read(SPI_TypeDef *interface,
         LL_SPI_DisableIT_RXNE(interface);
         transaction->state = SPI_TRANSACTION_COMPLETE;
         transaction->set_cs();
-        transaction->callback(transaction->read_buffer, transaction->read);
+
+        /* it's not clear why this keeps happening, but it can */
+        if (!transaction->callback_called)
+        {
+            transaction->callback(transaction->read_buffer, transaction->read);
+            transaction->callback_called = true;
+        }
     }
 }
 
@@ -116,13 +122,15 @@ void spi_init_state(spi_state_t *spi, SPI_TypeDef *interface)
 bool spi_start_transaction(spi_state_t *spi, spi_transaction_t *transaction)
 {
     /* don't tamper with an ongoing transaction */
-    if (spi->current_transaction->state == SPI_TRANSACTION_ACTIVE)
+    if (spi->current_transaction != NULL &&
+        spi->current_transaction->state == SPI_TRANSACTION_ACTIVE)
         return false;
 
     transaction->reset_cs();
     transaction->written = 0;
     transaction->read = 0;
     transaction->dummy_reads = 0;
+    transaction->callback_called = false;
     transaction->state = SPI_TRANSACTION_ACTIVE;
     spi->current_transaction = transaction;
 
@@ -166,7 +174,7 @@ void spi_state_handler(spi_state_t *spi)
 {
     if (LL_SPI_IsActiveFlag_RXNE(spi->interface))
         spi->rx_handle(spi->interface, spi->current_transaction);
-    if (LL_SPI_IsActiveFlag_TXE(spi->interface))
+    else if (LL_SPI_IsActiveFlag_TXE(spi->interface))
         spi->tx_handle(spi->interface, spi->current_transaction);
     else
         spi->err_handle(spi->interface, spi->current_transaction);
@@ -174,3 +182,4 @@ void spi_state_handler(spi_state_t *spi)
 
 /* actual symbol that appears in the vector table */
 void SPI1_Handler(void) { spi_state_handler(&spi1_state); }
+void SPI2_Handler(void) { spi_state_handler(&spi2_state); }

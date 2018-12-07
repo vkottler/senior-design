@@ -1,11 +1,66 @@
-#ifndef GYRO_H
-#define GYRO_H
+#pragma once
 
 #include <stdio.h>
 
+#include "stateful_spi.h"
 
+/*****************************************************************************/
+
+#define GYRO_SENSITIVITY    (7.8125f / 1000.0f)
+#define GYRO_DATA_RATE      800.0f
+#define GYRO_FIFO_WATERMARK 16
+
+/* make sure we calibrate for a watermark-divisible amount of samples */
+#define GYRO_CALIB_SAMPLES  (100 * GYRO_FIFO_WATERMARK)
+
+typedef enum gyro_state
+{
+    GYRO_NOT_INITED      = 0,
+    GYRO_NOT_CALIB       = 1,
+    GYRO_BUFFERING       = 2,
+    GYRO_GETTING_SAMPLES = 3,
+} gyro_state_t;
+
+/*
+ * One sample is three 16-bit integers, one for each axis.
+ * Want to be able to read as many samples as we configure for the
+ * watermark.
+ *
+ * One issue with this is that if we trigger an overflow, we will need to
+ * read all of the samples from the buffer at once.
+ *
+ * Also add one to make sure we read the status register each time and one to
+ * account for the read command.
+ */
+#define GYRO_SAMPLE_SIZE (3 * sizeof(int16_t))
+#define GYRO_BUFFER_SIZE ((32 * GYRO_SAMPLE_SIZE) + 2)
+
+typedef struct gyro
+{
+    volatile gyro_state_t state;
+    size_t calib_samples, samples;
+
+    int16_t calib_accum[3];
+    float calib_offset[3];
+    float accum[3];
+
+    uint8_t write_buffer[GYRO_BUFFER_SIZE];
+    uint8_t read_buffer[GYRO_BUFFER_SIZE];
+
+    spi_transaction_t sample;
+    spi_state_t *spi;
+
+    uint8_t status;
+} gyro_t;
+
+extern gyro_t gyro;
+
+void service_gyro(gyro_t *gyro);
+int gyro_config(void);
+void dump_gyro(gyro_t *gyro);
+
+#define GYRO_WHOAMI_VAL          0xD7
 #define GYRO_ADDR 0x20
-#define WATERMARK_SIZE 8
 
 /*****************************************************************************/
 /* Registers                                                                 */
@@ -22,7 +77,7 @@
 #define F_STATUS_21002           0x08
 #define F_SETUP_21002            0x09
 #define F_EVENT_21002            0x0A
-#define INT_SRC_FLAG21002        0x0B
+#define INT_SRC_FLAG_21002       0x0B
 #define WHO_AM_I_21002           0x0C
 #define CTRL_REG0_21002          0x0D
 #define RT_CFG_21002             0x0E
@@ -73,6 +128,14 @@
 #define FS_1000_DPS_21002       0x01 // 31.25 mdps/LSB
 #define FS_500_DPS_21002        0x02 // 15.625 mdps/LSB
 #define FS_250_DPS_21002        0x03 // 7.8125 mdps/LSB
+#define LPF_BW_HIGH_21002       0x80
+#define LPF_BW_MID_21002        0x40
+#define LPF_BW_LOW_21002        0x00
+#define HPF_BW_ODR_DIV50        0x00
+#define HPF_BW_ODR_DIV100       0x08
+#define HPF_BW_ODR_DIV200       0x10
+#define HPF_BW_ODR_DIV400       0x18
+#define HPF_EN_21002            0x04
 
 /* RT_CFG ********************************************************************/
 #define ELE_EN_21002            0x08
@@ -142,17 +205,3 @@
 #define WRAPTOONE_21002          0x08
 #define EXTCTRLEN_21002          0x04 // INT2 is input
 #define FS_DOUBLE_21002          0x01
-
-void setOffset();
-void getGyroXYZ();
-void gyro_read_xyz();
-int16_t gyro_read_x();
-int16_t gyro_read_y();
-int16_t gyro_read_z();
-uint8_t gyro_who_am_i();
-uint16_t gyro_config();
-void gyro_read_fifo();
-void gyro_int1_callback();
-void gyro_int2_callback();
-
-#endif /* GYRO_H */

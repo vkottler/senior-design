@@ -37,6 +37,7 @@ typedef struct spi_transaction
 
     /* user callback */
     transaction_done_callback callback;
+    bool callback_called;
 } spi_transaction_t;
 
 typedef void (*spi_handle)(SPI_TypeDef *interface,
