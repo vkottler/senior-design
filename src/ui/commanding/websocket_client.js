@@ -63,12 +63,20 @@ class TelemetryClient
         this.data_log.log(evt.data);
     }
 
+    send_message(data)
+    {
+        if (this.socket.readyState === WebSocket.OPEN)
+        {
+            this.socket.send(this.silence_byte_array);
+            this.socket.send(data + '\n');
+            this.log_activity(`sent: ${data}`);
+        }
+        else console.log(`Can't send '${data}', connection not active.`);
+    }
+
     send()
     {
-        let to_send = this.input_element.value;
-        this.socket.send(this.silence_byte_array);
-        this.socket.send(to_send + '\n');
-        this.log_activity(`sent: ${to_send}`);
+        this.send_message(this.input_element.value);
     }
 
     handle_error(evt)
