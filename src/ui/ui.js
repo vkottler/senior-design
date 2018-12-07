@@ -20,7 +20,13 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
-function send_stop() { client.send_message('stop'); }
+function send_stop() {
+    client.send_message('abort');
+    client.send_message('abort');
+    client.send_message('abort');
+    client.send_message('abort');
+    client.send_message('abort');
+}
 
 function sendGain()
 {
@@ -33,7 +39,15 @@ function sendGain()
         data.push(value)
     }
     client.send_message(`set p_gain ${data[0]}`);
+    client.send_message(`set p_gain ${data[0]}`);
+    client.send_message(`set p_gain ${data[0]}`);
+
     client.send_message(`set i_gain ${data[1]}`);
+    client.send_message(`set i_gain ${data[1]}`);
+    client.send_message(`set i_gain ${data[1]}`);
+
+    client.send_message(`set d_gain ${data[2]}`);
+    client.send_message(`set d_gain ${data[2]}`);
     client.send_message(`set d_gain ${data[2]}`);
 }
 
@@ -49,8 +63,19 @@ function sendDesiredVals()
         data.push(value)
     }
     client.send_message(`set throttle ${throttle_value}`);
+    client.send_message(`set throttle ${throttle_value}`);
+    client.send_message(`set throttle ${throttle_value}`);
+
     client.send_message(`set req_x ${data[0]}`);
+    client.send_message(`set req_x ${data[0]}`);
+    client.send_message(`set req_x ${data[0]}`);
+
     client.send_message(`set req_y ${data[1]}`);
+    client.send_message(`set req_y ${data[1]}`);
+    client.send_message(`set req_y ${data[1]}`);
+
+    client.send_message(`set req_z ${data[2]}`);
+    client.send_message(`set req_z ${data[2]}`);
     client.send_message(`set req_z ${data[2]}`);
 }
 
