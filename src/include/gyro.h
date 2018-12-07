@@ -154,5 +154,6 @@ uint16_t gyro_config();
 void gyro_read_fifo();
 void gyro_int1_callback();
 void gyro_int2_callback();
+void zeroGyroXYZ();
 
 #endif /* GYRO_H */

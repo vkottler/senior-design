@@ -7,7 +7,7 @@
 
 uint8_t buff[WATERMARK_SIZE];
 
-#define CALIBRATE_NUM 1000.0f
+#define CALIBRATE_NUM 10000.0f
 #define SENSITIVITY   (7.8125f / 1000.0f)
 
 PC_Buffer *gyro_tx_buf, *gyro_rx_buf;
@@ -28,6 +28,13 @@ void setOffset()
         pc_buffer_remove(gyro_rx_buf, (char*) &data[1]);
         gyro_accum_offset[i] += (int16_t)(data[0] << 8 | data[1]);
     }
+}
+
+void zeroGyroXYZ()
+{
+    float zero = 0;
+    for(int i = 0; i < 3; i++)
+        memcpy(&zero, manifest.channels[i].data, sizeof(float));
 }
 
 void getGyroXYZ()

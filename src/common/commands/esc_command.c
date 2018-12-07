@@ -27,7 +27,7 @@ command_status do_esc(int argc, char *argv[]) {
         return CMD_SUCCESS;
     }
 
-    return CMD_SUCCESS;
+    return USAGE;
 }
 
 COMMAND_ENTRY("esc", "{ x_pos | x_neg | y_pos | y_neg } [val]", "Set ESC speed value 0 - 1000", do_esc)
