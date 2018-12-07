@@ -22,7 +22,18 @@ function openTab(evt, tabName) {
 
 function send_stop()
 {
-    console.log('STOP')
+    this.socket.send('stop')
+}
+
+function sendGain()
+{
+    let currentSliderArray = document.getElementsByClassName("gain_slider")
+
+
+}
+function sendDesiredVals()
+{
+
 }
 
 
@@ -66,6 +77,7 @@ $(function() {
                 if((this.value < min) || (this.value > max)) this.value = max;
                 $("#"+currentSliderId).slider( "value", this.value );
             });
+            console.log("#"+currentSliderId.value)
         }
     }
 });
