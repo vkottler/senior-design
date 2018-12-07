@@ -241,6 +241,7 @@ void SPI1_TransferError_Callback(void)
   }
 }
 
+/*
 void SPI1_Handler(void)
 {
     if(LL_SPI_IsActiveFlag_RXNE(SPI1))
@@ -256,3 +257,4 @@ void SPI1_Handler(void)
         SPI1_TransferError_Callback();
     }
 }
+*/

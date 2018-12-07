@@ -1,5 +1,6 @@
 #include "command.h"
 #include "stateful_spi.h"
+#include "gpio.h"
 #include "board.h"
 
 #include <stdlib.h>
@@ -15,12 +16,18 @@ void command_transaction_done(const uint8_t *buffer, size_t len)
         printf("0x%x ", buffer[i]);
 }
 
+void command_reset_spi_cs(void)
+{ gpio_resetPin(GPIOB, 12); }
+
+void command_set_spi_cs(void)
+{ gpio_setPin(GPIOB, 12); }
+
 command_status do_spi(int argc, char *argv[])
 {
     spi_transaction_t transaction;
     uint8_t write_buffer[LARGEST_SPI_TRANSACTION],
             read_buffer[LARGEST_SPI_TRANSACTION];
-    size_t num_bytes = argc - 1, i;
+    int num_bytes = argc - 1, i;
 
     /* make sure the command fits into the buffer(s) */
     if (num_bytes > LARGEST_SPI_TRANSACTION)
@@ -38,8 +45,9 @@ command_status do_spi(int argc, char *argv[])
 
     /* initialize and start the transaction */
     spi_init_transaction(&transaction, write_buffer, read_buffer,
-                         num_bytes, num_bytes, command_transaction_done);
-    if (!spi_start_transaction(&spi1_state, &transaction))
+                         num_bytes, num_bytes, command_set_spi_cs,
+                         command_reset_spi_cs, command_transaction_done);
+    if (!spi_start_transaction(&spi2_state, &transaction))
     {
         printf("transaction couldn't start\r\n");
         return FAIL;
