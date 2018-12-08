@@ -24,30 +24,20 @@ int write_frame(frame_type_t frame_type, const char *buf, size_t count)
 {
     size_t curr;
 
-    if (count > 255)
-        return -1;
+    /* if we can't write this frame in one shot, don't try */
+    if (pc_buffer_space(tx_buf[0]) < count + 4)
+        return 0;
 
-    /* write SOF */
-    if (_putc(USART1, BLOCK, TELEM_SOF))
-        return -1;
+    /* frame size is one byte, can't send anything larger  */
+    if (count > 255) return 0;
 
-    /* write type */
-    if (_putc(USART1, BLOCK, (char) frame_type))
-        return -1;
-
-    /* write size */
-    if (_putc(USART1, BLOCK, (char) (count & 0xff)))
-        return -1;
-
-    /* write body */
-	for (curr = 0; curr < count; curr++) {
-		if (_putc(USART1, BLOCK, *(buf++)))
-			return -1;
-	}
-
-    /* write EOF */
-    if (_putc(USART1, BLOCK, TELEM_EOF))
-    { return -1; }
+    /* write SOF, type, size, body, then EOF */
+    _putc(USART1, BLOCK, TELEM_SOF);
+    _putc(USART1, BLOCK, (char) frame_type);
+    _putc(USART1, BLOCK, (char) (count & 0xff));
+	for (curr = 0; curr < count; curr++)
+        _putc(USART1, BLOCK, *(buf++));
+    _putc(USART1, BLOCK, TELEM_EOF);
 
 	return count;
 }
@@ -62,7 +52,7 @@ int _write(int fd, const void *buf, size_t count)
     USART_TypeDef *interface = fd_to_usart(fd);
 	for (curr = 0; curr < count; curr++) {
 		if (_putc(interface, BLOCK, *(buf_ptr)++))
-			return -1;
+			return curr;
     }
     return count;
 #endif

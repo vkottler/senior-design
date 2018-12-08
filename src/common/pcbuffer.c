@@ -33,6 +33,11 @@ bool pc_buffer_full(PC_Buffer *buf) {
 	return buf->produce_count - buf->consume_count == buf->buffer_SIZE;
 }
 
+uint32_t pc_buffer_space(PC_Buffer *buf)
+{
+    return ((uint32_t) buf->buffer_SIZE) - (buf->produce_count - buf->consume_count);
+}
+
 bool pc_buffer_messageAvailable(PC_Buffer *buf) {
 	return buf->message_available > 0;
 }

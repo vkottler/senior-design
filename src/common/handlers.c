@@ -180,18 +180,18 @@ void blink_handler(unsigned int blink_int) {
 void send_high_rate_telemetry(unsigned int interval)
 {
     static uint32_t last_tick = 0;
-    if (radio_transmit_state && !(ticks % interval) && ticks != last_tick)
+    if (radio_transmit_state && (ticks % interval == 0) && ticks != last_tick)
     {
         last_tick = ticks;
         write_frame(TELEM_FRAME_DATA, (const char *) packets[0], telemetry_packet_size(packets[0]));
-        //write_frame(TELEM_FRAME_DATA, (const char *) packets[1], telemetry_packet_size(packets[1]));
+        write_frame(TELEM_FRAME_DATA, (const char *) packets[1], telemetry_packet_size(packets[1]));
     }
 }
 
 void send_low_rate_telemetry(unsigned int interval)
 {
     static uint32_t last_tick = 0;
-    if (radio_transmit_state && !(ticks % interval) && ticks != last_tick)
+    if (radio_transmit_state && (ticks % interval == 0) && ticks != last_tick)
     {
         last_tick = ticks;
         write_frame(TELEM_FRAME_DATA, (const char *) packets[2], telemetry_packet_size(packets[2]));
@@ -210,12 +210,12 @@ void service_sensors(unsigned int interval) {
         *((uint16_t *) manifest.channels[3].data) = lidar_readDist(1);
         *((uint16_t *) manifest.channels[4].data) = lidar_readDist(2);
 
+        /*
         float raw_input_x, raw_input_y, raw_input_z;
-
         memcpy(&raw_input_x, manifest.channels[0].data, sizeof(float));
         memcpy(&raw_input_y, manifest.channels[1].data, sizeof(float));
         memcpy(&raw_input_z, manifest.channels[2].data, sizeof(float));
-
         control_loop(raw_input_x, raw_input_y, raw_input_z);
+        */
     }
 }

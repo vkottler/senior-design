@@ -73,11 +73,12 @@ int periph_init(void) {
     post();
     printPrompt();
 
-    /*
     adc_config();
     adc_activate();
+    /*
     control_config();
-    esc_config();*/
+    esc_config();
+    */
 
     spi_config();
 

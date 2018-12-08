@@ -10,9 +10,9 @@
 #define GYRO_DATA_RATE      800.0f
 #define GYRO_FIFO_WATERMARK 16
 
-#define GYRO_X_DRIFT_T      (133 * 200)
-#define GYRO_Y_DRIFT_T      (132 * 200)
-#define GYRO_Z_DRIFT_T      (127 * 200)
+#define GYRO_X_DRIFT_T      (134 * 200)
+#define GYRO_Y_DRIFT_T      (133 * 200)
+#define GYRO_Z_DRIFT_T      (128 * 200)
 
 #define GYRO_DRIFT_AMT           0.1f
 
@@ -46,7 +46,6 @@ typedef struct gyro
     volatile gyro_state_t state;
     size_t calib_samples, samples;
 
-    int16_t calib_accum[3];
     float calib_offset[3];
     float accum[3];
 

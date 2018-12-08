@@ -11,6 +11,7 @@ PC_Buffer *tx_buf[NUM_UARTS],
 
 volatile uint32_t radio_resume = 0;
 volatile bool radio_transmit_state = true;
+volatile bool radio_buffer_full = false;
 
 PC_Buffer *get_tx(USART_TypeDef* usart)
 {
@@ -58,28 +59,15 @@ int _putc(USART_TypeDef* usart, bool block, char data)
     PC_Buffer *tx = get_tx(usart);
 
     /* check if a character can be added */
-    if (pc_buffer_full(tx))
-    {
-        if (!block) return 1;
-        while (pc_buffer_full(tx)) {;}
-    }
+    if (pc_buffer_full(tx)) return 1;
 
     /* safely add the desired character */
     __disable_irq();
     pc_buffer_add(tx, data);
     __enable_irq();
 
-    /* check state of AUX pin */
-/*    if (usart == USART1)*/
-/*    {*/
-/*        while (!gpio_readPin(GPIOB, 2)) {;}*/
-/*    }*/
-
     /* set TX-empty interrupt enable flag */
-    if (usart != USART1)
-    {
     usart->CR1 |= USART_CR1_TXEIE;
-    }
 
     return 0;
 }
@@ -263,12 +251,9 @@ static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
 {
     char curr;
 
-    /* clear error flags if present */
-    if (usart->ISR & USART_ISR_ORE)
-        usart->ICR |= USART_ICR_ORECF;
-
     /* character received */
-    if (usart->ISR & USART_ISR_RXNE) {
+    if (usart->ISR & USART_ISR_RXNE)
+    {
         curr = usart->RDR;
 
         /* check for a signal to temporarily halt outgoing transmissions */
@@ -312,12 +297,11 @@ static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
         *prev2 = *prev;
         *prev = curr;
     }
+
     /* character ready to be sent */
-    if (usart->ISR & USART_ISR_TXE) {
-        // dissable transmit interrupt if AUX pin low
-        if(!gpio_readPin(GPIOB, 2))
-            USART1->CR1 &= ~USART_CR1_TXEIE;
-        else if (!pc_buffer_empty(tx))
+    if (usart->ISR & USART_ISR_TXE)
+    {
+        if (!pc_buffer_empty(tx))
             pc_buffer_remove(tx, (char *) &usart->TDR);
         else
             usart->CR1 &= ~USART_CR1_TXEIE;
@@ -327,12 +311,40 @@ static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
 void USART1_Handler(void)
 {
     static char prev1 = '\0', prev2 = '\0';
-    USART_Handler(USART1, tx_buf[0], rx_buf[0], &prev1, &prev2, false);
+
+    /* clear error flags if present */
+    if (USART1->ISR & USART_ISR_ORE)
+    {
+        USART1->ICR |= USART_ICR_ORECF;
+        return;
+    }
+
+    /* service received bytes without doing expensive logic */
+    if (USART1->ISR & USART_ISR_RXNE)
+    {
+        USART_Handler(USART1, tx_buf[0], rx_buf[0], &prev1, &prev2, false);
+        return;
+    }
+
+    /* always check if the radio buffer is full, in case we're transmitting */
+    if (!gpio_readPin(GPIOB, 2))
+        radio_buffer_full = true;
+
+    /* disable transmit interrupt if AUX pin low, or we are expecting a
+     * command */
+    if ((USART1->ISR & USART_ISR_TXE) &&
+        (radio_buffer_full || !radio_transmit_state) &&
+        (USART1->CR1 & USART_CR1_TXEIE))
+        USART1->CR1 &= ~USART_CR1_TXEIE;
+    else USART_Handler(USART1, tx_buf[0], rx_buf[0], &prev1, &prev2, false);
 }
 
 void USART2_Handler(void)
 {
     static char prev1 = '\0', prev2 = '\0';
+
+    /* clear error flags if present */
+    if (USART2->ISR & USART_ISR_ORE) USART2->ICR |= USART_ICR_ORECF;
 
 #ifndef NUCLEO
     char c;
@@ -352,6 +364,9 @@ void USART3_Handler(void)
 {
     static char prev1 = '\0', prev2 = '\0';
     char c;
+
+    /* clear error flags if present */
+    if (USART3->ISR & USART_ISR_ORE) USART3->ICR |= USART_ICR_ORECF;
 
     /* character received */
     if (USART3->ISR & USART_ISR_RXNE) {

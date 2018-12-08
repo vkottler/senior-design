@@ -22,5 +22,6 @@ bool pc_buffer_empty(PC_Buffer *buffer);
 bool pc_buffer_full(PC_Buffer *buffer);
 bool pc_buffer_getMessage(PC_Buffer *buffer, char *message, int maxLength);
 bool pc_buffer_messageAvailable(PC_Buffer *buffer);
+uint32_t pc_buffer_space(PC_Buffer *buf);
 
 #endif
