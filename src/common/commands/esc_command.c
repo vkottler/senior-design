@@ -3,11 +3,27 @@
 #include <string.h>
 #include "command.h"
 #include "esc.h"
+#include "board.h"
 
 command_status do_esc(int argc, char *argv[]) {
 
     if (argc < 2)
         return USAGE;
+
+    if (!strcmp("calibrate", argv[1])) {
+        esc_set_pulse(ESC_TABLE[X_POS_INDEX], 0);
+        esc_set_pulse(ESC_TABLE[X_NEG_INDEX], 0);
+        esc_set_pulse(ESC_TABLE[Y_POS_INDEX], 0);
+        esc_set_pulse(ESC_TABLE[Y_NEG_INDEX], 0);
+
+        // Wait for ESC to latch
+        delay(7000);
+
+        esc_set_pulse(ESC_TABLE[X_POS_INDEX], 0);
+        esc_set_pulse(ESC_TABLE[X_NEG_INDEX], 0);
+        esc_set_pulse(ESC_TABLE[Y_POS_INDEX], 0);
+        esc_set_pulse(ESC_TABLE[Y_NEG_INDEX], 0);
+    }
 
     uint16_t val = atoi(argv[2]);
     if (!strcmp("x_pos", argv[1])) {

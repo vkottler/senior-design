@@ -117,9 +117,9 @@ void control_loop
 					       	 + control.pid_output_z);
 	neg_x_val = (int16_t)(control.throttle - control.pid_output_y
 					       	 + control.pid_output_z);
-	pos_y_val = (int16_t)(control.throttle + control.pid_output_x
+	pos_y_val = (int16_t)(control.throttle - control.pid_output_x
 					       	 - control.pid_output_z);
-	neg_y_val = (int16_t)(control.throttle - control.pid_output_x
+	neg_y_val = (int16_t)(control.throttle + control.pid_output_x
 					       	 - control.pid_output_z);
     // Saturate
     if (pos_x_val < 0 || control.throttle == 0) pos_x_val = 0;

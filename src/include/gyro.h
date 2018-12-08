@@ -10,6 +10,12 @@
 #define GYRO_DATA_RATE      800.0f
 #define GYRO_FIFO_WATERMARK 16
 
+#define GYRO_X_DRIFT_T      (133 * 200)
+#define GYRO_Y_DRIFT_T      (132 * 200)
+#define GYRO_Z_DRIFT_T      (127 * 200)
+
+#define GYRO_DRIFT_AMT           0.1f
+
 /* make sure we calibrate for a watermark-divisible amount of samples */
 #define GYRO_CALIB_SAMPLES  (100 * GYRO_FIFO_WATERMARK)
 
@@ -47,6 +53,8 @@ typedef struct gyro
     uint8_t write_buffer[GYRO_BUFFER_SIZE];
     uint8_t read_buffer[GYRO_BUFFER_SIZE];
 
+    uint32_t samples_start_t;
+    int drifts_applied[3];
     spi_transaction_t sample;
     spi_state_t *spi;
 

@@ -34,7 +34,7 @@ void set_clks(void)
 
     /* set PLL parameters */
     rcc_set_pll(RCC_PLL_HSE, RCC_PLL_PREDIV_4, RCC_PLL_MUL_16, 10);
-    
+
     /* turn PLL on */
     rcc_set_sys_clk_src_state(SYS_CLK_PLL, true, 10);
 
@@ -76,9 +76,9 @@ int periph_init(void) {
     /*
     adc_config();
     adc_activate();
-    esc_config();
     control_config();
-    */
+    esc_config();*/
+
     spi_config();
 
     return ret;

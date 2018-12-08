@@ -70,13 +70,16 @@ int _putc(USART_TypeDef* usart, bool block, char data)
     __enable_irq();
 
     /* check state of AUX pin */
-    if (usart == USART1)
-    {
-        while (!gpio_readPin(GPIOB, 2)) {;}
-    }
+/*    if (usart == USART1)*/
+/*    {*/
+/*        while (!gpio_readPin(GPIOB, 2)) {;}*/
+/*    }*/
 
     /* set TX-empty interrupt enable flag */
+    if (usart != USART1)
+    {
     usart->CR1 |= USART_CR1_TXEIE;
+    }
 
     return 0;
 }

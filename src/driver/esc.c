@@ -21,18 +21,11 @@ const ESC_TypeDef ESC_TABLE[] = {
 
 void esc_config()
 {
-    TIM_PWM_Init(ESC_1_TIM, ESC_1_CH, 4000, 100);
-    TIM_PWM_Init(ESC_2_TIM, ESC_2_CH, 4000, 100);
-    TIM_PWM_Init(ESC_3_TIM, ESC_3_CH, 4000, 100);
-    TIM_PWM_Init(ESC_4_TIM, ESC_4_CH, 4000, 100);
+    TIM_PWM_Init(ESC_1_TIM, ESC_1_CH, ESC_PERIOD, 0);
+    TIM_PWM_Init(ESC_2_TIM, ESC_2_CH, ESC_PERIOD, 0);
+    TIM_PWM_Init(ESC_3_TIM, ESC_3_CH, ESC_PERIOD, 0);
+    TIM_PWM_Init(ESC_4_TIM, ESC_4_CH, ESC_PERIOD, 0);
 
-    // Wait for ESC to latch
-    delay(7000);
-
-	esc_set_pulse(ESC_TABLE[X_POS_INDEX], 0);
-	esc_set_pulse(ESC_TABLE[X_NEG_INDEX], 0);
-	esc_set_pulse(ESC_TABLE[Y_POS_INDEX], 0);
-	esc_set_pulse(ESC_TABLE[Y_NEG_INDEX], 0);
 
 }
 

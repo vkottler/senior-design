@@ -50,7 +50,8 @@ int gyro_validate_register(uint8_t address, uint8_t expected)
 
 void calibration_round_done(const uint8_t *buffer, size_t len)
 {
-    float temp1, temp2;
+    float temp1;
+    float temp2;
 
     __disable_irq();
 
@@ -81,6 +82,9 @@ void calibration_round_done(const uint8_t *buffer, size_t len)
         gyro.calib_offset[0] *= GYRO_SENSITIVITY;
         gyro.calib_offset[1] *= GYRO_SENSITIVITY;
         gyro.calib_offset[2] *= GYRO_SENSITIVITY;
+        gyro.calib_offset[0] /= GYRO_DATA_RATE;
+        gyro.calib_offset[1] /= GYRO_DATA_RATE;
+        gyro.calib_offset[2] /= GYRO_DATA_RATE;
         gyro.state = GYRO_BUFFERING;
     }
 
@@ -90,20 +94,16 @@ void calibration_round_done(const uint8_t *buffer, size_t len)
 void sample_round_done(const uint8_t *buffer, size_t len)
 {
     int16_t raw[3];
-    float temp[3];
+    float temp[3] = {0, 0, 0};
+    uint32_t sample_time;
 
     __disable_irq();
+
+    if (gyro.samples == 0) gyro.samples_start_t = ticks;
 
     gyro.status = buffer[1];
     for (size_t i = 2; i < len; i += GYRO_SAMPLE_SIZE)
     {
-        /* apply the offset to correct for drift */
-        if (gyro.samples % GYRO_CALIB_SAMPLES)
-        {
-            temp[0] -= gyro.calib_offset[0];
-            temp[1] -= gyro.calib_offset[1];
-            temp[2] -= gyro.calib_offset[2];
-        }
 
         raw[0] = buffer[i]     << 8 | buffer[i + 1];
         raw[1] = buffer[i + 2] << 8 | buffer[i + 3];
@@ -114,11 +114,30 @@ void sample_round_done(const uint8_t *buffer, size_t len)
         temp[0] *= GYRO_SENSITIVITY;
         temp[1] *= GYRO_SENSITIVITY;
         temp[2] *= GYRO_SENSITIVITY;
+
         gyro.accum[0] += temp[0] / GYRO_DATA_RATE;
         gyro.accum[1] += temp[1] / GYRO_DATA_RATE;
         gyro.accum[2] += temp[2] / GYRO_DATA_RATE;
+
         gyro.samples++;
     }
+    sample_time = ticks - gyro.samples_start_t;
+    if (sample_time / GYRO_X_DRIFT_T > gyro.drifts_applied[0])
+    {
+        gyro.drifts_applied[0] ++;
+        gyro.accum[0] += GYRO_DRIFT_AMT;
+    }
+    if (sample_time / GYRO_Y_DRIFT_T > gyro.drifts_applied[1])
+    {
+        gyro.drifts_applied[1] ++;
+        gyro.accum[1] += GYRO_DRIFT_AMT;
+    }
+    if (sample_time / GYRO_Z_DRIFT_T > gyro.drifts_applied[2])
+    {
+        gyro.drifts_applied[2] ++;
+        gyro.accum[2] += GYRO_DRIFT_AMT;
+    }
+
     memcpy(manifest.channels[0].data, &gyro.accum[0], sizeof(float));
     memcpy(manifest.channels[1].data, &gyro.accum[1], sizeof(float));
     memcpy(manifest.channels[2].data, &gyro.accum[2], sizeof(float));
@@ -171,8 +190,10 @@ void gyro_init(gyro_t *gyro)
     gyro->state = GYRO_NOT_INITED;
     gyro->spi = &spi1_state;
     gyro->calib_samples = 0;
+    gyro->samples_start_t = 0;
     for (int i = 0; i < 3; i++)
     {
+        gyro->drifts_applied[i] = 0;
         gyro->calib_accum[i]  = 0;
         gyro->calib_offset[i] = 0.0f;
         gyro->accum[i]        = 0.0f;
@@ -300,7 +321,7 @@ void dump_gyro(gyro_t *gyro)
            gyro->calib_accum[0],
            gyro->calib_accum[1],
            gyro->calib_accum[2]);
-    printf("calib_offset:\r\nx: %0.2f, y: %0.2f, z: %0.2f\r\n",
+    printf("calib_offset:\r\nx: %0.5f, y: %0.5f, z: %0.5f\r\n",
            gyro->calib_offset[0],
            gyro->calib_offset[1],
            gyro->calib_offset[2]);

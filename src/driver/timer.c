@@ -28,7 +28,7 @@ int TIM_PWM_Init(TIM_TypeDef *tim, uint8_t channel, uint32_t period, uint32_t pu
 	tim->ARR = period;
 	/*tim-> ARR = 0x8;*/
 
-	tim->PSC = 0x7;
+	tim->PSC = 0x1F;
 
 	tim->EGR |= 0x1;
 
