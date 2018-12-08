@@ -6,6 +6,7 @@
 #include "pcbuffer.h"
 #include "usart.h"
 #include "board.h"
+#include "gpio.h"
 
 #include "frame.h"
 
@@ -20,16 +21,52 @@ USART_TypeDef *fd_to_usart(int fd)
 #endif
 }
 
+void update_radio_state(void)
+{
+    bool re_enable = false;
+
+    if (radio_buffer_full && gpio_readPin(GPIOB, 2))
+    {
+        radio_buffer_full = false;
+        re_enable = true;
+    }
+    if (!radio_transmit_state && ticks > radio_resume) 
+    {
+        radio_transmit_state = true;
+        re_enable = true;
+    }
+
+    if (re_enable) USART1->CR1 |= USART_CR1_TXEIE;
+}
+
+void console_wait_free(size_t count)
+{
+    bool all_ready = false;
+    bool enough_space = false;
+
+    while (!all_ready)
+    {
+        update_radio_state();
+        enough_space = (pc_buffer_space(tx_buf[0]) >= count + 4);
+        if (radio_transmit_state && !radio_buffer_full && enough_space)
+            all_ready = true;
+    }
+}
+
 int write_frame(frame_type_t frame_type, const char *buf, size_t count)
 {
     size_t curr;
 
+    /* frame size is one byte, can't send anything larger  */
+    if (count > 255) return 0;
+
+    /* always make sure console frames get sent */
+    if (frame_type == TELEM_FRAME_CONSOLE)
+        console_wait_free(count);
+
     /* if we can't write this frame in one shot, don't try */
     if (pc_buffer_space(tx_buf[0]) < count + 4)
         return 0;
-
-    /* frame size is one byte, can't send anything larger  */
-    if (count > 255) return 0;
 
     /* write SOF, type, size, body, then EOF */
     _putc(USART1, BLOCK, TELEM_SOF);

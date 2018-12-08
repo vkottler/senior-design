@@ -41,9 +41,6 @@ void service_sensors(unsigned int interval);
 void send_low_rate_telemetry(unsigned int interval);
 void send_high_rate_telemetry(unsigned int interval);
 void control_config();
-void control_loop
-(
- float raw_input_x, float raw_input_y, float raw_input_z
- );
+void control_loop(float raw_input_x, float raw_input_y, float raw_input_z);
 
 #endif

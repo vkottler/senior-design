@@ -1,12 +1,10 @@
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
 
 #include "stm32f303xe.h"
-#include <main.h>
-#include <gpio.h>
-#include <board.h>
-#include <pcbuffer.h>
-#include <cli.h>
 
+#include "board.h"
+#include "pcbuffer.h"
+#include "cli.h"
+#include "channels.h"
 
-#endif /* MAIN_H */
+void fault_loop(void);
