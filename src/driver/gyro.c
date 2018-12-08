@@ -328,7 +328,7 @@ void dump_gyro(gyro_t *gyro)
     printf("latest status register: 0x%x\r\n", gyro->status);
     printf("samples: %u (%lu Hz), calib_samples: %u\r\n",
            gyro->samples,
-           gyro->samples / (ticks / 1000),
+           gyro->samples / ((ticks - gyro->samples_start_t) / 1000),
            gyro->calib_samples);
     printf("latest values:\r\nx: %0.2f, y: %0.2f, z: %0.2f\r\n",
            gyro->accum[0],
