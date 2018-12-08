@@ -85,55 +85,6 @@ int periph_init(void) {
     return ret;
 }
 
-channel_manifest_t manifest;
-channel_t channels[MAX_CHANNEL_COUNT];
-telemetry_packet_t *packets[MAX_PACKET_COUNT];
-
-void manifest_sender(char *buffer, uint32_t len)
-{
-    write_frame(TELEM_FRAME_MANIFEST, buffer, len);
-}
-
-void manifest_init(void)
-{
-    manifest.channels = channels;
-    manifest.count = 0;
-    manifest.capacity = MAX_CHANNEL_COUNT;
-
-    channel_add(&manifest, "gyro_x", "deg/s", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "gyro_y", "deg/s", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "gyro_z", "deg/s", TELEM_FLOAT, sizeof(float));
-
-    channel_add(&manifest, "lidar_d1", "mm", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "lidar_d2", "mm", TELEM_UINT16, sizeof(uint16_t));
-
-    channel_add(&manifest, "esc_pos_x_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "esc_neg_x_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "esc_pos_y_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
-    channel_add(&manifest, "esc_neg_y_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
-
-    channel_add(&manifest, "batt_v_cell1", "ADC counts", TELEM_FLOAT , sizeof(float));
-    channel_add(&manifest, "batt_v_cell2", "ADC counts", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "batt_v_cell3", "ADC counts", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "batt_current", "ADC counts", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "batt_v_total", "ADC counts", TELEM_FLOAT, sizeof(float));
-
-    packets[0] = telemetry_packet_create(&manifest.channels[0], 3);
-    packets[1] = telemetry_packet_create(&manifest.channels[3], 2);
-    packets[2] = telemetry_packet_create(&manifest.channels[5], 4);
-    packets[3] = telemetry_packet_create(&manifest.channels[9], 5);
-
-    /*
-    channel_manifest_print(stdout, &manifest);
-    telemetry_packet_print(stdout, packets[0]);
-    telemetry_packet_print(stdout, packets[1]);
-    telemetry_packet_print(stdout, packets[2]);
-    telemetry_packet_print(stdout, packets[3]);
-    */
-
-    channel_manifest_send(&manifest, manifest_sender);
-}
-
 /* spi chip-select managers */
 void command_reset_spi1_cs(void) { gpio_resetPin(GPIOA, 4); }
 void command_set_spi1_cs(void) { gpio_setPin(GPIOA, 4); }

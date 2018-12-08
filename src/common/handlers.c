@@ -164,6 +164,9 @@ void fault_handler(unsigned int blink_int) {
     prev = curr;
 }
 
+void fault_loop(void)
+{ while (1) { fault_handler(1000); } }
+
 void blink_handler(unsigned int blink_int) {
 
     static unsigned int curr = 0, prev = 0;
