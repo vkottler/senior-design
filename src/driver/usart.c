@@ -311,7 +311,10 @@ static void USART_Handler(USART_TypeDef *usart, PC_Buffer *tx, PC_Buffer *rx,
     }
     /* character ready to be sent */
     if (usart->ISR & USART_ISR_TXE) {
-        if (!pc_buffer_empty(tx))
+        // dissable transmit interrupt if AUX pin low
+        if(!gpio_readPin(GPIOB, 2))
+            USART1->CR1 &= ~USART_CR1_TXEIE;
+        else if (!pc_buffer_empty(tx))
             pc_buffer_remove(tx, (char *) &usart->TDR);
         else
             usart->CR1 &= ~USART_CR1_TXEIE;

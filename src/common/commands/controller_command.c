@@ -11,15 +11,6 @@ command_status do_control(int argc, char *argv[]) {
     if (argc < 2)
         return USAGE;
 
-    if (argc == 2)
-    {
-        if (!strcmp("gain", argv[1])) {
-            printf("Proportional gain: %.2f\r\n", control.p_gain);
-            printf("Integral gain: %.2f\r\n", control.i_gain);
-            printf("Derivative gain: %.2f\r\n", control.d_gain);
-        }
-    }
-
     float val = atof(argv[2]);
     if (!strcmp("x", argv[1])) {
         control.desired_x = val;

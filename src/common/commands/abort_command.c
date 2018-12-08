@@ -7,8 +7,8 @@
 
 extern control_t control;
 
-command_status do_stop(int argc, char *argv[]) {
-    
+command_status do_abort(int argc, char *argv[]) {
+
 	control.desired_x = 0;
     control.desired_y = 0;
     control.desired_z = 0;
@@ -22,4 +22,4 @@ command_status do_stop(int argc, char *argv[]) {
     return CMD_SUCCESS;
 }
 
-COMMAND_ENTRY("stop", "stop", "Stop ALL ESCs", do_stop)
+COMMAND_ENTRY("abort", "abort", "abort ALL ESCs", do_abort)
