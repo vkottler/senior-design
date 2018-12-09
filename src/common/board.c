@@ -81,7 +81,6 @@ int periph_init(void) {
     control_config();
     esc_config();
 
-
     spi_config();
 
     return ret;

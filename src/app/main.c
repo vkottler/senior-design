@@ -25,8 +25,6 @@ int main(void)
         batt_startConver();
         batt_getBattery();
 
-        service_lidar(LIDAR_UPDATE_RATE);
-
         /* service incoming commands */
         check_input();
 

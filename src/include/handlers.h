@@ -6,6 +6,5 @@ void fault_loop(void);
 void blink_handler(unsigned int blink_int);
 void run_critical(void);
 void run_control(void);
-void service_lidar(unsigned int interval);
 
 #endif

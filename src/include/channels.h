@@ -18,6 +18,13 @@ bool manifest_init(void);
 #define manifest tm._manifest
 #define packets tm._packets
 
+#define GYRO_X_IND  0
+#define GYRO_Y_IND  1
+#define GYRO_Z_IND  2
+
+#define LIDAR1_IND  3
+#define LIDAR2_IND  4
+
 typedef struct telemetry_manager
 {
     /* channels */

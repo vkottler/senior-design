@@ -7,13 +7,8 @@
 
 gyro_t gyro;
 
-
 spi_transaction_t write_transaction;
 uint8_t write_tx_buf[2], write_rx_buf[2];
-
-const uint32_t drift_times[3] = {
-    GYRO_X_DRIFT_T, GYRO_Y_DRIFT_T, GYRO_Z_DRIFT_T
-};
 
 void write_done_discard(const uint8_t *buffer, size_t len)
 { (void) buffer; (void) len; }
@@ -98,7 +93,6 @@ void calibration_round_done(const uint8_t *buffer, size_t len)
 void sample_round_done(const uint8_t *buffer, size_t len)
 {
     size_t i;
-    uint32_t sample_time;
 
     __disable_irq();
 
@@ -110,19 +104,11 @@ void sample_round_done(const uint8_t *buffer, size_t len)
         gyro.accum[0] += raw_to_float(&buffer[i]);
         gyro.accum[1] += raw_to_float(&buffer[i + 2]);
         gyro.accum[2] += raw_to_float(&buffer[i + 4]);
-        gyro.samples++;
     }
-
-    /* apply manually calculated drift offsets if necessary */
-    sample_time = ticks - gyro.samples_start_t;
-    for (i = 0; i < 3; i++)
-    {
-        if (sample_time / drift_times[i] > gyro.drifts_applied[i])
-        {
-            gyro.drifts_applied[i]++;
-            gyro.accum[i] += GYRO_DRIFT_AMT;
-        }
-    }
+    gyro.accum[0] += GYRO_X_BIAS;
+    gyro.accum[1] += GYRO_Y_BIAS;
+    gyro.accum[2] += GYRO_Z_BIAS;
+    gyro.samples++;
 
     /* can't generate floating-point instructions to write a value to an
      * address that's not word-aligned, so use memcpy */
@@ -304,15 +290,15 @@ void dump_gyro(gyro_t *gyro)
 {
     printf("watermark: %d, calib_samples: %d\r\n", GYRO_FIFO_WATERMARK,
            GYRO_CALIB_SAMPLES);
-    printf("calib_offset:\r\nx: %0.5f, y: %0.5f, z: %0.5f\r\n",
+    printf("calib_offset:\r\nx: %0.12f, y: %0.12f, z: %0.12f\r\n",
            gyro->calib_offset[0],
            gyro->calib_offset[1],
            gyro->calib_offset[2]);
     printf("latest status register: 0x%x\r\n", gyro->status);
-    printf("samples: %u (%lu Hz), calib_samples: %u\r\n",
+    printf("samples: %u (%lu Hz), calib_samples: %u (%0.2fs)\r\n",
            gyro->samples,
            gyro->samples / ((ticks - gyro->samples_start_t) / 1000),
-           gyro->calib_samples);
+           gyro->calib_samples, (float) gyro->calib_samples / GYRO_DATA_RATE);
     printf("latest values:\r\nx: %0.2f, y: %0.2f, z: %0.2f\r\n",
            gyro->accum[0],
            gyro->accum[1],

@@ -48,8 +48,17 @@ void blink_handler(unsigned int blink_int) {
     prev = curr;
 }
 
+void service_lidar(void)
+{
+    if (lidar_data_ready(LIDAR1))
+        *((uint16_t *) manifest.channels[LIDAR1_IND].data) = lidar_readDist(LIDAR1);
+    if (lidar_data_ready(LIDAR2))
+        *((uint16_t *) manifest.channels[LIDAR2_IND].data) = lidar_readDist(LIDAR2);
+}
+
 void run_critical(void) {
     service_gyro(&gyro);
+    service_lidar();
     run_control();
 }
 
@@ -64,16 +73,5 @@ void run_control(void) {
 /*        memcpy(&raw_input_z, manifest.channels[2].data, sizeof(float));*/
         control_loop_x(raw_input_x, control.throttle);
         gyro.new_data = false;
-    }
-}
-
-void service_lidar(unsigned int interval) {
-    static uint32_t last_tick = 0;
-
-    if (!(ticks % interval) && ticks != last_tick)
-    {
-        last_tick = ticks;
-        *((uint16_t *) manifest.channels[3].data) = lidar_readDist(1);
-        *((uint16_t *) manifest.channels[4].data) = lidar_readDist(2);
     }
 }

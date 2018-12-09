@@ -2,17 +2,35 @@
 #include "usart.h"
 #include "lidar.h"
 
-static lidar_t lidar1 = { .state = frame_header1, .checksum = 0, .dist = 0, .valid_dist = 0 };
-static lidar_t lidar2 = { .state = frame_header1, .checksum = 0, .dist = 0, .valid_dist = 0 };
+lidar_t lidar1 = {
+    .state = frame_header1, .checksum = 0, .dist = 0, .valid_dist = 0,
+    .new_data = false
+};
 
-uint16_t lidar_readDist(int lidar_num)
+lidar_t lidar2 = {
+    .state = frame_header1, .checksum = 0, .dist = 0, .valid_dist = 0,
+    .new_data = false
+};
+
+bool lidar_data_ready(LIDAR_ID id)
+{
+    lidar_t *lidar = &lidar1;
+    if (id == LIDAR2) lidar = &lidar2;
+    return lidar->new_data;
+}
+
+uint16_t lidar_readDist(LIDAR_ID id)
 {   
-    lidar_t * lidar;
-    if (lidar_num == 1) lidar = &lidar1;
-    else if (lidar_num == 2) lidar = &lidar2;
-    else return 0xffff;
-    return lidar->valid_dist;
-/*    printf("Lidar%d: %d \r\n", lidar_num, lidar->valid_dist);*/
+    uint16_t data;
+    lidar_t *lidar = &lidar1;
+
+    __disable_irq();
+    if (id == LIDAR2) lidar = &lidar2;
+    data = lidar->valid_dist;
+    lidar->new_data = false;
+    __enable_irq();
+
+    return data;
 }
 
 void lidar_state_machine(lidar_t *lidar, char c)
@@ -59,6 +77,7 @@ void lidar_state_machine(lidar_t *lidar, char c)
             if(lidar->checksum == c)
             {
                 lidar->valid_dist = lidar->dist;
+                lidar->new_data = true;
             }
             lidar->checksum = 0;
             lidar->state = frame_header1;
@@ -79,4 +98,3 @@ void lidar2_callback(char c)
 {
     lidar_state_machine(&lidar2, c);
 }
-
