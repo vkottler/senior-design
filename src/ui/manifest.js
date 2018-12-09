@@ -2,6 +2,7 @@ let start_time = new Date().getTime() / 1000.0;
 let window_size = 100;
 let num_plots = 0;
 let plots = {};
+let channels = []
 
 function add_manifest_table_entry(manifest_entry)
 {
@@ -45,7 +46,8 @@ function manifest_handle(data_set, socket)
         let new_plot_container_name = `${manifest_entry.name}-container`;
         new_plot_container.setAttribute("id", new_plot_container_name);
         new_plot_container.className = "plot-container";
-
+        channels.push(manifest_entry.name)
+        addChannelEnable(manifest_entry.name)
         /* add new plot container to the existing DOM */
         plot_container.appendChild(new_plot_container);
 
@@ -105,13 +107,14 @@ function get_plot_interval()
 function update_odd()
 {
     for (plot_name in plots)
-    {
+    {   
+        let checkBoxStatus = document.getElementById(plot_name+'_checkbutton').checked;
         let plot = plots[plot_name];
-        if (i % 2 === 0 && plot.to_render)
+        if (i % 2 === 0 && plot.to_render && checkBoxStatus)
         {
             plot.to_render = false;
             plot.plot.render();
-        }
+        } 
     }
 }
 
@@ -119,8 +122,9 @@ function update_even()
 {
     for (plot_name in plots)
     {
+        let checkBoxStatus = document.getElementById(plot_name+'_checkbutton').checked;
         let plot = plots[plot_name];
-        if (i % 2 === 1 && plot.to_render)
+        if (i % 2 === 1 && plot.to_render && checkBoxStatus)
         {
             plot.to_render = false;
             plot.plot.render();
@@ -164,3 +168,31 @@ $(function() {
     document.getElementById("start-plots").onclick = start_plots;
     start_plots();
 });
+
+/* Add channels and check button to the plot tab */
+function addChannelEnable(channel_name) {
+    var plot_enable_table = document.getElementById("plot_enable_table")
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.id = channel_name+"_checkbutton";  
+        input.checked = true;   //all check box values are defaulted to set 
+        input.onclick = function() {toggleGraph(this.id)}
+        let tr = document.createElement('tr');
+        let td1 = document.createElement('td');
+        let td2 = document.createElement('td');
+        td1.appendChild(document.createTextNode(channel_name));
+        td2.appendChild(input);
+        tr.appendChild(td1);    
+        tr.appendChild(td2);
+        plot_enable_table.append(tr);    
+}
+
+/*Toggles the display of the graph on click */
+function toggleGraph(id){
+    let checkBoxStatus = document.getElementById(id).checked;
+    let plot = id.split("_checkbutton"); //isolate channel name 
+    if(!checkBoxStatus) 
+        document.getElementById(plot[0]+'-container').style.display = "none";
+    else 
+        document.getElementById(plot[0]+'-container').style.display = "block"; 
+}
