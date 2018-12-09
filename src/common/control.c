@@ -18,8 +18,8 @@ void control_loop_y(float raw_input_y, float throttle)
                                         control.dy_gain, &control.i_output_y,
                                         &control.prev_dif_y);
 
-    pos_x_val = (int16_t) (throttle - control.pid_output_y * POS_X_PORTION);
-    neg_x_val = (int16_t) (throttle + control.pid_output_y * NEG_X_PORTION);
+    pos_x_val = (int16_t) (throttle + control.pid_output_y * POS_X_PORTION);
+    neg_x_val = (int16_t) (throttle - control.pid_output_y * NEG_X_PORTION);
 
     new_pos_x_val = pos_x_val;
     new_neg_x_val = neg_x_val;
@@ -29,26 +29,26 @@ void control_loop_y(float raw_input_y, float throttle)
     {
         remainder = MIN_THROTTLE - pos_x_val;
         new_neg_x_val -= remainder;
-        pos_x_val = MIN_THROTTLE;
+        new_pos_x_val = MIN_THROTTLE;
     }
     else if (pos_x_val > MAX_THROTTLE)
     { 
         remainder = pos_x_val - MAX_THROTTLE;
         new_neg_x_val += remainder;
-        pos_x_val = MAX_THROTTLE;
+        new_pos_x_val = MAX_THROTTLE;
     }
 
     if (neg_x_val < MIN_THROTTLE)
     {
         remainder = MIN_THROTTLE - neg_x_val;
         new_pos_x_val -= remainder;
-        neg_x_val = MIN_THROTTLE;
+        new_neg_x_val = MIN_THROTTLE;
     }
     else if (neg_x_val > MAX_THROTTLE) 
     {
         remainder = neg_x_val - MAX_THROTTLE;
         new_pos_x_val += remainder;
-        neg_x_val = MAX_THROTTLE;
+        new_neg_x_val = MAX_THROTTLE;
     }
 
     if(new_neg_x_val > MAX_THROTTLE || new_pos_x_val > MAX_THROTTLE || 
@@ -86,26 +86,26 @@ void control_loop_x(float raw_input_x, float throttle)
     {
         remainder = MIN_THROTTLE - pos_y_val;
         new_neg_y_val -= remainder;
-        pos_y_val = MIN_THROTTLE;
+        new_pos_y_val = MIN_THROTTLE;
     }
     else if (pos_y_val > MAX_THROTTLE)
     { 
         remainder = pos_y_val - MAX_THROTTLE;
         new_neg_y_val += remainder;
-        pos_y_val = MAX_THROTTLE;
+        new_pos_y_val = MAX_THROTTLE;
     }
 
     if (neg_y_val < MIN_THROTTLE)
     {
         remainder = MIN_THROTTLE - neg_y_val;
         new_pos_y_val -= remainder;
-        neg_y_val = MIN_THROTTLE;
+        new_neg_y_val = MIN_THROTTLE;
     }
     else if (neg_y_val > MAX_THROTTLE) 
     {
         remainder = neg_y_val - MAX_THROTTLE;
         new_pos_y_val += remainder;
-        neg_y_val = MAX_THROTTLE;
+        new_neg_y_val = MAX_THROTTLE;
     }
 
     if(new_neg_y_val > MAX_THROTTLE || new_pos_y_val > MAX_THROTTLE || 

@@ -2,27 +2,17 @@
 
 #include <stdint.h>
 
-#define MAX_THROTTLE   450
-#define MIN_THROTTLE   150
+#define MAX_THROTTLE   600
+#define MIN_THROTTLE   50
 #define START_THROTTLE 225
 
-/*
-#define P_GAIN_Y       (01.50f)
+#define P_GAIN_Y       (05.00f)
 #define I_GAIN_Y       (00.00f)
 #define D_GAIN_Y       (10.00f)
 
-#define P_GAIN_X       (10.00f)
+#define P_GAIN_X       (05.00f)
 #define I_GAIN_X       (00.00f)
-#define D_GAIN_X       (25.00f)
-*/
-
-#define P_GAIN_Y       (00.00f)
-#define I_GAIN_Y       (00.00f)
-#define D_GAIN_Y       (00.00f)
-
-#define P_GAIN_X       (00.00f)
-#define I_GAIN_X       (00.00f)
-#define D_GAIN_X       (00.00f)
+#define D_GAIN_X       (10.00f)
 
 #define P_GAIN_Z       (00.00f)
 #define I_GAIN_Z       (00.00f)
