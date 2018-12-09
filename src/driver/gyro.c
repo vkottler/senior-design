@@ -4,6 +4,7 @@
 #include "gpio.h"
 #include <string.h>
 #include <stdlib.h>
+#include "channels.h"
 
 gyro_t gyro;
 
@@ -92,7 +93,8 @@ void calibration_round_done(const uint8_t *buffer, size_t len)
 
 void sample_round_done(const uint8_t *buffer, size_t len)
 {
-    size_t i;
+    size_t i, num_samples = 0;
+    float x = 0.0f, y = 0.0f, z = 0.0f;
 
     __disable_irq();
 
@@ -101,20 +103,21 @@ void sample_round_done(const uint8_t *buffer, size_t len)
     /* accumulate all of the samples */
     for (i = 2; i < len; i += GYRO_SAMPLE_SIZE)
     {
-        gyro.accum[0] += raw_to_float(&buffer[i]);
-        gyro.accum[1] += raw_to_float(&buffer[i + 2]);
-        gyro.accum[2] += raw_to_float(&buffer[i + 4]);
+        x += raw_to_float(&buffer[i])     - gyro.calib_offset[0];
+        y += raw_to_float(&buffer[i + 2]) - gyro.calib_offset[1];
+        z += raw_to_float(&buffer[i + 4]) - gyro.calib_offset[2];
+        gyro.samples++;
+        num_samples++;
     }
-    gyro.accum[0] += GYRO_X_BIAS;
-    gyro.accum[1] += GYRO_Y_BIAS;
-    gyro.accum[2] += GYRO_Z_BIAS;
-    gyro.samples++;
+    x /= num_samples;
+    y /= num_samples;
+    z /= num_samples;
 
     /* can't generate floating-point instructions to write a value to an
      * address that's not word-aligned, so use memcpy */
-    memcpy(manifest.channels[0].data, &gyro.accum[0], sizeof(float));
-    memcpy(manifest.channels[1].data, &gyro.accum[1], sizeof(float));
-    memcpy(manifest.channels[2].data, &gyro.accum[2], sizeof(float));
+    memcpy(manifest.channels[GYRO_X_IND].data, &x, sizeof(float));
+    memcpy(manifest.channels[GYRO_Y_IND].data, &y, sizeof(float));
+    memcpy(manifest.channels[GYRO_Z_IND].data, &z, sizeof(float));
 
     /* inform handler that we can start new samples */
     gyro.state = GYRO_BUFFERING;
@@ -218,8 +221,8 @@ int gyro_config(void)
      *
      * These configurations should be experimented with.
      */
-    control = FS_250_DPS_21002 | LPF_BW_HIGH_21002 |
-              HPF_BW_ODR_DIV400 | HPF_EN_21002;
+    control = FS_250_DPS_21002 | LPF_BW_HIGH_21002;// |
+              //HPF_BW_ODR_DIV400 | HPF_EN_21002;
     gyro_write_block(CTRL_REG0_21002, control);
     if (gyro_validate_register(CTRL_REG0_21002, control))
         return -1;
@@ -299,8 +302,4 @@ void dump_gyro(gyro_t *gyro)
            gyro->samples,
            gyro->samples / ((ticks - gyro->samples_start_t) / 1000),
            gyro->calib_samples, (float) gyro->calib_samples / GYRO_DATA_RATE);
-    printf("latest values:\r\nx: %0.2f, y: %0.2f, z: %0.2f\r\n",
-           gyro->accum[0],
-           gyro->accum[1],
-           gyro->accum[2]);
 }

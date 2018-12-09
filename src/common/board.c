@@ -17,6 +17,7 @@
 #include "gyro.h"
 #include "esc.h"
 #include "control.h"
+#include "battery.h"
 
 void delay(uint32_t ms)
 {
@@ -77,6 +78,7 @@ int periph_init(void) {
 
     adc_config();
     adc_activate();
+    batt_startConver();
 
     control_config();
     esc_config();

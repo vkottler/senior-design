@@ -81,16 +81,16 @@ bool initialize_next_packet(uint32_t num_channels, uint32_t update_rate,
 bool manifest_init_data_channels(void)
 {
     /* gyro data */
-    channel_add(&manifest, "gyro_x", "deg/s", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "gyro_y", "deg/s", TELEM_FLOAT, sizeof(float));
-    channel_add(&manifest, "gyro_z", "deg/s", TELEM_FLOAT, sizeof(float));
-    if (!initialize_next_packet(3, GYRO_UPDATE_RATE, true))
+    channel_add(&manifest, "gyro_x", "mdeg/s", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "gyro_y", "mdeg/s", TELEM_FLOAT, sizeof(float));
+    channel_add(&manifest, "gyro_z", "mdeg/s", TELEM_FLOAT, sizeof(float));
+    if (!initialize_next_packet(3, GYRO_UPDATE_RATE, GYRO_TELEM_ON))
         return false;
 
     /* lidar data */
     channel_add(&manifest, "lidar_d1", "mm", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "lidar_d2", "mm", TELEM_UINT16, sizeof(uint16_t));
-    if (!initialize_next_packet(2, LIDAR_UPDATE_RATE, true))
+    if (!initialize_next_packet(2, LIDAR_UPDATE_RATE, LIDAR_TELEM_ON))
         return false;
 
     /* battery metrics */
@@ -99,7 +99,7 @@ bool manifest_init_data_channels(void)
     channel_add(&manifest, "batt_v_cell3", "ADC counts", TELEM_FLOAT, sizeof(float));
     channel_add(&manifest, "batt_current", "ADC counts", TELEM_FLOAT, sizeof(float));
     channel_add(&manifest, "batt_v_total", "ADC counts", TELEM_FLOAT, sizeof(float));
-    if (!initialize_next_packet(5, BATTERY_UPDATE_RATE, true))
+    if (!initialize_next_packet(5, BATTERY_UPDATE_RATE, BATTERY_TELEM_ON))
         return false;
 
     return true;
@@ -112,7 +112,7 @@ bool manifest_init_parameter_channels(void)
     channel_add(&manifest, "esc_neg_x_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "esc_pos_y_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
     channel_add(&manifest, "esc_neg_y_val", "1000 + ms", TELEM_UINT16, sizeof(uint16_t));
-    if (!initialize_next_packet(4, THROTTLE_UPDATE_RATE, true))
+    if (!initialize_next_packet(4, THROTTLE_UPDATE_RATE, THROTTLE_TELEM_ON))
         return false;
 
     return true;
@@ -132,14 +132,6 @@ bool manifest_init(void)
 
     if (!manifest_init_data_channels() || !manifest_init_parameter_channels())
         return false;
-
-    /*
-    channel_manifest_print(stdout, &manifest);
-    telemetry_packet_print(stdout, packets[0]);
-    telemetry_packet_print(stdout, packets[1]);
-    telemetry_packet_print(stdout, packets[2]);
-    telemetry_packet_print(stdout, packets[3]);
-    */
 
     channel_manifest_send(&manifest, manifest_sender);
     return true;

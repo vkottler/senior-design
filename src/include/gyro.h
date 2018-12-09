@@ -6,17 +6,12 @@
 
 /*****************************************************************************/
 
-#define GYRO_SENSITIVITY    (7.8125f / 1000.0f)
+#define GYRO_SENSITIVITY    (7.8125f)
 #define GYRO_DATA_RATE      (800.0f)
 #define GYRO_FIFO_WATERMARK 16
 
-/* these were derived manually */
-#define GYRO_X_BIAS (0.000075f)
-#define GYRO_Y_BIAS (0.000075f)
-#define GYRO_Z_BIAS (0.000075f)
-
 /* make sure we calibrate for a watermark-divisible amount of samples */
-#define GYRO_CALIB_SAMPLES  (75 * GYRO_FIFO_WATERMARK)
+#define GYRO_CALIB_SAMPLES  (100 * GYRO_FIFO_WATERMARK)
 
 typedef enum gyro_state
 {
@@ -47,7 +42,6 @@ typedef struct gyro
     size_t calib_samples, samples;
 
     float calib_offset[3];
-    float accum[3];
 
     uint8_t write_buffer[GYRO_BUFFER_SIZE];
     uint8_t read_buffer[GYRO_BUFFER_SIZE];
@@ -135,9 +129,9 @@ void dump_gyro(gyro_t *gyro);
 #define FS_1000_DPS_21002       0x01 // 31.25 mdps/LSB
 #define FS_500_DPS_21002        0x02 // 15.625 mdps/LSB
 #define FS_250_DPS_21002        0x03 // 7.8125 mdps/LSB
-#define LPF_BW_HIGH_21002       0x80
+#define LPF_BW_HIGH_21002       0x00
 #define LPF_BW_MID_21002        0x40
-#define LPF_BW_LOW_21002        0x00
+#define LPF_BW_LOW_21002        0x80
 #define HPF_BW_ODR_DIV50        0x00
 #define HPF_BW_ODR_DIV100       0x08
 #define HPF_BW_ODR_DIV200       0x10

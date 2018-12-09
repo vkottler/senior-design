@@ -10,9 +10,16 @@ bool manifest_init(void);
 #define MAX_PACKET_COUNT     8
 
 #define GYRO_UPDATE_RATE      500
+#define GYRO_TELEM_ON         true
+
 #define LIDAR_UPDATE_RATE     1000 
+#define LIDAR_TELEM_ON        true
+
 #define BATTERY_UPDATE_RATE   4000
+#define BATTERY_TELEM_ON      true
+
 #define THROTTLE_UPDATE_RATE  500
+#define THROTTLE_TELEM_ON     true
 
 /* don't want to rename everything */
 #define manifest tm._manifest
@@ -24,6 +31,17 @@ bool manifest_init(void);
 
 #define LIDAR1_IND  3
 #define LIDAR2_IND  4
+
+#define BATTERY_IND 5
+
+#define POSX_IND    10
+#define NEGX_IND    11
+#define POSY_IND    12
+#define NEGY_IND    13
+
+#define GYRO_XA_IND 14
+#define GYRO_YA_IND 15
+#define GYRO_ZA_IND 16
 
 typedef struct telemetry_manager
 {

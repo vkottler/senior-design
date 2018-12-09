@@ -25,18 +25,7 @@ command_status do_set(int argc, char *argv[]) {
         control.throttle = val;
         return CMD_SUCCESS;
     }
-    else if (!strcmp("p_gain", argv[1])) {
-        control.p_gain = val;
-        return CMD_SUCCESS;
-    }
-    else if (!strcmp("i_gain", argv[1])) {
-        control.i_gain = val;
-        return CMD_SUCCESS;
-    }
-    else if (!strcmp("d_gain", argv[1])) {
-        control.d_gain = val;
-        return CMD_SUCCESS;
-    }
     return USAGE;
 }
-COMMAND_ENTRY("set", "{ req_x | req_y | req_z | throttle | p_gain | i_gain | d_gain } [val]", "Set gain values for PID loop", do_set)
+COMMAND_ENTRY("set", "{ req_x | req_y | req_z | throttle } <val>",
+              "Set gain values for PID loop", do_set)

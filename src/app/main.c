@@ -18,12 +18,11 @@ int main(void)
     tm.t_zero = ticks;
     while (1)
     {
+        /* toggle the LED if it makes sense to */
         blink_handler(75);
 
+        /* perform any work needing servicing */
         run_critical();
-
-        batt_startConver();
-        batt_getBattery();
 
         /* service incoming commands */
         check_input();

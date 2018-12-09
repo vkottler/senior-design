@@ -6,36 +6,19 @@
 #include "adc.h"
 #include <string.h> 
 
-#define ANALOG_CONVER 0.000805664f
-
-typedef struct {
-    float R1;
-    float R2;
-} VOLT_DIVIDER_T;
-
 const VOLT_DIVIDER_T V_DIVIDERS[3] = {{.R1 = 100.0f, .R2 = 100.0f},
                                       {.R1 = 300.0f, .R2 = 100.0f},
                                       {.R1 = 750.0f, .R2 = 150.0f}};
 
-typedef enum{
-    vbatt_1s,
-    vbatt_2s,
-    vbatt_3s,
-    curr_meas
-} current_conversion_t;
 
 float battery_val[4] = {0, 0, 0, 0};
 static current_conversion_t curr_conv = vbatt_1s;
-static bool start_adc = true;
 
 float voltageDivider(float r1, float r2)
-{
-return ((r1+r2)/r2);
-}
+{ return ((r1+r2)/r2); }
 
-void batt_startConver()
+void batt_startConver(void)
 {
-    if(!start_adc) return;
     switch(curr_conv)
     {
         case vbatt_1s:
@@ -50,27 +33,30 @@ void batt_startConver()
         case curr_meas:
             adc_ConversionStart(curr_meas_adc, curr_meas_ch, curr_meas_seq);
             break;
-        default: 
-            curr_conv = vbatt_1s;
+        default: return;
     }
-    start_adc = false;
 }
 
-void batt_convertUnits(ADC_TypeDef * adc, float vdivider, uint8_t battery_val_index, float subtractor)
+void batt_convertUnits(ADC_TypeDef * adc, float vdivider,
+                       uint8_t battery_val_index, float subtractor)
 {
-
+    int i;
     uint16_t analogRead = LL_ADC_REG_ReadConversionData12(adc);
-    float volts = analogRead * ANALOG_CONVER* vdivider;
+    float volts = analogRead * ANALOG_CONVER * vdivider;
+
     battery_val[battery_val_index] = volts - subtractor;
 
-    memcpy(manifest.channels[5 + battery_val_index].data, 
-            (void*)&battery_val[battery_val_index], sizeof(float));
+    memcpy(manifest.channels[BATTERY_IND + battery_val_index].data, 
+           (void *) &battery_val[battery_val_index], sizeof(float));
 
-    if(battery_val_index == vbatt_3s)
+    /* if we just updated the third cell, sum all of the cell values */
+    if (battery_val_index == vbatt_3s)
     {
-        //total
-        memcpy(manifest.channels[5 + battery_val_index + 2].data, 
-                (void*)&volts, sizeof(float));
+        volts = 0.0f;
+        for (i = 0; i < 3; i++)
+            volts += battery_val[i];
+        memcpy(manifest.channels[BATTERY_IND + 4].data, 
+                (void *) &volts, sizeof(float));
     }
 }
 
@@ -116,18 +102,15 @@ void batt_getBattery()
             vdivider = 10.0f; 
             next_conv = vbatt_1s;
             break;
-        default: 
-            curr_conv = vbatt_1s;
-            adc = vbatt_1s_adc;
-            battery_val_index = 0;
-            next_conv = vbatt_1s;
+        default: return;
     }
+
+    /* handle sample if it's finished and start a new one */
     if (LL_ADC_IsActiveFlag_EOC(adc))
     {
         LL_ADC_ClearFlag_EOC(adc);
         batt_convertUnits(adc, vdivider, battery_val_index, subtractor);
         curr_conv = next_conv;
-        start_adc = true;
+        batt_startConver();
     }
 }
-
