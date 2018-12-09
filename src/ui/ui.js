@@ -98,7 +98,6 @@ $(function() {
     }
 });
  
-
 /* open the first tab by default */
 let start_tab = "plot-tab";
 let mock_evt = {currentTarget: document.getElementById("start-tab")};
