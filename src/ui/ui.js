@@ -20,7 +20,13 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
-function send_stop() { client.send_message('stop'); }
+function send_stop()
+{
+    client.send_message('abort');
+    client.send_message('abort');
+    client.send_message('abort');
+    client.send_message('abort');
+}
 
 function sendGain()
 {
@@ -32,9 +38,8 @@ function sendGain()
         var value = document.getElementById(currentSliderId+'_val').value
         data.push(value)
     }
-    client.send_message(`set p_gain ${data[0]}`);
-    client.send_message(`set i_gain ${data[1]}`);
-    client.send_message(`set d_gain ${data[2]}`);
+    let axis = document.getElementById("gain-axis").value;
+    client.send_message(`pid ${axis} ${data[0]} ${data[1]} ${data[2]}`);
 }
 
 function sendDesiredVals()
@@ -66,7 +71,7 @@ $(function() {
         switch(i){
             case 0: 
                  min = 0.000;
-                 max = 10.000;
+                 max = 1000.000;
                 break;
             case 1: 
                  min = -90.000;

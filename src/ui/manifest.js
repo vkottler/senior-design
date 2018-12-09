@@ -2,7 +2,8 @@ let start_time = new Date().getTime() / 1000.0;
 let window_size = 100;
 let num_plots = 0;
 let plots = {};
-let channels = []
+let plots_data = [];
+let channels = [];
 
 function add_manifest_table_entry(manifest_entry)
 {
@@ -53,6 +54,7 @@ function manifest_handle(data_set, socket)
 
         /* create the CanvasJS plot */
         let plot_data = [];
+        plots_data.push(plot_data);
         let chart_config = {
             zoomEnabled: false,
             title: { text: `${manifest_entry.name} (${manifest_entry.units})` },
@@ -162,10 +164,23 @@ function start_plots()
     }, interval / 2);
 }
 
+/* remove all existing data from the graph */
+function clear_data()
+{
+    for (i in plots_data)
+    {
+        let size = plots_data[i].length;
+        for (let j = 0; j < size; j++)
+            plots_data[i].pop();
+    }
+    start_time = new Date().getTime() / 1000.0;
+}
+
 /* start the plots with the default value when the page loads */
 $(function() {
     document.getElementById("stop-plots").onclick = stop_plots;
     document.getElementById("start-plots").onclick = start_plots;
+    document.getElementById("clear-data").onclick = clear_data;
     start_plots();
 });
 
@@ -182,9 +197,9 @@ function addChannelEnable(channel_name) {
         let td2 = document.createElement('td');
         td1.appendChild(document.createTextNode(channel_name));
         td2.appendChild(input);
-        tr.appendChild(td1);    
+        tr.appendChild(td1);
         tr.appendChild(td2);
-        plot_enable_table.append(tr);    
+        plot_enable_table.append(tr);
 }
 
 /*Toggles the display of the graph on click */
