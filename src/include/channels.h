@@ -9,10 +9,10 @@ bool manifest_init(void);
 #define MAX_CHANNEL_COUNT   64
 #define MAX_PACKET_COUNT     8
 
-#define GYRO_UPDATE_RATE      666
-#define LIDAR_UPDATE_RATE     666
-#define BATTERY_UPDATE_RATE   2000
-#define THROTTLE_UPDATE_RATE  2000
+#define GYRO_UPDATE_RATE      500
+#define LIDAR_UPDATE_RATE     1000 
+#define BATTERY_UPDATE_RATE   4000
+#define THROTTLE_UPDATE_RATE  500
 
 /* don't want to rename everything */
 #define manifest tm._manifest

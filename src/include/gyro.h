@@ -44,6 +44,7 @@ typedef enum gyro_state
 typedef struct gyro
 {
     volatile gyro_state_t state;
+    volatile bool new_data;
     size_t calib_samples, samples;
 
     float calib_offset[3];

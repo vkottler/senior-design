@@ -4,8 +4,18 @@
 #include "board_config.h"
 #include "battery.h"
 #include "adc.h"
+#include <string.h> 
 
-#define ANALOG_CONVER 0.000805664
+#define ANALOG_CONVER 0.000805664f
+
+typedef struct {
+    float R1;
+    float R2;
+} VOLT_DIVIDER_T;
+
+const VOLT_DIVIDER_T V_DIVIDERS[3] = {{.R1 = 100.0f, .R2 = 100.0f},
+                                      {.R1 = 300.0f, .R2 = 100.0f},
+                                      {.R1 = 750.0f, .R2 = 150.0f}};
 
 typedef enum{
     vbatt_1s,
@@ -14,9 +24,14 @@ typedef enum{
     curr_meas
 } current_conversion_t;
 
-static float battery_val[4] = {0, 0, 0, 0};
+float battery_val[4] = {0, 0, 0, 0};
 static current_conversion_t curr_conv = vbatt_1s;
 static bool start_adc = true;
+
+float voltageDivider(float r1, float r2)
+{
+return ((r1+r2)/r2);
+}
 
 void batt_startConver()
 {
@@ -41,11 +56,29 @@ void batt_startConver()
     start_adc = false;
 }
 
+void batt_convertUnits(ADC_TypeDef * adc, float vdivider, uint8_t battery_val_index, float subtractor)
+{
+
+    uint16_t analogRead = LL_ADC_REG_ReadConversionData12(adc);
+    float volts = analogRead * ANALOG_CONVER* vdivider;
+    battery_val[battery_val_index] = volts - subtractor;
+
+    memcpy(manifest.channels[5 + battery_val_index].data, 
+            (void*)&battery_val[battery_val_index], sizeof(float));
+
+    if(battery_val_index == vbatt_3s)
+    {
+        //total
+        memcpy(manifest.channels[5 + battery_val_index + 2].data, 
+                (void*)&volts, sizeof(float));
+    }
+}
 
 void batt_getBattery()
 { 
     uint16_t battery_val_index;
-    float *channel_data;
+    float vdivider = 1.0f;
+    float subtractor = 0.0f;
     ADC_TypeDef * adc;
     current_conversion_t next_conv;
 
@@ -54,21 +87,33 @@ void batt_getBattery()
         case vbatt_1s:
             adc = vbatt_1s_adc;
             battery_val_index = 0;
+            vdivider = voltageDivider(
+                    V_DIVIDERS[battery_val_index].R1,
+                    V_DIVIDERS[battery_val_index].R2);
             next_conv = vbatt_2s;
             break;
         case vbatt_2s:
             adc = vbatt_2s_adc;
             battery_val_index = 1;
+            vdivider = voltageDivider(
+                    V_DIVIDERS[battery_val_index].R1,
+                    V_DIVIDERS[battery_val_index].R2);
+            subtractor = battery_val[vbatt_1s];
             next_conv = vbatt_3s;
             break;
         case vbatt_3s:
             adc = vbatt_3s_adc;
             battery_val_index = 2;
+            vdivider = voltageDivider(
+                    V_DIVIDERS[battery_val_index].R1,
+                    V_DIVIDERS[battery_val_index].R2);
+            subtractor = battery_val[vbatt_1s] + battery_val[vbatt_2s];
             next_conv = curr_meas;
             break;
         case curr_meas:
             adc = curr_meas_adc;
             battery_val_index = 3;
+            vdivider = 10.0f; 
             next_conv = vbatt_1s;
             break;
         default: 
@@ -77,19 +122,12 @@ void batt_getBattery()
             battery_val_index = 0;
             next_conv = vbatt_1s;
     }
-
     if (LL_ADC_IsActiveFlag_EOC(adc))
     {
         LL_ADC_ClearFlag_EOC(adc);
-        battery_val[battery_val_index] = LL_ADC_REG_ReadConversionData12(adc) * ANALOG_CONVER;
-
-        channel_data = (float*) manifest.channels[9 + battery_val_index].data;
-        *channel_data = battery_val[battery_val_index];
-
+        batt_convertUnits(adc, vdivider, battery_val_index, subtractor);
         curr_conv = next_conv;
         start_adc = true;
     }
-
 }
-
 

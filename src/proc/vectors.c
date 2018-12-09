@@ -30,7 +30,7 @@ typedef void(*f_ptr)(void);
 
 void Default_Handler(void)
 {
-    fault_handler(100);
+/*    fault_loop();*/
 }
 
 volatile uint32_t ticks = 0;

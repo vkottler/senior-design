@@ -28,6 +28,7 @@ typedef struct _ESC{
 
 extern const ESC_TypeDef ESC_TABLE[];
 
+void esc_reset();
 void esc_config();
 void esc_set_pulse(ESC_TypeDef ESC, uint32_t pulse);
 

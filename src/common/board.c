@@ -16,6 +16,7 @@
 #include "accel.h"
 #include "gyro.h"
 #include "esc.h"
+#include "control.h"
 
 void delay(uint32_t ms)
 {
@@ -49,6 +50,7 @@ void set_clks(void)
 
 void io_init(void)
 {
+    esc_reset();
     gpioAliasInit();
 
     set_clks();
@@ -75,10 +77,10 @@ int periph_init(void) {
 
     adc_config();
     adc_activate();
-    /*
+
     control_config();
     esc_config();
-    */
+
 
     spi_config();
 

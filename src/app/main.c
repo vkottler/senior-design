@@ -1,5 +1,6 @@
 #include "main.h"
 #include "gyro.h"
+#include "battery.h"
 
 int main(void)
 {
@@ -19,8 +20,12 @@ int main(void)
     {
         blink_handler(75);
 
-        service_gyro(&gyro);
-        service_sensors(25);
+        run_critical();
+
+        batt_startConver();
+        batt_getBattery();
+
+        service_lidar(LIDAR_UPDATE_RATE);
 
         /* service incoming commands */
         check_input();

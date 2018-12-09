@@ -7,6 +7,7 @@
 
 gyro_t gyro;
 
+
 spi_transaction_t write_transaction;
 uint8_t write_tx_buf[2], write_rx_buf[2];
 
@@ -52,7 +53,7 @@ int gyro_validate_register(uint8_t address, uint8_t expected)
     return 0;
 }
 
-inline float raw_to_float(const uint8_t reading[2])
+float raw_to_float(const uint8_t reading[2])
 {
     float temp;
     int16_t raw;
@@ -132,6 +133,8 @@ void sample_round_done(const uint8_t *buffer, size_t len)
     /* inform handler that we can start new samples */
     gyro.state = GYRO_BUFFERING;
 
+    gyro.new_data = true;
+
     __enable_irq();
 }
 
@@ -181,6 +184,7 @@ void gyro_init(gyro_t *gyro)
     gyro->spi             = &spi1_state;
     gyro->calib_samples   = 0;
     gyro->samples_start_t = 0;
+    gyro->new_data = false;
     memset(gyro->write_buffer, 0, GYRO_BUFFER_SIZE);
     memset(gyro->read_buffer,  0, GYRO_BUFFER_SIZE);
     spi_init_transaction(&gyro->sample, gyro->write_buffer, gyro->read_buffer,

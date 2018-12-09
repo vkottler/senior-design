@@ -49,22 +49,22 @@ int TIM_PWM_Init(TIM_TypeDef *tim, uint8_t channel, uint32_t period, uint32_t pu
 		default:
 	break;
 	}
-	
+
 	/*clear and set active high*/
 	tim->CCER &= ~(0xf<<(4*(channel-1)));
 
 	switch (channel){
 		case 1:
-			tim->CCR1 = (uint32_t)(1000 + pulse * 10);
+			tim->CCR1 = (uint32_t)(1000 + pulse);
 			break;
 		case 2:
-			tim->CCR2 = (uint32_t)(1000 + pulse * 10);
+			tim->CCR2 = (uint32_t)(1000 + pulse);
 			break;
 		case 3:
-			tim->CCR3 = (uint32_t)(1000 + pulse * 10);
+			tim->CCR3 = (uint32_t)(1000 + pulse);
 			break;
 		case 4:
-			tim->CCR4 = (uint32_t)(1000 + pulse * 10);
+			tim->CCR4 = (uint32_t)(1000 + pulse);
 			break;
 		default:
 			break;

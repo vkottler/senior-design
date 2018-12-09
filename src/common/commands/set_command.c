@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "command.h"
-#include "handlers.h"
+#include "control.h"
+
 extern control_t control;
 command_status do_set(int argc, char *argv[]) {
     if (argc < 2)
