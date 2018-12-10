@@ -88,6 +88,9 @@ function manifest_handle(data_set, socket)
                 plot_data.shift();
             plots[manifest_entry.name].to_render = true;
         });
+
+        /* hide the graph until the user enables it */
+        new_plot_container.style.display = "none";
     }
 }
 
@@ -185,29 +188,30 @@ $(function() {
 });
 
 /* Add channels and check button to the plot tab */
-function addChannelEnable(channel_name) {
-    var plot_enable_table = document.getElementById("plot_enable_table")
-        var input = document.createElement("input");
-        input.type = "checkbox";
-        input.id = channel_name+"_checkbutton";  
-        input.checked = true;   //all check box values are defaulted to set 
-        input.onclick = function() {toggleGraph(this.id)}
-        let tr = document.createElement('tr');
-        let td1 = document.createElement('td');
-        let td2 = document.createElement('td');
-        td1.appendChild(document.createTextNode(channel_name));
-        td2.appendChild(input);
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        plot_enable_table.append(tr);
+function addChannelEnable(channel_name)
+{
+    var plot_enable_table = document.getElementById("plot_enable_table");
+    var input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = channel_name+"_checkbutton";  
+    input.checked = false;   //all check box values are defaulted to set 
+    input.onclick = function() { toggleGraph(this.id); };
+    let tr = document.createElement('tr');
+    let td1 = document.createElement('td');
+    let td2 = document.createElement('td');
+    td1.appendChild(document.createTextNode(channel_name));
+    td2.appendChild(input);
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    plot_enable_table.append(tr);
 }
 
 /*Toggles the display of the graph on click */
-function toggleGraph(id){
+function toggleGraph(id) {
     let checkBoxStatus = document.getElementById(id).checked;
-    let plot = id.split("_checkbutton"); //isolate channel name 
+    let plot_id = id.replace("_checkbutton", ""); //isolate channel name 
     if(!checkBoxStatus) 
-        document.getElementById(plot[0]+'-container').style.display = "none";
+        document.getElementById(plot_id + '-container').style.display = "none";
     else 
-        document.getElementById(plot[0]+'-container').style.display = "block"; 
+        document.getElementById(plot_id + '-container').style.display = "block"; 
 }
