@@ -8,18 +8,22 @@ bool manifest_init(void);
 
 #define MAX_CHANNEL_COUNT   64
 #define MAX_PACKET_COUNT     8
+#define TELEM_NUM_GROUPS     4
+
+#define MAX_TELEM_PERIOD      10000
+#define MIN_TELEM_PERIOD      250
 
 #define GYRO_UPDATE_RATE      500
-#define GYRO_TELEM_ON         true
+#define GYRO_TELEM_ON         false
 
 #define LIDAR_UPDATE_RATE     1000 
-#define LIDAR_TELEM_ON        true
+#define LIDAR_TELEM_ON        false
 
 #define BATTERY_UPDATE_RATE   4000
-#define BATTERY_TELEM_ON      true
+#define BATTERY_TELEM_ON      false
 
 #define THROTTLE_UPDATE_RATE  500
-#define THROTTLE_TELEM_ON     true
+#define THROTTLE_TELEM_ON     false
 
 /* don't want to rename everything */
 #define manifest tm._manifest
@@ -43,6 +47,12 @@ bool manifest_init(void);
 #define GYRO_YA_IND 15
 #define GYRO_ZA_IND 16
 
+typedef struct telemetry_group {
+    const char *alias;
+    uint32_t rate;
+    bool publish;
+} telemetry_group_t;
+
 typedef struct telemetry_manager
 {
     /* channels */
@@ -51,11 +61,12 @@ typedef struct telemetry_manager
 
     /* packets */
     telemetry_packet_t *_packets[MAX_PACKET_COUNT];
-    bool                packet_auto_publish[MAX_PACKET_COUNT];
-    uint32_t            packet_update_rates[MAX_PACKET_COUNT];
+    bool               *packet_auto_publish[MAX_PACKET_COUNT];
+    uint32_t           *packet_update_rates[MAX_PACKET_COUNT];
     uint32_t            packet_last_ticks[MAX_PACKET_COUNT];
     uint32_t            packets_sent[MAX_PACKET_COUNT];
     uint32_t            packets_dropped[MAX_PACKET_COUNT];
+    uint32_t            packets_not_published[MAX_PACKET_COUNT];
     uint32_t            packet_index;
 
     bool                publish;
@@ -68,3 +79,4 @@ void dump_telemetry_manager(telemetry_manager_t *tman);
 
 extern telemetry_manager_t tm;
 extern volatile uint32_t ticks;
+extern telemetry_group_t packet_groups[TELEM_NUM_GROUPS];
