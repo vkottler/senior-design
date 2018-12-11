@@ -35,6 +35,7 @@ HTML_LINES=(`find -iname '*.html' | xargs wc -l | tail -n 1`)
 CSS_LINES=(`find -iname '*.css' | xargs wc -l | tail -n 1`)
 JS_LINES=(`find -iname '*.js' | xargs wc -l | tail -n 1`)
 
+echo "Originally Authored"
 echo "Source Code Breakdown"
 echo "======================="
 echo "C Source   : $C_LINES lines"
@@ -50,4 +51,3 @@ TOTAL_LINES=`expr $C_LINES + $H_LINES + $PYTHON_LINES + $MAKEFILE_LINES`
 TOTAL_LINES=`expr $TOTAL_LINES + $HTML_LINES + $CSS_LINES + $JS_LINES`
 
 echo "Total      : $TOTAL_LINES lines"
-
