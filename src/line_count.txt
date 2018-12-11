@@ -1,0 +1,11 @@
+Source Code Breakdown
+=======================
+C Source   : 4864 lines
+C Header   : 1204 lines
+Python     : 1638 lines
+GNU make   : 229  lines
+HTML       : 316  lines
+CSS        : 251  lines
+JavaScript : 887  lines
+=======================
+Total      : 9389 lines
