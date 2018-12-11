@@ -1,0 +1,56 @@
+html {
+    width: 100%;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+}
+
+.pad {
+    padding: 0.5em;
+}
+
+h1 {
+    padding: 0.5em;
+    margin: 0;
+}
+
+.frow {
+    display: flex;
+    flex-direction: row;
+}
+
+.fcol {
+    display: flex;
+    flex-direction: column;
+}
+
+.fgrow {
+    flex-grow: 1;
+}
+
+.fsa {
+    justify-content: space-around;
+}
+
+.fcenter {
+    justify-content: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.log {
+    margin: 0 1em;
+    height: 10.5em;
+    max-height: 10.5em;
+    overflow-y: scroll;
+    border: 1px solid;
+}
+
+#data-log.log {
+    height: 20em;
+    max-height: 20em;
+}
