@@ -1,3 +1,8 @@
+let throttle_requests = [];
+let gyro_x_requests = [];
+let gyro_y_requests = [];
+let gyro_z_requests = [];
+
 // Function to display variable in html (iterates through all counts
 // of elements and sets values accordingly)
 function displayVals(elm_name, value) {
@@ -65,43 +70,86 @@ var slider_types = ["gain_slider","gyro_slider", "thrust_slider"];
 $(function() {
     for(i = 0; i < slider_types.length; i++)
     {
-        let currentSliderArray = document.getElementsByClassName(slider_types[i])
-        let min = 0; 
-        let max = 0; 
-        switch(i){
+        let currentSliderArray = document.getElementsByClassName(slider_types[i]);
+        let min;
+        let max; 
+        let step;
+        let start;
+        switch(i)
+        {
             case 0: 
-                 min = 0.000;
-                 max = 1000.000;
+                start = 0.0;
+                min =   0.0;
+                max =  30.0;
+                step =  0.1;
                 break;
             case 1: 
-                 min = -90.000;
-                 max = 90.000;
+                start =  0.0;
+                min =  -90.0;
+                max =   90.0;
+                step =   5.0;
                 break;
             case 2:
-                 min = 0.000;
-                 max = 500.000;
+                start = 50.0;
+                min =   50.0;
+                max =  500.0;
+                step =   5.0;
                 break;
+            default: throw "Unknown slider type.";
         }
         var occurences = currentSliderArray.length;
-        for(j = 0; j < occurences;j++){
-            let currentSliderId = currentSliderArray[j].id
+        for(j = 0; j < occurences; j++)
+        {
+            let currentSliderId  = currentSliderArray[j].id;
+            let slider_val = `#${currentSliderId}_val`;
+
+            /* set to the minimum by default */
+            $(slider_val).val(start);
+
             $("#"+currentSliderId).slider({
-            min: min,
-            max: max,
-            step: .001,
-            range: "min",
-            value: $("#"+currentSliderId+"_val").val(),
-            slide: function( event, ui ) {
-                $("#"+currentSliderId+"_val").val(ui.value);
-            }
+                min: min, max: max, step: step,
+                range: "min",
+                value: $(slider_val).val(),
+                slide: (evt, ui) => {
+                    $(slider_val).val(ui.value);
+
+                    /* send a command if applicable */
+                    if (slider_val.includes("gyro"))
+                    {
+                        if (slider_val.includes("x"))
+                            gyro_x_requests.push(ui.value);
+                        else if (slider_val.includes("y"))
+                            gyro_y_requests.push(ui.value);
+                        else if (slider_val.includes("z"))
+                            gyro_z_requests.push(ui.value);
+                    }
+                    else if (slider_val.includes("thrust"))
+                        throttle_requests.push(ui.value);
+                }
             });
-            $("#"+currentSliderId+"_val").on( "keyup", function() {
-                if((this.value < min) || (this.value > max)) this.value = max;
-                $("#"+currentSliderId).slider( "value", this.value );
+
+            $(slider_val).on("keyup", function() {
+                if (this.value < min)      this.value = min;
+                else if (this.value > max) this.value = max;
+                $("#"+currentSliderId).slider("value", this.value);
             });
         }
     }
 });
+
+/* on an interval, service requests to change throttle and rotation */
+function service_requests()
+{
+    if (throttle_requests.length > 0)
+        client.send_message(`set throttle ${throttle_requests.shift()}`);
+    else if (gyro_x_requests.length > 0)
+        client.send_message(`set req_x ${gyro_x_requests.shift()}`);
+    else if (gyro_y_requests.length > 0)
+        client.send_message(`set req_y ${gyro_y_requests.shift()}`);
+    else if (gyro_z_requests.length > 0)
+        client.send_message(`set req_z ${gyro_z_requests.shift()}`);
+}
+setInterval(service_requests, 500);
  
 /* open the first tab by default */
 let start_tab = "plot-tab";

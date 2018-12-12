@@ -177,6 +177,10 @@ function clear_data()
             plots_data[i].pop();
     }
     start_time = new Date().getTime() / 1000.0;
+
+    /* re-render all of the plots */
+    for (plot_name in plots)
+        plots[plot_name].plot.render();
 }
 
 /* start the plots with the default value when the page loads */

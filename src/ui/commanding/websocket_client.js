@@ -143,3 +143,9 @@ class LogElement
         this.update();
     }
 }
+
+function start_telemetry()
+{ client.send_message("tm on"); }
+
+function stop_telemetry()
+{ client.send_message("tm off"); }

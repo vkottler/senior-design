@@ -54,4 +54,8 @@ $(function() {
         /* automatically attempt to connect */
         start_client();
     });
+
+    /* register telemetry starting/stopping butons */
+    document.getElementById("start-telemetry").onclick = start_telemetry;
+    document.getElementById("stop-telemetry").onclick = stop_telemetry;
 });
