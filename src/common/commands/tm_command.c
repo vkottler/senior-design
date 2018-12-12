@@ -5,13 +5,13 @@
 #include <stdlib.h>
 
 void all_telem(bool state)
+{ tm.publish = state; }
+
+void all_telem_packets(bool state)
 {
     for (int i = 0; i < TELEM_NUM_GROUPS; i++)
         packet_groups[i].publish = state;
 }
-
-void all_telem_on(void) { all_telem(true); }
-void all_telem_off(void) { all_telem(false); }
 
 command_status do_tm(int argc, char *argv[])
 {
@@ -30,8 +30,17 @@ command_status do_tm(int argc, char *argv[])
     /* turn all telemetry on or off */
     if (argc == 2)
     {
-        if (!strcmp("on", argv[1])) all_telem_on();
-        else if (!strcmp("off", argv[1])) all_telem_off();
+        if (!strcmp("on", argv[1])) all_telem(true);
+        else if (!strcmp("off", argv[1])) all_telem(false);
+        else return FAIL;
+        return CMD_SUCCESS;
+    }
+
+    /* toggle all packets on or off */
+    if (argc == 4 && !strcmp("all", argv[2]))
+    {
+        if (!strcmp("on", argv[3])) all_telem_packets(true);
+        else if (!strcmp("off", argv[3])) all_telem_packets(false);
         else return FAIL;
         return CMD_SUCCESS;
     }

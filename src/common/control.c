@@ -7,6 +7,31 @@
 control_t control;
 extern bool abort_control;
 
+void reset_requested(void)
+{
+	control.desired_x = 0;
+    control.desired_y = 0;
+    control.desired_z = 0;
+}
+
+void end_abort(void)
+{
+    control.throttle = START_THROTTLE;
+    reset_requested();
+    update_y(control.throttle, control.throttle);
+    update_x(control.throttle, control.throttle);
+    abort_control = false;
+}
+
+void abort(void)
+{
+    control.throttle = MIN_THROTTLE;
+    reset_requested();
+    update_y(control.throttle, control.throttle);
+    update_x(control.throttle, control.throttle);
+    abort_control = true;
+}
+
 void control_loop_y(float raw_input_y, float throttle)
 {
     int16_t pos_x_val, neg_x_val;
@@ -56,9 +81,8 @@ void control_loop_y(float raw_input_y, float throttle)
     {
         printf("new pos x: %d new neg x: %d\r\n", new_pos_x_val, new_neg_x_val);
         printf("pos x: %d neg x: %d\r\n", pos_x_val, neg_x_val);
-        abort_control = true;
-        new_pos_x_val = 0;
-        new_neg_x_val = 0;
+        abort();
+        return;
     }
 
     update_x(new_pos_x_val, new_neg_x_val);
@@ -113,9 +137,8 @@ void control_loop_x(float raw_input_x, float throttle)
     {
         printf("new pos y: %d new neg y: %d\r\n", new_pos_y_val, new_neg_y_val);
         printf("pos y: %d neg y: %d\r\n", pos_y_val, neg_y_val);
-        abort_control = true;
-        new_pos_y_val = 0;
-        new_neg_y_val = 0;
+        abort();
+        return;
     }
 
     update_y(new_pos_y_val, new_neg_y_val);

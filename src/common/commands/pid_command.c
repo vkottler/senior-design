@@ -63,12 +63,10 @@ command_status do_pid(int argc, char *argv[]) {
         control.prev_dif_x = 0;
         control.prev_dif_y = 0;
         control.prev_dif_z = 0;
-        control.desired_x = 0;
-        control.desired_y = 0;
-        control.desired_z = 0;
-        control.throttle = START_THROTTLE;
-        abort_control = false;
         report_pids();
+
+        end_abort();
+
         return CMD_SUCCESS;
     }
 

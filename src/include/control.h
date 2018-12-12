@@ -2,17 +2,17 @@
 
 #include <stdint.h>
 
-#define MAX_THROTTLE   600
+#define MAX_THROTTLE   750
 #define MIN_THROTTLE   50
-#define START_THROTTLE 225
+#define START_THROTTLE 200
 
-#define P_GAIN_Y       (05.00f)
-#define I_GAIN_Y       (00.00f)
-#define D_GAIN_Y       (10.00f)
+#define P_GAIN_Y       (00.00f)//(05.00f)
+#define I_GAIN_Y       (00.00f)//(00.00f)
+#define D_GAIN_Y       (00.00f)//(10.00f)
 
-#define P_GAIN_X       (05.00f)
-#define I_GAIN_X       (00.00f)
-#define D_GAIN_X       (10.00f)
+#define P_GAIN_X       (00.00f)//(05.00f)
+#define I_GAIN_X       (00.00f)//(00.00f)
+#define D_GAIN_X       (00.00f)//(10.00f)
 
 #define P_GAIN_Z       (00.00f)
 #define I_GAIN_Z       (00.00f)
@@ -57,6 +57,9 @@ void update_x(int16_t pos_y_val, int16_t neg_y_val);
 float control_math(float raw, float desired,
                    float p_gain, float i_gain, float d_gain,
                    float *i_accum, float *prev_d);
+
+void abort(void);
+void end_abort(void);
 
 /*****************************************************************************/
 /*         		Y + (CCW)                                                     */
