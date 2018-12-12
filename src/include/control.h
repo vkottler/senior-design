@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define MAX_THROTTLE   750
 #define MIN_THROTTLE   50
@@ -60,6 +61,9 @@ float control_math(float raw, float desired,
 
 void abort(void);
 void end_abort(void);
+
+extern volatile bool abort_control;
+extern control_t control;
 
 /*****************************************************************************/
 /*         		Y + (CCW)                                                     */

@@ -27,9 +27,6 @@ int main(void)
         /* service incoming commands */
         check_input();
 
-        /* re-enable the telemetry stream if the radio is available */
-        update_radio_state();
-
         /* use remaining time to publish telemetry */
         publish_telemetry(&tm);
     }

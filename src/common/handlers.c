@@ -18,7 +18,6 @@
 
 PC_Buffer *gyro_tx_buf[1], *gyro_rx_buf[1];
 void (*fun_ptr)();
-bool abort_control = false;
 extern control_t control;
 void fault_handler(unsigned int blink_int)
 {
@@ -65,19 +64,25 @@ void run_critical(void)
     service_lidar();
     run_control();
     batt_getBattery();
+    update_radio_state();
 }
 
 void run_control(void)
 {
-    if (abort_control) return;
+    float raw_input_x, raw_input_y, raw_input_z;
+
     if (gyro.new_data)
     {
-        float raw_input_x, raw_input_y, raw_input_z;
-        memcpy(&raw_input_x, manifest.channels[0].data, sizeof(float));
-        memcpy(&raw_input_y, manifest.channels[1].data, sizeof(float));
-        memcpy(&raw_input_z, manifest.channels[2].data, sizeof(float));
-        control_loop_x(raw_input_x, control.throttle);
-        control_loop_y(raw_input_y, control.throttle);
+        if (!abort_control)
+        {
+            __disable_irq();
+            memcpy(&raw_input_x, manifest.channels[0].data, sizeof(float));
+            memcpy(&raw_input_y, manifest.channels[1].data, sizeof(float));
+            memcpy(&raw_input_z, manifest.channels[2].data, sizeof(float));
+            control_loop_x(raw_input_x, control.throttle);
+            control_loop_y(raw_input_y, control.throttle);
+            __enable_irq();
+        }
         gyro.new_data = false;
     }
 }

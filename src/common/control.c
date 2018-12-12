@@ -5,9 +5,9 @@
 #include <string.h>
 
 control_t control;
-extern bool abort_control;
+volatile bool abort_control = false;
 
-void reset_requested(void)
+static void reset_requested(void)
 {
 	control.desired_x = 0;
     control.desired_y = 0;
@@ -25,11 +25,11 @@ void end_abort(void)
 
 void abort(void)
 {
+    abort_control = true;
     control.throttle = MIN_THROTTLE;
     reset_requested();
     update_y(control.throttle, control.throttle);
     update_x(control.throttle, control.throttle);
-    abort_control = true;
 }
 
 void control_loop_y(float raw_input_y, float throttle)
@@ -79,9 +79,10 @@ void control_loop_y(float raw_input_y, float throttle)
     if(new_neg_x_val > MAX_THROTTLE || new_pos_x_val > MAX_THROTTLE || 
        new_neg_x_val < MIN_THROTTLE || new_pos_x_val < MIN_THROTTLE ) 
     {
+        abort();
+        __enable_irq();
         printf("new pos x: %d new neg x: %d\r\n", new_pos_x_val, new_neg_x_val);
         printf("pos x: %d neg x: %d\r\n", pos_x_val, neg_x_val);
-        abort();
         return;
     }
 
@@ -135,9 +136,10 @@ void control_loop_x(float raw_input_x, float throttle)
     if(new_neg_y_val > MAX_THROTTLE || new_pos_y_val > MAX_THROTTLE || 
        new_neg_y_val < MIN_THROTTLE || new_pos_y_val < MIN_THROTTLE ) 
     {
+        abort();
+        __enable_irq();
         printf("new pos y: %d new neg y: %d\r\n", new_pos_y_val, new_neg_y_val);
         printf("pos y: %d neg y: %d\r\n", pos_y_val, neg_y_val);
-        abort();
         return;
     }
 

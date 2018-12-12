@@ -47,8 +47,7 @@ void console_wait_free(size_t count)
 
     while (!all_ready)
     {
-        service_gyro(&gyro);
-        update_radio_state();
+        run_critical();
         enough_space = (pc_buffer_space(tx_buf[0]) >= count + 4);
         if (radio_transmit_state && !radio_buffer_full && enough_space)
             all_ready = true;

@@ -6,9 +6,6 @@
 #include "control.h"
 #include "gyro.h"
 
-extern control_t control;
-extern bool abort_control;
-
 void report_pids(void)
 {
     printf("P: x=%.2f, y=%.2f, z=%.2f\r\n",
@@ -63,9 +60,8 @@ command_status do_pid(int argc, char *argv[]) {
         control.prev_dif_x = 0;
         control.prev_dif_y = 0;
         control.prev_dif_z = 0;
-        report_pids();
-
         end_abort();
+        report_pids();
 
         return CMD_SUCCESS;
     }
